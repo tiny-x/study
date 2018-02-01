@@ -21,7 +21,7 @@ public class ReferenceExample {
 
     private static void softReference() {
 
-        ReferenceQueue queue = new ReferenceQueue();
+        final ReferenceQueue queue = new ReferenceQueue();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -61,7 +61,7 @@ public class ReferenceExample {
     }
 
     private static void weakReference() {
-        ReferenceQueue queue = new ReferenceQueue();
+        final ReferenceQueue queue = new ReferenceQueue();
         new Thread(new Runnable() {
             @Override
             public void run() {
