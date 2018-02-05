@@ -57,6 +57,7 @@
         <module>netty</module>
         <module>basic</module>
         <module>nio</module>
+        <module>rpc</module>
     </modules>
 
     <build>

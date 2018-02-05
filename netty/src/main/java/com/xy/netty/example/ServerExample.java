@@ -27,13 +27,13 @@ public class ServerExample {
         LoggerConfig.initConfig();
     }
 
-    public void main(String[] args) {
+    public static void main(String[] args) {
         new ServerExample().init(9091);
     }
 
     public void init(int port) {
         // 主进程
-        EventLoopGroup mainGroup = new NioEventLoopGroup(1);
+        EventLoopGroup mainGroup = new NioEventLoopGroup();
         // 工作进程
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -50,9 +50,11 @@ public class ServerExample {
                             ch.pipeline().addLast(new ServerHandler());
                         }
                     });
-            ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
             logger.info("server start listen port: {}", port);
+            ChannelFuture channelFuture = serverBootstrap.bind(port);
             channelFuture.channel().closeFuture().sync();
+
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
