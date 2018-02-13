@@ -116,7 +116,7 @@ public class RpcClient {
     }
 
     /**
-     * Process server message.
+     * Process remoting message.
      *
      * @param msg the msg
      * @throws Exception the exception

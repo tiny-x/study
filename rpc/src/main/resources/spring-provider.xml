@@ -3,8 +3,8 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!-- server -->
-    <bean class="org.rpc.server.RpcServer" >
+    <!-- remoting -->
+    <bean class="org.rpc.remoting.netty.NettyServiceAbstract" >
         <property name="port" value="9100" />
     </bean>
 
