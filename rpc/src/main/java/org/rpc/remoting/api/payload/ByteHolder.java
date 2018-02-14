@@ -1,4 +1,4 @@
-package org.rpc.remoting.payload;
+package org.rpc.remoting.api.payload;
 
 public abstract class ByteHolder {
 

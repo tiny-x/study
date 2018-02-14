@@ -1,9 +1,8 @@
-package org.rpc.remoting;
+package org.rpc.remoting.api;
 
 import io.netty.channel.Channel;
-import org.rpc.comm.UnresolvedAddress;
-import org.rpc.remoting.future.ResponseFuture;
-import org.rpc.remoting.payload.RequestBytes;
+import org.rpc.remoting.api.future.ResponseFuture;
+import org.rpc.remoting.api.payload.RequestBytes;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;

@@ -1,6 +1,6 @@
-package org.rpc.remoting;
+package org.rpc.remoting.api;
 
-import org.rpc.remoting.future.ResponseFuture;
+import org.rpc.remoting.api.future.ResponseFuture;
 
 import java.util.concurrent.ExecutionException;
 

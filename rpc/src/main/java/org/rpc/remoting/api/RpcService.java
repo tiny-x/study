@@ -1,4 +1,4 @@
-package org.rpc.remoting;
+package org.rpc.remoting.api;
 
 public interface RpcService {
 

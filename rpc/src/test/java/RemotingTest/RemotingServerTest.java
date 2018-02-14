@@ -4,16 +4,17 @@ import io.netty.channel.ChannelHandlerContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.rpc.comm.UnresolvedAddress;
-import org.rpc.remoting.RequestProcessor;
-import org.rpc.remoting.RpcClient;
-import org.rpc.remoting.RpcServer;
+import org.rpc.remoting.api.RequestProcessor;
+import org.rpc.remoting.api.RpcClient;
+import org.rpc.remoting.api.RpcServer;
+import org.rpc.remoting.api.channel.ChannelGroup;
 import org.rpc.remoting.netty.NettyClient;
 import org.rpc.remoting.netty.NettyClientConfig;
 import org.rpc.remoting.netty.NettyServer;
 import org.rpc.remoting.netty.NettyServerConfig;
-import org.rpc.remoting.payload.RequestBytes;
-import org.rpc.remoting.payload.ResponseBytes;
-import org.rpc.remoting.procotol.ProtocolHead;
+import org.rpc.remoting.api.payload.RequestBytes;
+import org.rpc.remoting.api.payload.ResponseBytes;
+import org.rpc.remoting.api.procotol.ProtocolHead;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -55,7 +56,11 @@ public class RemotingServerTest {
         }, Executors.newCachedThreadPool());
 
         RequestBytes request = new RequestBytes(ProtocolHead.JSON, "hello server".getBytes());
-        ResponseBytes response = rpcClient.invokeSync(new UnresolvedAddress("127.0.0.1", 9000),
+        UnresolvedAddress address = new UnresolvedAddress("127.0.0.1", 9000);
+        rpcClient.connect(address);
+        ChannelGroup group = rpcClient.group(address);
+
+        ResponseBytes response = rpcClient.invokeSync(group.next(),
                 request,
                 3000L,
                 TimeUnit.SECONDS
@@ -88,7 +93,11 @@ public class RemotingServerTest {
         RequestBytes request = new RequestBytes(ProtocolHead.JSON, "hello server".getBytes());
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        rpcClient.invokeAsync(new UnresolvedAddress("127.0.0.1", 9000),
+        UnresolvedAddress address = new UnresolvedAddress("127.0.0.1", 9000);
+        rpcClient.connect(address);
+        ChannelGroup group = rpcClient.group(address);
+
+        rpcClient.invokeAsync(group.next(),
                 request,
                 3000L,
                 TimeUnit.SECONDS,

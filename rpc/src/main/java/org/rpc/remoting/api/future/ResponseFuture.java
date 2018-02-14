@@ -1,6 +1,6 @@
-package org.rpc.remoting.future;
+package org.rpc.remoting.api.future;
 
-import org.rpc.remoting.InvokeCallback;
+import org.rpc.remoting.api.InvokeCallback;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;

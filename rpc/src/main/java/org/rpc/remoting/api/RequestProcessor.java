@@ -1,8 +1,8 @@
-package org.rpc.remoting;
+package org.rpc.remoting.api;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.rpc.remoting.payload.RequestBytes;
-import org.rpc.remoting.payload.ResponseBytes;
+import org.rpc.remoting.api.payload.RequestBytes;
+import org.rpc.remoting.api.payload.ResponseBytes;
 
 public interface RequestProcessor {
 

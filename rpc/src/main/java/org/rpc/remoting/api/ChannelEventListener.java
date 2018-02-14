@@ -1,4 +1,4 @@
-package org.rpc.remoting;
+package org.rpc.remoting.api;
 
 import io.netty.channel.Channel;
 

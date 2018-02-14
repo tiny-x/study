@@ -3,16 +3,17 @@ package org.rpc.remoting.netty;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
+import org.rpc.exception.RemotingException;
 import org.rpc.exception.RemotingTimeoutException;
 import org.rpc.exception.RemotingTooMuchRequestException;
-import org.rpc.remoting.InvokeCallback;
-import org.rpc.remoting.payload.ByteHolder;
-import org.rpc.remoting.payload.RequestBytes;
-import org.rpc.remoting.payload.ResponseBytes;
-import org.rpc.remoting.procotol.ProtocolHead;
+import org.rpc.remoting.api.InvokeCallback;
+import org.rpc.remoting.api.payload.ByteHolder;
+import org.rpc.remoting.api.payload.RequestBytes;
+import org.rpc.remoting.api.payload.ResponseBytes;
+import org.rpc.remoting.api.procotol.ProtocolHead;
 import org.rpc.remoting.Pair;
-import org.rpc.remoting.RequestProcessor;
-import org.rpc.remoting.future.ResponseFuture;
+import org.rpc.remoting.api.RequestProcessor;
+import org.rpc.remoting.api.future.ResponseFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,38 +81,39 @@ public abstract class NettyServiceAbstract {
         }
     }
 
-    protected ResponseBytes invokeSync0(Channel channel, RequestBytes request, long timeout, TimeUnit timeUnit) throws Exception {
+    protected ResponseBytes invokeSync0(Channel channel, RequestBytes request, long timeout, TimeUnit timeUnit) throws RemotingException, InterruptedException {
         ResponseFuture<ResponseBytes> responseFuture = new ResponseFuture<>();
         responseTable.putIfAbsent(request.getInvokeId(), responseFuture);
-        ResponseBytes responseBytes;
+        ResponseBytes response = new ResponseBytes(request.getSerializerCode(), null);
 
         try {
             channel.writeAndFlush(request).addListener((ChannelFuture future) -> {
                 if (!future.isSuccess()) {
+                    ResponseBytes responseFail = new ResponseBytes(request.getSerializerCode(), null);
+                    ;
+
                     responseTable.remove(request.getInvokeId());
-                    ResponseBytes response = new ResponseBytes(request.getSerializerCode(), null);
-                    response.setInvokeId(request.getInvokeId());
-                    response.setStatus(ProtocolHead.STATUS_ERROR);
-                    responseFuture.complete(response);
-                    logger.error("invokeSync0 error!", future.cause());
+                    responseFail.setInvokeId(request.getInvokeId());
+                    responseFail.setStatus(ProtocolHead.STATUS_ERROR);
+                    responseFuture.complete(responseFail);
+                    throw new RemotingException("", future.cause());
                 }
             });
-            responseBytes = responseFuture.get(timeout, timeUnit);
+            response = responseFuture.get(timeout, timeUnit);
+        } catch (ExecutionException e) {
+            throw new RemotingException("ExecutionException", e);
         } catch (TimeoutException e) {
-            responseBytes = new ResponseBytes(request.getSerializerCode(), null);
-            responseBytes.setInvokeId(request.getInvokeId());
-            responseBytes.setStatus(ProtocolHead.STATUS_TIMEOUT);
-
-            logger.error("invokeSync0 timeout!", e);
+            response.setInvokeId(request.getInvokeId());
+            response.setStatus(ProtocolHead.STATUS_TIMEOUT);
+            throw new RemotingTimeoutException(channel.remoteAddress().toString(), timeUnit.convert(timeout, TimeUnit.MILLISECONDS));
         } finally {
             responseTable.remove(request.getInvokeId());
         }
-
-        return responseBytes;
+        return response;
     }
 
     protected void invokeAsync0(Channel channel, RequestBytes request,
-                                long timeout, TimeUnit timeUnit, InvokeCallback<ResponseBytes> invokeCallback) throws Exception {
+                                long timeout, TimeUnit timeUnit, InvokeCallback<ResponseBytes> invokeCallback) throws RemotingException, InterruptedException {
 
         ResponseFuture<ResponseBytes> responseFuture = new ResponseFuture<>(invokeCallback);
         responseTable.putIfAbsent(request.getInvokeId(), responseFuture);
@@ -145,7 +147,6 @@ public abstract class NettyServiceAbstract {
                 throw new RemotingTimeoutException(info);
             }
         }
-
 
     }
 

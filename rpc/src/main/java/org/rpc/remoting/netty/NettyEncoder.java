@@ -3,11 +3,11 @@ package org.rpc.remoting.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import org.rpc.remoting.payload.ByteHolder;
-import org.rpc.remoting.payload.RequestBytes;
-import org.rpc.remoting.payload.ResponseBytes;
+import org.rpc.remoting.api.payload.ByteHolder;
+import org.rpc.remoting.api.payload.RequestBytes;
+import org.rpc.remoting.api.payload.ResponseBytes;
 import org.rpc.exception.RemotingException;
-import org.rpc.remoting.procotol.ProtocolHead;
+import org.rpc.remoting.api.procotol.ProtocolHead;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
