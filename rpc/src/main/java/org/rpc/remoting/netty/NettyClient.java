@@ -8,7 +8,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.exception.RemotingConnectException;
 import org.rpc.exception.RemotingException;
-import org.rpc.exception.RemotingTimeoutException;
 import org.rpc.remoting.api.Directory;
 import org.rpc.remoting.api.InvokeCallback;
 import org.rpc.remoting.api.RequestProcessor;
@@ -22,7 +21,6 @@ import org.rpc.remoting.channel.NettyChannelGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.ConnectException;
 import java.util.concurrent.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -56,6 +54,7 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
         if (future.awaitUninterruptibly(connectTimeoutMillis, TimeUnit.MILLISECONDS)) {
             if (future.channel() != null && future.channel().isActive()) {
                 group.addChannel(future.channel());
+                logger.info("connect with: {}", future.channel());
             } else {
                 throw new RemotingConnectException(address.toString());
             }

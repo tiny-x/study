@@ -25,9 +25,7 @@ public abstract class AbstractDispatcher implements Dispatcher {
 
     private LoadBalancer loadBalancer;
 
-    private Serializer serializer;
-
-    private long timeoutMillis;
+    protected long timeoutMillis;
 
     private SerializerType serializerType;
 
@@ -60,6 +58,12 @@ public abstract class AbstractDispatcher implements Dispatcher {
         return (ChannelGroup[]) consumer.client().directory(metadata).toArray();
     }
 
+    @Override
+    public Dispatcher timeoutMillis(long timeoutMillis) {
+        this.timeoutMillis = timeoutMillis;
+        return this;
+    }
+
     protected Serializer getSerializer() {
         return SerializerFactory.serializer(serializerType);
     }
@@ -68,7 +72,7 @@ public abstract class AbstractDispatcher implements Dispatcher {
         return serializerType.value();
     }
 
-    protected <T> T invoke(Channel channel,
+    protected ResponseBytes invoke(Channel channel,
                            final Request request,
                            final DispatchType dispatchType,
                            boolean sync) {
@@ -88,6 +92,6 @@ public abstract class AbstractDispatcher implements Dispatcher {
             logger.error(e.getMessage(), e);
         }
 
-        return (T) responseBytes;
+        return responseBytes;
     }
 }

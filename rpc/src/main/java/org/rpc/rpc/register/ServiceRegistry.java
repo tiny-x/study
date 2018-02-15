@@ -12,6 +12,16 @@ public interface ServiceRegistry {
      */
     ServiceRegistry weight(int weight);
 
+    ServiceRegistry provider(Object serviceProvider);
+
+    ServiceRegistry interfaceClass(Class<?> interfaceClass);
+
+    ServiceRegistry group(String group);
+
+    ServiceRegistry providerName(String providerName);
+
+    ServiceRegistry version(String version);
+
     /**
      * 注册服务到本地容器.
      */

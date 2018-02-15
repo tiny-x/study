@@ -9,6 +9,6 @@
     </bean>
 
     <!-- service -->
-    <bean class="org.rpc.example.server.HelloServiceImpl"/>
+    <bean class="org.rpc.example.demo.HelloServiceImpl"/>
 
 </beans>

@@ -17,14 +17,10 @@ public class DefaultProvider implements Provider{
 
     private RpcServer server;
 
-    private ServiceRegistry serviceRegistry;
-
     private ServiceProviderContainer serviceProviderContainer;
 
     public DefaultProvider(NettyServerConfig nettyServerConfig) {
         this.serviceProviderContainer = new DefaultServiceProviderContainer();
-        serviceRegistry = new DefaultServiceRegistry(serviceProviderContainer);
-
         this.server = new NettyServer(nettyServerConfig);
         server.registerRequestProcess(new DefaultProcessor(this), Executors.newCachedThreadPool());
     }
@@ -36,11 +32,11 @@ public class DefaultProvider implements Provider{
 
     @Override
     public ServiceWrapper lookupService(Directory directory) {
-        return null;
+        return serviceProviderContainer.lookupService(directory.directory());
     }
 
     @Override
     public ServiceRegistry serviceRegistry() {
-        return null;
+        return new DefaultServiceRegistry(serviceProviderContainer);
     }
 }

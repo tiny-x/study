@@ -1,4 +1,4 @@
-package org.rpc.example.api;
+package org.rpc.example.demo;
 
 /**
  * @author yefei

@@ -39,7 +39,7 @@ public class ProxyFactory {
         return this;
     }
 
-    public ProxyFactory consumer(long timeoutMillis) {
+    public ProxyFactory timeMillis(long timeoutMillis) {
         this.timeoutMillis = timeoutMillis;
         return this;
     }

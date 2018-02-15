@@ -1,5 +1,6 @@
 package org.rpc.rpc.consumer;
 
+import org.rpc.comm.UnresolvedAddress;
 import org.rpc.remoting.api.RpcClient;
 
 public interface Consumer {
@@ -8,6 +9,6 @@ public interface Consumer {
 
     String application();
 
-    void start();
+    void connect(UnresolvedAddress address);
 
 }

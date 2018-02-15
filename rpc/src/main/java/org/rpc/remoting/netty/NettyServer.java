@@ -64,7 +64,7 @@ public class NettyServer extends NettyServiceAbstract implements RpcServer {
 
         serverBootstrap.group(nioEventLoopGroupMain, nioEventLoopGroupWorker)
                 .channel(NioServerSocketChannel.class)
-                .childOption(ChannelOption.SO_BACKLOG, 1024)
+                .option(ChannelOption.SO_BACKLOG, 32768)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {

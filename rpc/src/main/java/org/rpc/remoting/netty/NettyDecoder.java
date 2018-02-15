@@ -46,7 +46,6 @@ public class NettyDecoder extends ReplayingDecoder<NettyDecoder.State> {
                         byte[] body = new byte[head.getBodyLength()];
                         in.readBytes(body);
                         RequestBytes requestBytes = new RequestBytes(head.getInvokeId(), head.getSerializerCode(), body);
-                        logger.info("REQUEST decode: {}", requestBytes);
                         out.add(requestBytes);
                         break;
                     }
@@ -58,7 +57,6 @@ public class NettyDecoder extends ReplayingDecoder<NettyDecoder.State> {
                                 body);
                         responseBytes.setInvokeId(head.getInvokeId());
                         responseBytes.setStatus(head.getStatus());
-                        logger.info("RESPONSE decode: {}", responseBytes);
                         out.add(responseBytes);
                         break;
                     }

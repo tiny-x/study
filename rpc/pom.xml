@@ -41,6 +41,12 @@
             <version>1.0.13</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>reflectasm</artifactId>
+            <version>1.11.0</version>
+        </dependency>
+
         <!-- Objenesis -->
         <dependency>
             <groupId>org.objenesis</groupId>

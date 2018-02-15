@@ -18,6 +18,7 @@ package org.rpc.rpc.consumer.dispatcher;
 
 import io.netty.channel.Channel;
 import org.rpc.remoting.api.payload.RequestBytes;
+import org.rpc.remoting.api.payload.ResponseBytes;
 import org.rpc.rpc.Request;
 import org.rpc.rpc.consumer.Consumer;
 import org.rpc.rpc.load.balancer.LoadBalancer;
@@ -33,11 +34,6 @@ public class DefaultRoundDispatcher extends AbstractDispatcher {
     }
 
     @Override
-    public Dispatcher timeoutMillis(long timeout) {
-        return this;
-    }
-
-    @Override
     public <T> T dispatch(Request request, Class<T> returnType) {
 
         final RequestWrapper requestWrapper = request.getRequestWrapper();
@@ -50,6 +46,9 @@ public class DefaultRoundDispatcher extends AbstractDispatcher {
         RequestBytes requestBytes = new RequestBytes(getSerializerCode(), bytes);
         request.setRequestBytes(requestBytes);
 
-        return invoke(channel, request, DispatchType.ROUND, true);
+        ResponseBytes responseBytes = invoke(channel, request, DispatchType.ROUND, true);
+
+        T result = serializer.deserialize(responseBytes.getBody(), returnType);
+        return result;
     }
 }

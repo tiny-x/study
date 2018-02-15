@@ -24,52 +24,34 @@ public final class DefaultServiceRegistry implements ServiceRegistry {
         return this;
     }
 
-    public Object getServiceProvider() {
-        return serviceProvider;
-    }
-
-    public void setServiceProvider(Object serviceProvider) {
+    @Override
+    public ServiceRegistry provider(Object serviceProvider) {
         this.serviceProvider = serviceProvider;
+        return this;
     }
 
-    public Class<?> getInterfaceClass() {
-        return interfaceClass;
-    }
-
-    public void setInterfaceClass(Class<?> interfaceClass) {
+    @Override
+    public ServiceRegistry interfaceClass(Class<?> interfaceClass) {
         this.interfaceClass = interfaceClass;
+        return this;
     }
 
-    public String getGroup() {
-        return group;
-    }
-
-    public void setGroup(String group) {
+    @Override
+    public ServiceRegistry group(String group) {
         this.group = group;
+        return this;
     }
 
-    public String getProviderName() {
-        return providerName;
-    }
-
-    public void setProviderName(String providerName) {
+    @Override
+    public ServiceRegistry providerName(String providerName) {
         this.providerName = providerName;
+        return this;
     }
 
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
+    @Override
+    public ServiceRegistry version(String version) {
         this.version = version;
-    }
-
-    public int getWeight() {
-        return weight;
-    }
-
-    public void setWeight(int weight) {
-        this.weight = weight;
+        return this;
     }
 
     @Override

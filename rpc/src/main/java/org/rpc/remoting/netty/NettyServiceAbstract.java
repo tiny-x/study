@@ -90,7 +90,6 @@ public abstract class NettyServiceAbstract {
             channel.writeAndFlush(request).addListener((ChannelFuture future) -> {
                 if (!future.isSuccess()) {
                     ResponseBytes responseFail = new ResponseBytes(request.getSerializerCode(), null);
-                    ;
 
                     responseTable.remove(request.getInvokeId());
                     responseFail.setInvokeId(request.getInvokeId());
