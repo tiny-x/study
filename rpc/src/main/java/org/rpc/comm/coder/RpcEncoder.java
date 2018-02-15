@@ -3,7 +3,7 @@ package org.rpc.comm.coder;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import org.rpc.comm.utils.SerializationUtil;
+import org.rpc.serializer.ProtoStuffSerializer;
 
 /**
  * The type Rpc encoder.<br />
@@ -23,7 +23,7 @@ public class RpcEncoder extends MessageToByteEncoder<Object> {
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
         if (requestCalss.isInstance(msg)) {
-            byte[] bytes = SerializationUtil.serialize(msg);
+            byte[] bytes = ProtoStuffSerializer.serialize(msg);
             out.writeInt(bytes.length);
             out.writeBytes(bytes);
         }

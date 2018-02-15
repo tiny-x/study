@@ -15,6 +15,10 @@ public class RequestWrapper {
         return serviceMeta;
     }
 
+    public void setServiceMeta(ServiceMeta serviceMeta) {
+        this.serviceMeta = serviceMeta;
+    }
+
     public String getMethodName() {
         return methodName;
     }

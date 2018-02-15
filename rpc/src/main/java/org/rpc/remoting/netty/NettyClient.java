@@ -9,10 +9,12 @@ import org.rpc.comm.UnresolvedAddress;
 import org.rpc.exception.RemotingConnectException;
 import org.rpc.exception.RemotingException;
 import org.rpc.exception.RemotingTimeoutException;
+import org.rpc.remoting.api.Directory;
 import org.rpc.remoting.api.InvokeCallback;
 import org.rpc.remoting.api.RequestProcessor;
 import org.rpc.remoting.api.RpcClient;
 import org.rpc.remoting.api.channel.ChannelGroup;
+import org.rpc.remoting.api.channel.DirectoryChannelGroup;
 import org.rpc.remoting.api.payload.ByteHolder;
 import org.rpc.remoting.api.payload.RequestBytes;
 import org.rpc.remoting.api.payload.ResponseBytes;
@@ -21,10 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.ConnectException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -39,6 +38,8 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
     private final NettyClientConfig nettyClientConfig;
 
     private final ConcurrentMap<String, ChannelGroup> addressGroups = new ConcurrentHashMap<>();
+
+    private final DirectoryChannelGroup directoryChannelGroup = new DirectoryChannelGroup();
 
     public NettyClient(NettyClientConfig nettyClientConfig) {
         super(256, 256);
@@ -75,6 +76,46 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
             }
         }
         return group;
+    }
+
+    @Override
+    public boolean addChannelGroup(Directory directory, ChannelGroup group) {
+        CopyOnWriteArrayList groups = directoryChannelGroup.find(directory);
+        boolean added = groups.addIfAbsent(group);
+        if (added) {
+            if (logger.isInfoEnabled()) {
+                logger.info("Added channel group: {} to {}.", group, directory.directory());
+            }
+        }
+        return added;
+    }
+
+    @Override
+    public boolean removeChannelGroup(Directory directory, ChannelGroup group) {
+        CopyOnWriteArrayList groups = directoryChannelGroup.find(directory);
+        boolean added = groups.remove(group);
+        if (added) {
+            if (logger.isInfoEnabled()) {
+                logger.info("Added channel group: {} to {}.", group, directory.directory());
+            }
+        }
+        return added;
+    }
+
+    @Override
+    public CopyOnWriteArrayList<ChannelGroup> directory(Directory directory) {
+        return directoryChannelGroup.find(directory);
+    }
+
+    @Override
+    public boolean isDirectoryAvailable(Directory directory) {
+        CopyOnWriteArrayList<ChannelGroup> groups = directory(directory);
+        for (ChannelGroup g : groups) {
+            if (g.isAvailable()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

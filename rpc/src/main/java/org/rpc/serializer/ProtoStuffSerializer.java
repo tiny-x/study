@@ -1,4 +1,4 @@
-package org.rpc.comm.utils;
+package org.rpc.serializer;
 
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
@@ -16,29 +16,29 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author yefei
  * @date 2017 -6-20 15:05:50
  */
-public class SerializationUtil {
+public class ProtoStuffSerializer implements Serializer {
 
     private static Map<Class<?>, Schema<?>> cachedSchema = new ConcurrentHashMap<>();
 
     private static Objenesis objenesis = new ObjenesisStd(true);
 
-    private SerializationUtil() {
+    public ProtoStuffSerializer() {
     }
 
     /**
      * 序列化（对象 -> 字节数组）
      *
-     * @param <T> the type parameter
-     * @param obj the obj
+     * @param <T>    the type parameter
+     * @param object the object
      * @return the byte [ ]
      */
     @SuppressWarnings("unchecked")
-    public static <T> byte[] serialize(T obj) {
-        Class<T> cls = (Class<T>) obj.getClass();
+    public <T> byte[] serialize(T object) {
+        Class<T> cls = (Class<T>) object.getClass();
         LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
         try {
             Schema<T> schema = getSchema(cls);
-            return ProtostuffIOUtil.toByteArray(obj, schema, buffer);
+            return ProtostuffIOUtil.toByteArray(object, schema, buffer);
         } catch (Exception e) {
             throw new IllegalStateException(e.getMessage(), e);
         } finally {
@@ -51,13 +51,12 @@ public class SerializationUtil {
      *
      * @param <T>  the type parameter
      * @param data the data
-     * @param cls  the cls
      * @return the t
      */
-    public static <T> T deserialize(byte[] data, Class<T> cls) {
+    public <T> T deserialize(byte[] data, Class<T> clazz) {
         try {
-            T message = objenesis.newInstance(cls);
-            Schema<T> schema = getSchema(cls);
+            T message = objenesis.newInstance(clazz);
+            Schema<T> schema = getSchema(clazz);
             ProtostuffIOUtil.mergeFrom(data, message, schema);
             return message;
         } catch (Exception e) {

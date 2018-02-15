@@ -8,6 +8,7 @@ import org.rpc.remoting.api.channel.ChannelGroup;
 import org.rpc.remoting.api.payload.RequestBytes;
 import org.rpc.remoting.api.payload.ResponseBytes;
 
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -17,6 +18,14 @@ public interface RpcClient extends RpcService {
             throws InterruptedException, RemotingConnectException;
 
     ChannelGroup group(UnresolvedAddress address);
+
+    boolean addChannelGroup(Directory directory, ChannelGroup group);
+
+    boolean removeChannelGroup(Directory directory, ChannelGroup group);
+
+    CopyOnWriteArrayList<ChannelGroup> directory(Directory directory);
+
+    boolean isDirectoryAvailable(Directory directory);
 
     ResponseBytes invokeSync(final Channel channel, final RequestBytes request, long timeout, TimeUnit timeUnit)
             throws RemotingException, InterruptedException;

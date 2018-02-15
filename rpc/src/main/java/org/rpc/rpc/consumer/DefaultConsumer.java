@@ -13,9 +13,16 @@ public class DefaultConsumer implements Consumer {
 
     private ChannelGroup group;
 
+    private NettyClientConfig config;
+
     public DefaultConsumer(String application, NettyClientConfig nettyClientConfig) {
         this.application = application;
         this.rpcClient = new NettyClient(nettyClientConfig);
+    }
+
+    @Override
+    public RpcClient client() {
+        return null;
     }
 
     @Override
@@ -23,6 +30,7 @@ public class DefaultConsumer implements Consumer {
         rpcClient.start();
     }
 
+    @Override
     public String application() {
         return application;
     }

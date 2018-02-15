@@ -77,7 +77,7 @@ public class NettyChannelGroup implements ChannelGroup {
 
     @Override
     public boolean isAvailable() {
-        return false;
+        return !channels.isEmpty();
     }
 
     @Override

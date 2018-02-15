@@ -3,7 +3,7 @@ package org.rpc.comm.coder;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.rpc.comm.utils.SerializationUtil;
+import org.rpc.serializer.ProtoStuffSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +42,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
         }
         byte[] data = new byte[dataLength];
         in.readBytes(data);
-        out.add(SerializationUtil.deserialize(data, reponseClass));
+        out.add(ProtoStuffSerializer.deserialize(data, reponseClass));
     }
 
 }
