@@ -2,11 +2,14 @@ package org.rpc.remoting.api.payload;
 
 public abstract class ByteHolder {
 
+    private byte messageCode;
+
     private byte serializerCode;
 
     private byte[] body;
 
-    public ByteHolder(byte serializerCode, byte[] body) {
+    public ByteHolder(byte messageCode, byte serializerCode, byte[] body) {
+        this.messageCode = messageCode;
         this.serializerCode = serializerCode;
         this.body = body;
     }
@@ -17,5 +20,9 @@ public abstract class ByteHolder {
 
     public byte[] getBody() {
         return body;
+    }
+
+    public byte getMessageCode() {
+        return messageCode;
     }
 }

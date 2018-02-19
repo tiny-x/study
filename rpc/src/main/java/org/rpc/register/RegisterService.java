@@ -1,51 +1,19 @@
 package org.rpc.register;
 
-import org.rpc.register.bean.URL;
+import org.rpc.register.bean.RegisterMeta;
 
 import java.util.List;
 
-/**
- * The interface Register service.
- *
- * @author yefei
- * @date 2017 -06-28 10:37
- */
+
 public interface RegisterService {
 
-    /**
-     * Register.
-     *
-     * @param url the url
-     */
-    void register(URL url);
+    void register(RegisterMeta registerMeta);
 
-    /**
-     * Un register.
-     *
-     * @param url the url
-     */
-    void unRegister(URL url);
+    void unRegister(RegisterMeta RegisterMeta);
 
-    /**
-     * Subscribe.
-     *
-     * @param url            the url
-     * @param notifyListener the notify listener
-     */
-    void subscribe(URL url, NotifyListener notifyListener);
+    void subscribe(RegisterMeta RegisterMeta, NotifyListener notifyListener);
 
-    /**
-     * Un subscribe.
-     *
-     * @param url the url
-     */
-    void unSubscribe(URL url);
+    void unSubscribe(RegisterMeta RegisterMeta);
 
-    /**
-     * Lookup list.
-     *
-     * @param url the url
-     * @return the list
-     */
-    List<URL> lookup(URL url);
+    List<RegisterMeta> lookup(RegisterMeta RegisterMeta);
 }

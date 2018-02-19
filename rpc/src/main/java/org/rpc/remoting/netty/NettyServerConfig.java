@@ -2,7 +2,7 @@ package org.rpc.remoting.netty;
 
 public class NettyServerConfig {
 
-    private static final int DEFAULT_PORT = 9000;
+    private static final int DEFAULT_PORT = 9018;
 
     private int port = DEFAULT_PORT;
 

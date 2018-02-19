@@ -58,6 +58,7 @@
         <module>basic</module>
         <module>nio</module>
         <module>rpc</module>
+        <module>dubbo</module>
     </modules>
 
     <build>

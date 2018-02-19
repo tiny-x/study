@@ -1,6 +1,8 @@
 package org.rpc.rpc;
 
+import org.rpc.comm.UnresolvedAddress;
 import org.rpc.comm.utils.Proxies;
+import org.rpc.register.bean.RegisterMeta;
 import org.rpc.remoting.api.Directory;
 import org.rpc.remoting.api.channel.ChannelGroup;
 import org.rpc.rpc.consumer.Consumer;
@@ -9,7 +11,9 @@ import org.rpc.rpc.consumer.dispatcher.Dispatcher;
 import org.rpc.rpc.load.balancer.LoadBalancer;
 import org.rpc.rpc.model.ServiceMeta;
 import org.rpc.serializer.SerializerType;
+import org.rpc.utils.InetUtils;
 
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ProxyFactory {
@@ -56,6 +60,18 @@ public class ProxyFactory {
         }, SerializerType.PROTO_STUFF);
 
         dispatcher.timeoutMillis(timeoutMillis);
+
+        RegisterMeta registerMeta = new RegisterMeta();
+        registerMeta.setServiceMeta(serviceMeta);
+        registerMeta.setAddress(new UnresolvedAddress(InetUtils.getLocalHost(), 9180));
+
+        List<RegisterMeta> registerMetaList = consumer.lookup(registerMeta);
+        for (RegisterMeta meta : registerMetaList) {
+            for (int i = 0; i < meta.getConnCount(); i++) {
+                consumer.connect(meta.getAddress());
+                consumer.client().addChannelGroup(serviceMeta, consumer.client().group(meta.getAddress()));
+            }
+        }
 
         return (T) Proxies.getDefault().newProxy(interfaces, new SyncInvoker(dispatcher, serviceMeta));
     }

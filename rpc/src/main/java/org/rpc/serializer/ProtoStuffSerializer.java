@@ -25,6 +25,11 @@ public class ProtoStuffSerializer implements Serializer {
     public ProtoStuffSerializer() {
     }
 
+    @Override
+    public SerializerType serializerType() {
+        return SerializerType.PROTO_STUFF;
+    }
+
     /**
      * 序列化（对象 -> 字节数组）
      *

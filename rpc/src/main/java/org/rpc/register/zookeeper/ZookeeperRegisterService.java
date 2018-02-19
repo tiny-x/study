@@ -1,4 +1,4 @@
-package org.rpc.register.zookeeperRegister;
+package org.rpc.register.zookeeper;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -11,7 +11,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.rpc.register.AbstractRegisterService;
 import org.rpc.register.bean.DirectoryEnums;
-import org.rpc.register.bean.URL;
+import org.rpc.register.bean.RegisterMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ public class ZookeeperRegisterService extends AbstractRegisterService {
     private final int sessionTimeoutMs = 3000;
 
     private final int connectionTimeoutMs = 3000;
-    private final ConcurrentMap<URL, PathChildrenCache> pathChildrenCaches = new ConcurrentHashMap<>();
+    private final ConcurrentMap<RegisterMeta, PathChildrenCache> pathChildrenCaches = new ConcurrentHashMap<>();
     private CuratorFramework curatorFramework;
 
     public ZookeeperRegisterService(String connectString) {
@@ -48,12 +48,12 @@ public class ZookeeperRegisterService extends AbstractRegisterService {
                 if (newState == ConnectionState.RECONNECTED) {
                     logger.info("Zookeeper connection has been re-established, will re-subscribe and re-register.");
                     // 重新订阅
-                    for (URL url : consumers) {
-                        doSubscribe(url);
+                    for (RegisterMeta RegisterMeta : consumers) {
+                        doSubscribe(RegisterMeta);
                     }
                     // 重新发布服务
-                    for (URL url : providers) {
-                        doRegister(url);
+                    for (RegisterMeta RegisterMeta : providers) {
+                        doRegister(RegisterMeta);
                     }
                 }
             }
@@ -62,52 +62,26 @@ public class ZookeeperRegisterService extends AbstractRegisterService {
     }
 
     @Override
-    public void doRegister(URL url) {
-        try {
-            if (curatorFramework.checkExists().forPath(url.getInterfaceName()) == null) {
-                curatorFramework.create().forPath(url.getInterfaceName());
-                for (DirectoryEnums directoryEnums : DirectoryEnums.values()) {
-                    curatorFramework.create().forPath(url.getInterfaceName() + "/" + directoryEnums.path);
-                }
-            }
-            curatorFramework.create().withMode(CreateMode.EPHEMERAL)
-                    .forPath(url.getInterfaceName() + "/" + DirectoryEnums.PROVIDERS.path + "/" + url.toString());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void doUnRegister(URL url) {
-        try {
-            curatorFramework.delete().deletingChildrenIfNeeded()
-                    .forPath(url.getInterfaceName() + "/" + DirectoryEnums.PROVIDERS.path + "/" + url.toString());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void doSubscribe(URL url) {
-        PathChildrenCache newChildrenCache = new PathChildrenCache(curatorFramework,
-                url.getInterfaceName() + "/" + DirectoryEnums.PROVIDERS.path, false);
-        pathChildrenCaches.putIfAbsent(url, newChildrenCache).getListenable()
-                .addListener(new PathChildrenCacheListener() {
-                    @Override
-                    public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
-                        List<String> children = client.getChildren().forPath(event.getData().getPath());
-//TODO
-                        ZookeeperRegisterService.this.notify();
-                    }
-                });
+    public void doRegister(RegisterMeta RegisterMeta) {
 
     }
 
     @Override
-    public void doUnSubscribe(URL url) {
+    public void doUnRegister(RegisterMeta RegisterMeta) {
+
+    }
+
+    @Override
+    public void doSubscribe(RegisterMeta RegisterMeta) {
+
+
+    }
+
+    @Override
+    public void doUnSubscribe(RegisterMeta RegisterMeta) {
         try {
-            pathChildrenCaches.get(url).clearAndRefresh();
-            pathChildrenCaches.remove(url);
+            pathChildrenCaches.get(RegisterMeta).clearAndRefresh();
+            pathChildrenCaches.remove(RegisterMeta);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -115,7 +89,7 @@ public class ZookeeperRegisterService extends AbstractRegisterService {
     }
 
     @Override
-    public List<URL> lookup(URL url) {
+    public List<RegisterMeta> lookup(RegisterMeta RegisterMeta) {
         return null;
     }
 

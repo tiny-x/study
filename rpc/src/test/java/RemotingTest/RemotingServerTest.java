@@ -55,7 +55,7 @@ public class RemotingServerTest {
             }
         }, Executors.newCachedThreadPool());
 
-        RequestBytes request = new RequestBytes(ProtocolHead.JSON, "hello server".getBytes());
+        RequestBytes request = new RequestBytes(ProtocolHead.REQUEST, ProtocolHead.JSON, "hello register".getBytes());
         UnresolvedAddress address = new UnresolvedAddress("127.0.0.1", 9000);
         rpcClient.connect(address);
         ChannelGroup group = rpcClient.group(address);
@@ -65,7 +65,7 @@ public class RemotingServerTest {
                 3000L,
                 TimeUnit.SECONDS
         );
-        System.out.printf("------- > receive server message: %s\n", new String(response.getBody()));
+        System.out.printf("------- > receive register message: %s\n", new String(response.getBody()));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class RemotingServerTest {
             }
         }, Executors.newCachedThreadPool());
 
-        RequestBytes request = new RequestBytes(ProtocolHead.JSON, "hello server".getBytes());
+        RequestBytes request = new RequestBytes(ProtocolHead.REQUEST, ProtocolHead.JSON, "hello register".getBytes());
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         UnresolvedAddress address = new UnresolvedAddress("127.0.0.1", 9000);
@@ -103,7 +103,7 @@ public class RemotingServerTest {
                 TimeUnit.SECONDS,
                 (future) -> {
                     ResponseBytes response = future.get();
-                    System.out.printf("------- > receive server message: %s\n", new String(response.getBody()));
+                    System.out.printf("------- > receive register message: %s\n", new String(response.getBody()));
                     //countDownLatch.countDown();
                 }
         );

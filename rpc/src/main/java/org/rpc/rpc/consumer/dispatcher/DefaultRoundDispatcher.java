@@ -19,6 +19,7 @@ package org.rpc.rpc.consumer.dispatcher;
 import io.netty.channel.Channel;
 import org.rpc.remoting.api.payload.RequestBytes;
 import org.rpc.remoting.api.payload.ResponseBytes;
+import org.rpc.remoting.api.procotol.ProtocolHead;
 import org.rpc.rpc.Request;
 import org.rpc.rpc.consumer.Consumer;
 import org.rpc.rpc.load.balancer.LoadBalancer;
@@ -43,7 +44,7 @@ public class DefaultRoundDispatcher extends AbstractDispatcher {
         Serializer serializer = getSerializer();
 
         byte[] bytes = serializer.serialize(requestWrapper);
-        RequestBytes requestBytes = new RequestBytes(getSerializerCode(), bytes);
+        RequestBytes requestBytes = new RequestBytes(ProtocolHead.REQUEST, getSerializerCode(), bytes);
         request.setRequestBytes(requestBytes);
 
         ResponseBytes responseBytes = invoke(channel, request, DispatchType.ROUND, true);

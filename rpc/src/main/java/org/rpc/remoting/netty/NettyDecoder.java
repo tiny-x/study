@@ -40,26 +40,26 @@ public class NettyDecoder extends ReplayingDecoder<NettyDecoder.State> {
                 head.setBodyLength(in.readInt());
                 checkpoint(State.BODY);
             case BODY:
-                switch (head.getMessageCode()) {
-
-                    case ProtocolHead.REQUEST: {
-                        byte[] body = new byte[head.getBodyLength()];
-                        in.readBytes(body);
-                        RequestBytes requestBytes = new RequestBytes(head.getInvokeId(), head.getSerializerCode(), body);
-                        out.add(requestBytes);
-                        break;
-                    }
-                    case ProtocolHead.RESPONSE: {
-                        byte[] body = new byte[head.getBodyLength()];
-                        in.readBytes(body);
-                        ResponseBytes responseBytes = new ResponseBytes(
-                                head.getSerializerCode(),
-                                body);
-                        responseBytes.setInvokeId(head.getInvokeId());
-                        responseBytes.setStatus(head.getStatus());
-                        out.add(responseBytes);
-                        break;
-                    }
+                boolean isRequest = ((head.getMessageCode() % 2) == 1);
+                if (isRequest) {
+                    byte[] body = new byte[head.getBodyLength()];
+                    in.readBytes(body);
+                    RequestBytes requestBytes = new RequestBytes(
+                            head.getMessageCode(),
+                            head.getInvokeId(),
+                            head.getSerializerCode(),
+                            body);
+                    out.add(requestBytes);
+                } else {
+                    byte[] body = new byte[head.getBodyLength()];
+                    in.readBytes(body);
+                    ResponseBytes responseBytes = new ResponseBytes(
+                            head.getMessageCode(),
+                            head.getSerializerCode(),
+                            body);
+                    responseBytes.setInvokeId(head.getInvokeId());
+                    responseBytes.setStatus(head.getStatus());
+                    out.add(responseBytes);
                 }
                 checkpoint(State.HEADER_MAGIC);
         }

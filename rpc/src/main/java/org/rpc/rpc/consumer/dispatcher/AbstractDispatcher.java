@@ -2,7 +2,9 @@ package org.rpc.rpc.consumer.dispatcher;
 
 import io.netty.channel.Channel;
 import org.rpc.exception.RemotingException;
+import org.rpc.remoting.api.InvokeCallback;
 import org.rpc.remoting.api.channel.ChannelGroup;
+import org.rpc.remoting.api.future.ResponseFuture;
 import org.rpc.remoting.api.payload.ResponseBytes;
 import org.rpc.rpc.Request;
 import org.rpc.rpc.consumer.Consumer;
@@ -15,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractDispatcher implements Dispatcher {
@@ -84,6 +87,18 @@ public abstract class AbstractDispatcher implements Dispatcher {
                         .invokeSync(channel, request.getRequestBytes(), timeoutMillis, TimeUnit.MILLISECONDS);
 
             } else {
+
+               consumer.client()
+                        .invokeAsync(channel,
+                                request.getRequestBytes(),
+                                timeoutMillis,
+                                TimeUnit.MILLISECONDS
+                                , new InvokeCallback<ResponseBytes>() {
+                                    @Override
+                                    public void operationComplete(ResponseFuture<ResponseBytes> responseFuture) throws ExecutionException, InterruptedException {
+
+                                    }
+                                });
 
             }
         } catch (RemotingException e) {

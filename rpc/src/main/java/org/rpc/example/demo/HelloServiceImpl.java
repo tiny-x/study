@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
  * @author yefei
  * @date 2017-06-20 14:14
  */
-@RpcService(HelloService.class)
 public class HelloServiceImpl implements HelloService {
 
     /**

@@ -1,5 +1,7 @@
 package org.rpc.remoting.api.payload;
 
+import org.rpc.remoting.api.procotol.ProtocolHead;
+
 public class ResponseBytes extends ByteHolder {
 
     /**
@@ -10,7 +12,11 @@ public class ResponseBytes extends ByteHolder {
     private long invokeId;
 
     public ResponseBytes(byte serializerCode, byte[] body) {
-        super(serializerCode, body);
+        super(ProtocolHead.RESPONSE, serializerCode, body);
+    }
+
+    public ResponseBytes(byte messageCode, byte serializerCode, byte[] body) {
+        super(messageCode, serializerCode, body);
     }
 
     public void setStatus(byte status) {

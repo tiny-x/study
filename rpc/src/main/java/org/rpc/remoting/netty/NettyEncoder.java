@@ -32,9 +32,12 @@ public class NettyEncoder extends MessageToByteEncoder<ByteHolder> {
     }
 
     private void doEncodeRequest(RequestBytes request, ByteBuf out) {
-        byte sign = ProtocolHead.toSign(ProtocolHead.REQUEST, request.getSerializerCode());
+        byte sign = ProtocolHead.toSign(request.getMessageCode(), request.getSerializerCode());
         long invokeId = request.getInvokeId();
         byte[] bytes = request.getBody();
+        if (bytes == null) {
+            bytes = new byte[]{0};
+        }
         int length = bytes.length;
 
         out.writeShort(ProtocolHead.MAGIC)
@@ -47,10 +50,13 @@ public class NettyEncoder extends MessageToByteEncoder<ByteHolder> {
 
     private void doEncodeResponse(ResponseBytes response, ByteBuf out) {
 
-        byte sign = ProtocolHead.toSign(ProtocolHead.RESPONSE, response.getSerializerCode());
+        byte sign = ProtocolHead.toSign(response.getMessageCode(), response.getSerializerCode());
         byte status = response.getStatus();
         long invokeId = response.getInvokeId();
         byte[] bytes = response.getBody();
+        if (bytes == null) {
+            bytes = new byte[]{0};
+        }
         int length = bytes.length;
         out.writeShort(ProtocolHead.MAGIC)
                 .writeByte(sign)

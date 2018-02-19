@@ -1,4 +1,4 @@
-package org.rpc.rpc.register;
+package org.rpc.rpc.register.local;
 
 import org.rpc.rpc.container.ServiceProviderContainer;
 import org.rpc.rpc.model.ServiceWrapper;
