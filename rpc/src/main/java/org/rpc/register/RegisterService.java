@@ -1,6 +1,7 @@
 package org.rpc.register;
 
-import org.rpc.register.bean.RegisterMeta;
+import org.rpc.register.model.RegisterMeta;
+import org.rpc.rpc.model.ServiceMeta;
 
 import java.util.List;
 
@@ -11,9 +12,9 @@ public interface RegisterService {
 
     void unRegister(RegisterMeta RegisterMeta);
 
-    void subscribe(RegisterMeta RegisterMeta, NotifyListener notifyListener);
+    void subscribe(ServiceMeta serviceMeta, NotifyListener notifyListener);
 
-    void unSubscribe(RegisterMeta RegisterMeta);
+    void unSubscribe(ServiceMeta serviceMeta);
 
     List<RegisterMeta> lookup(RegisterMeta RegisterMeta);
 }

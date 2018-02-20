@@ -1,4 +1,4 @@
-package org.rpc.register.bean;
+package org.rpc.register.model;
 
 public enum DirectoryEnums {
 

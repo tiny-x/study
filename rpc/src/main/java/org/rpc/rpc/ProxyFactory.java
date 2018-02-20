@@ -2,7 +2,9 @@ package org.rpc.rpc;
 
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.comm.utils.Proxies;
-import org.rpc.register.bean.RegisterMeta;
+import org.rpc.register.NotifyEvent;
+import org.rpc.register.NotifyListener;
+import org.rpc.register.model.RegisterMeta;
 import org.rpc.remoting.api.Directory;
 import org.rpc.remoting.api.channel.ChannelGroup;
 import org.rpc.rpc.consumer.Consumer;
@@ -65,13 +67,22 @@ public class ProxyFactory {
         registerMeta.setServiceMeta(serviceMeta);
         registerMeta.setAddress(new UnresolvedAddress(InetUtils.getLocalHost(), 9180));
 
-        List<RegisterMeta> registerMetaList = consumer.lookup(registerMeta);
-        for (RegisterMeta meta : registerMetaList) {
-            for (int i = 0; i < meta.getConnCount(); i++) {
-                consumer.connect(meta.getAddress());
-                consumer.client().addChannelGroup(serviceMeta, consumer.client().group(meta.getAddress()));
+        consumer.subscribe(serviceMeta, new NotifyListener() {
+            @Override
+            public void notify(RegisterMeta registerMeta, NotifyEvent event) {
+                switch (event) {
+                    case ADD: {
+                        ChannelGroup group = consumer.client().group(registerMeta.getAddress());
+                        if (!group.isAvailable()) {
+                            for (int i = 0; i < registerMeta.getConnCount(); i++) {
+                                consumer.connect(registerMeta.getAddress());
+                                consumer.client().addChannelGroup(serviceMeta, group);
+                            }
+                        }
+                    }
+                }
             }
-        }
+        });
 
         return (T) Proxies.getDefault().newProxy(interfaces, new SyncInvoker(dispatcher, serviceMeta));
     }

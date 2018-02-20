@@ -1,7 +1,8 @@
 package org.rpc.register;
 
 import org.rpc.comm.collection.ConcurrentSet;
-import org.rpc.register.bean.RegisterMeta;
+import org.rpc.register.model.RegisterMeta;
+import org.rpc.rpc.model.ServiceMeta;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,12 +11,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public abstract class AbstractRegisterService implements RegisterService {
 
-    private final ReentrantReadWriteLock registriesLock = new ReentrantReadWriteLock();
-
     /**
      * 订阅者监听器
      */
-    private final ConcurrentMap<RegisterMeta, NotifyListener> subscribeListeners = new ConcurrentHashMap<>();
+    private final ConcurrentMap<ServiceMeta, NotifyListener> subscribeListeners = new ConcurrentHashMap<>();
 
     /**
      * 服务提供者
@@ -23,46 +22,52 @@ public abstract class AbstractRegisterService implements RegisterService {
     protected final ConcurrentSet<RegisterMeta> providers = new ConcurrentSet<>();
 
     /**
-     * 服务订阅者
+     * 已经订阅的服务
      */
-    protected final ConcurrentSet<RegisterMeta> consumers = new ConcurrentSet<>();
+    protected final ConcurrentSet<ServiceMeta> consumers = new ConcurrentSet<>();
 
 
     @Override
-    public void register(RegisterMeta RegisterMeta) {
-        providers.add(RegisterMeta);
-        doRegister(RegisterMeta);
+    public void register(RegisterMeta registerMeta) {
+        providers.add(registerMeta);
+        doRegister(registerMeta);
     }
 
     @Override
-    public void unRegister(RegisterMeta RegisterMeta) {
-        consumers.remove(RegisterMeta);
-        doUnRegister(RegisterMeta);
+    public void unRegister(RegisterMeta registerMeta) {
+        consumers.remove(registerMeta);
+        doUnRegister(registerMeta);
     }
 
     @Override
-    public void subscribe(RegisterMeta RegisterMeta, NotifyListener notifyListener) {
-        subscribeListeners.putIfAbsent(RegisterMeta, notifyListener);
-        doSubscribe(RegisterMeta);
+    public void subscribe(ServiceMeta serviceMeta, NotifyListener notifyListener) {
+        subscribeListeners.put(serviceMeta, notifyListener);
+        consumers.add(serviceMeta);
+        doSubscribe(serviceMeta);
     }
 
     @Override
-    public void unSubscribe(RegisterMeta RegisterMeta) {
-        subscribeListeners.remove(RegisterMeta);
-        doUnSubscribe(RegisterMeta);
+    public void unSubscribe(ServiceMeta serviceMeta) {
+        subscribeListeners.remove(serviceMeta);
+        doUnSubscribe(serviceMeta);
     }
 
-    protected void notify(List<RegisterMeta> RegisterMetas) {
-
+    public void notify(ServiceMeta serviceMeta, NotifyEvent event, List<RegisterMeta> registerMetas) {
+        if (registerMetas != null && registerMetas.size() > 0) {
+            NotifyListener notifyListener = subscribeListeners.get(serviceMeta);
+            for (RegisterMeta registerMeta : registerMetas) {
+                notifyListener.notify(registerMeta, event);
+            }
+        }
     }
 
-    protected abstract void doRegister(RegisterMeta RegisterMeta);
+    protected abstract void doRegister(RegisterMeta registerMeta);
 
-    protected abstract void doUnRegister(RegisterMeta RegisterMeta);
+    protected abstract void doUnRegister(RegisterMeta registerMeta);
 
-    protected abstract void doSubscribe(RegisterMeta RegisterMeta);
+    protected abstract void doSubscribe(ServiceMeta serviceMeta);
 
-    protected abstract void doUnSubscribe(RegisterMeta RegisterMeta);
+    protected abstract void doUnSubscribe(ServiceMeta serviceMeta);
 
 
 }

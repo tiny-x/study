@@ -2,7 +2,7 @@ package org.rpc.rpc.provider;
 
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.register.RegisterService;
-import org.rpc.register.bean.RegisterMeta;
+import org.rpc.register.model.RegisterMeta;
 import org.rpc.register.netty.DefaultRegisterService;
 import org.rpc.remoting.api.Directory;
 import org.rpc.remoting.api.RpcServer;

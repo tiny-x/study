@@ -1,4 +1,4 @@
-package org.rpc.register.bean;
+package org.rpc.register.model;
 
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.rpc.model.ServiceMeta;

@@ -3,15 +3,12 @@ package org.rpc.register.zookeeper;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
-import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
-import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.apache.zookeeper.CreateMode;
 import org.rpc.register.AbstractRegisterService;
-import org.rpc.register.bean.DirectoryEnums;
-import org.rpc.register.bean.RegisterMeta;
+import org.rpc.register.model.RegisterMeta;
+import org.rpc.rpc.model.ServiceMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,10 +44,7 @@ public class ZookeeperRegisterService extends AbstractRegisterService {
                 logger.info("Zookeeper connection state changed {}.", newState);
                 if (newState == ConnectionState.RECONNECTED) {
                     logger.info("Zookeeper connection has been re-established, will re-subscribe and re-register.");
-                    // 重新订阅
-                    for (RegisterMeta RegisterMeta : consumers) {
-                        doSubscribe(RegisterMeta);
-                    }
+
                     // 重新发布服务
                     for (RegisterMeta RegisterMeta : providers) {
                         doRegister(RegisterMeta);
@@ -72,16 +66,16 @@ public class ZookeeperRegisterService extends AbstractRegisterService {
     }
 
     @Override
-    public void doSubscribe(RegisterMeta RegisterMeta) {
+    public void doSubscribe(ServiceMeta serviceMeta) {
 
 
     }
 
     @Override
-    public void doUnSubscribe(RegisterMeta RegisterMeta) {
+    public void doUnSubscribe(ServiceMeta serviceMeta) {
         try {
-            pathChildrenCaches.get(RegisterMeta).clearAndRefresh();
-            pathChildrenCaches.remove(RegisterMeta);
+            pathChildrenCaches.get(serviceMeta).clearAndRefresh();
+            pathChildrenCaches.remove(serviceMeta);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

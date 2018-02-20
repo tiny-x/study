@@ -2,7 +2,8 @@ package org.rpc.register.netty;
 
 import org.rpc.register.AbstractRegisterService;
 import org.rpc.register.RegisterService;
-import org.rpc.register.bean.RegisterMeta;
+import org.rpc.register.model.RegisterMeta;
+import org.rpc.rpc.model.ServiceMeta;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public class DefaultRegisterService extends AbstractRegisterService implements R
     private DefaultRegisterClient registerClient;
 
     public DefaultRegisterService(String address) {
-        registerClient = new DefaultRegisterClient(address);
+        registerClient = new DefaultRegisterClient(address, this);
     }
 
     @Override
@@ -25,12 +26,12 @@ public class DefaultRegisterService extends AbstractRegisterService implements R
     }
 
     @Override
-    public void doSubscribe(RegisterMeta registerMeta) {
-        registerClient.subscribe(registerMeta);
+    public void doSubscribe(ServiceMeta serviceMeta) {
+        registerClient.subscribe(serviceMeta);
     }
 
     @Override
-    public void doUnSubscribe(RegisterMeta RegisterMeta) {
+    public void doUnSubscribe(ServiceMeta serviceMeta) {
 
     }
 

@@ -33,4 +33,34 @@ public class ServiceMeta extends Directory {
     public String getVersion() {
         return version;
     }
+
+    @Override
+    public String toString() {
+        return "ServiceMeta{" +
+                "group='" + group + '\'' +
+                ", serviceProviderName='" + serviceProviderName + '\'' +
+                ", version='" + version + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ServiceMeta that = (ServiceMeta) o;
+
+        if (group != null ? !group.equals(that.group) : that.group != null) return false;
+        if (serviceProviderName != null ? !serviceProviderName.equals(that.serviceProviderName) : that.serviceProviderName != null)
+            return false;
+        return version != null ? version.equals(that.version) : that.version == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = group != null ? group.hashCode() : 0;
+        result = 31 * result + (serviceProviderName != null ? serviceProviderName.hashCode() : 0);
+        result = 31 * result + (version != null ? version.hashCode() : 0);
+        return result;
+    }
 }
