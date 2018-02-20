@@ -1,4 +1,4 @@
-package RemotingTest;
+package remoting;
 
 public class Test {
 

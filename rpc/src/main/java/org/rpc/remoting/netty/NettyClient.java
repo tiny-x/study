@@ -5,22 +5,25 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.exception.RemotingConnectException;
 import org.rpc.exception.RemotingException;
-import org.rpc.remoting.api.Directory;
-import org.rpc.remoting.api.InvokeCallback;
-import org.rpc.remoting.api.RequestProcessor;
-import org.rpc.remoting.api.RpcClient;
+import org.rpc.remoting.api.*;
 import org.rpc.remoting.api.channel.ChannelGroup;
 import org.rpc.remoting.api.channel.DirectoryChannelGroup;
 import org.rpc.remoting.api.payload.ByteHolder;
 import org.rpc.remoting.api.payload.RequestBytes;
 import org.rpc.remoting.api.payload.ResponseBytes;
 import org.rpc.remoting.channel.NettyChannelGroup;
+import org.rpc.remoting.netty.event.ChannelEvent;
+import org.rpc.remoting.netty.event.ChannelEventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.SocketAddress;
 import java.util.concurrent.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -39,9 +42,16 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
 
     private final DirectoryChannelGroup directoryChannelGroup = new DirectoryChannelGroup();
 
+    private final ChannelEventListener channelEventListener;
+
     public NettyClient(NettyClientConfig nettyClientConfig) {
+        this(nettyClientConfig, null);
+    }
+
+    public NettyClient(NettyClientConfig nettyClientConfig, ChannelEventListener listener) {
         super(256, 256);
         this.nettyClientConfig = nettyClientConfig;
+        this.channelEventListener = listener;
     }
 
     @Override
@@ -144,6 +154,8 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
                         socketChannel.pipeline().addLast("NettyEncoder", new NettyEncoder());
                         socketChannel.pipeline().addLast("NettyDecoder", new NettyDecoder());
                         socketChannel.pipeline().addLast("NettyClientHandler", new NettyClientHandler());
+                        socketChannel.pipeline().addLast("IdleStateHandler", new IdleStateHandler(0, 0, 10));
+                        socketChannel.pipeline().addLast("NettyConnectManageHandler", new NettyConnectManageHandler());
                     }
                 });
 
@@ -154,6 +166,83 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
         protected void channelRead0(ChannelHandlerContext ctx, ByteHolder msg) throws Exception {
             processMessageReceived(ctx, msg);
         }
+    }
+
+    class NettyConnectManageHandler extends ChannelDuplexHandler {
+        @Override
+        public void connect(ChannelHandlerContext ctx, SocketAddress remoteAddress, SocketAddress localAddress,
+                            ChannelPromise promise) throws Exception {
+            final String local = localAddress == null ? "UNKNOWN" : localAddress.toString();
+            final String remote = remoteAddress == null ? "UNKNOWN" : remoteAddress.toString();
+            logger.info("NETTY CLIENT PIPELINE: CONNECT  {} => {}", local, remote);
+
+            super.connect(ctx, remoteAddress, localAddress, promise);
+
+            if (NettyClient.this.channelEventListener != null) {
+                NettyClient.this.putChannelEvent(new ChannelEvent(ChannelEventType.CONNECT, remote, ctx.channel()));
+            }
+        }
+
+        @Override
+        public void disconnect(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
+            final String remoteAddress = ctx.channel().remoteAddress().toString();
+            logger.info("NETTY CLIENT PIPELINE: DISCONNECT {}", remoteAddress);
+            ctx.channel().close();
+            super.disconnect(ctx, promise);
+
+            if (NettyClient.this.channelEventListener != null) {
+                NettyClient.this.putChannelEvent(new ChannelEvent(ChannelEventType.CLOSE, remoteAddress, ctx.channel()));
+            }
+        }
+
+        @Override
+        public void close(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
+            final String remoteAddress = ctx.channel().remoteAddress().toString();
+            logger.info("NETTY CLIENT PIPELINE: CLOSE {}", remoteAddress);
+            ctx.channel().close();
+            super.close(ctx, promise);
+
+            if (NettyClient.this.channelEventListener != null) {
+                NettyClient.this.putChannelEvent(new ChannelEvent(ChannelEventType.CLOSE, remoteAddress, ctx.channel()));
+            }
+        }
+
+        @Override
+        public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+            if (evt instanceof IdleStateEvent) {
+                IdleStateEvent event = (IdleStateEvent) evt;
+                if (event.state().equals(IdleState.ALL_IDLE)) {
+                    final String remoteAddress = ctx.channel().remoteAddress().toString();
+                    logger.warn("NETTY CLIENT PIPELINE: IDLE exception [{}]", remoteAddress);
+                    // ctx.channel().close();
+                    if (NettyClient.this.channelEventListener != null) {
+                        NettyClient.this
+                                .putChannelEvent(new ChannelEvent(ChannelEventType.IDLE, remoteAddress, ctx.channel()));
+                    }
+                }
+            }
+            ctx.fireUserEventTriggered(evt);
+        }
+
+        @Override
+        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+            final String remoteAddress = ctx.channel().remoteAddress().toString();
+            logger.warn("NETTY CLIENT PIPELINE: exceptionCaught {}", remoteAddress);
+            logger.warn("NETTY CLIENT PIPELINE: exceptionCaught exception.", cause);
+            ctx.channel().close();
+            if (NettyClient.this.channelEventListener != null) {
+                NettyClient.this.putChannelEvent(new ChannelEvent(ChannelEventType.EXCEPTION, remoteAddress, ctx.channel()));
+            }
+        }
+    }
+
+    private void putChannelEvent(ChannelEvent channelEvent) {
+        this.channelEventExecutor.putChannelEvent(channelEvent);
+    }
+
+    @Override
+    protected ChannelEventListener getChannelEventListener() {
+        return this.channelEventListener;
     }
 
     @Override

@@ -6,14 +6,16 @@ import io.netty.channel.ChannelHandlerContext;
 import org.rpc.exception.RemotingException;
 import org.rpc.exception.RemotingTimeoutException;
 import org.rpc.exception.RemotingTooMuchRequestException;
+import org.rpc.remoting.Pair;
+import org.rpc.remoting.api.ChannelEventListener;
 import org.rpc.remoting.api.InvokeCallback;
+import org.rpc.remoting.api.RequestProcessor;
+import org.rpc.remoting.api.future.ResponseFuture;
 import org.rpc.remoting.api.payload.ByteHolder;
 import org.rpc.remoting.api.payload.RequestBytes;
 import org.rpc.remoting.api.payload.ResponseBytes;
 import org.rpc.remoting.api.procotol.ProtocolHead;
-import org.rpc.remoting.Pair;
-import org.rpc.remoting.api.RequestProcessor;
-import org.rpc.remoting.api.future.ResponseFuture;
+import org.rpc.remoting.netty.event.ChannelEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,11 +37,15 @@ public abstract class NettyServiceAbstract {
 
     protected final Semaphore semaphoreOneWay;
 
-    protected final Pair<RequestProcessor, ExecutorService> defaultProcessor = new Pair(64);
+    protected final Pair<RequestProcessor, ExecutorService> defaultProcessor = new Pair();
+
+    protected final ChannelEventExecutor channelEventExecutor = new ChannelEventExecutor();
 
     public NettyServiceAbstract(final int permitsAsync, final int permitsOneWay) {
         this.semaphoreAsync = new Semaphore(permitsAsync, true);
         this.semaphoreOneWay = new Semaphore(permitsOneWay, true);
+
+        new Thread(channelEventExecutor).start();
     }
 
     public void processMessageReceived(ChannelHandlerContext ctx, ByteHolder msg) throws Exception {
@@ -148,5 +154,54 @@ public abstract class NettyServiceAbstract {
         }
 
     }
+
+    class ChannelEventExecutor implements Runnable {
+
+        private final LinkedBlockingQueue<ChannelEvent> eventQueue = new LinkedBlockingQueue<>();
+        private final int maxSize = 10000;
+
+        public void putChannelEvent(final ChannelEvent event) {
+            if (this.eventQueue.size() <= maxSize) {
+                this.eventQueue.add(event);
+            } else {
+                logger.warn("event queue size[{}] enough, so drop this event {}", this.eventQueue.size(), event.toString());
+            }
+        }
+
+        @Override
+        public void run() {
+            final ChannelEventListener listener = NettyServiceAbstract.this.getChannelEventListener();
+
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    ChannelEvent event = this.eventQueue.poll(3000, TimeUnit.MILLISECONDS);
+                    if (event != null && listener != null) {
+                        switch (event.getType()) {
+                            case IDLE:
+                                listener.onChannelIdle(event.getRemoteAddr(), event.getChannel());
+                                break;
+                            case CLOSE:
+                                listener.onChannelClose(event.getRemoteAddr(), event.getChannel());
+                                break;
+                            case CONNECT:
+                                listener.onChannelConnect(event.getRemoteAddr(), event.getChannel());
+                                break;
+                            case EXCEPTION:
+                                listener.onChannelException(event.getRemoteAddr(), event.getChannel());
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+    }
+
+    protected abstract ChannelEventListener getChannelEventListener();
 
 }

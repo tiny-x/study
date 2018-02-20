@@ -9,10 +9,6 @@ public class Pair<A, B> {
     public Pair() {
     }
 
-    public Pair(A a) {
-        this.a = a;
-    }
-
     public A getA() {
         return a;
     }
