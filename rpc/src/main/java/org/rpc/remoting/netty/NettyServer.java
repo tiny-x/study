@@ -79,7 +79,7 @@ public class NettyServer extends NettyServiceAbstract implements RpcServer {
                         socketChannel.pipeline().addLast("NettyEncoder", new NettyEncoder());
                         socketChannel.pipeline().addLast("NettyDecoder", new NettyDecoder());
                         socketChannel.pipeline().addLast("NettyServerHandler", new NettyServerHandler());
-                        socketChannel.pipeline().addLast("IdleStateHandler", new IdleStateHandler(0, 0, 10));
+                        socketChannel.pipeline().addLast("IdleStateHandler", new IdleStateHandler(0, 0, 60));
                         socketChannel.pipeline().addLast("NettyConnectManageHandler", new NettyConnectManageHandler());
                     }
                 });

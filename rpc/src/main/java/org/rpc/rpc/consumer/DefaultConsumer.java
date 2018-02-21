@@ -40,7 +40,6 @@ public class DefaultConsumer implements Consumer {
     public DefaultConsumer(String application, NettyClientConfig nettyClientConfig) {
         this.application = application;
         this.rpcClient = new NettyClient(nettyClientConfig);
-        this.rpcClient.registerRequestProcess(new SubscribeProcess(), Executors.newCachedThreadPool());
         this.rpcClient.start();
     }
 
@@ -83,35 +82,6 @@ public class DefaultConsumer implements Consumer {
     @Override
     public String application() {
         return application;
-    }
-
-
-    class SubscribeProcess implements RequestProcessor {
-
-        @Override
-        public ResponseBytes process(ChannelHandlerContext context, RequestBytes request) {
-            Serializer serializer = SerializerFactory.serializer(SerializerType.parse(request.getSerializerCode()));
-            RegisterMeta registerMeta = serializer.deserialize(request.getBody(), RegisterMeta.class);
-
-            switch (request.getMessageCode()) {
-                case SUBSCRIBE_RECEIVE: {
-                    DefaultConsumer.this.connect(registerMeta.getAddress());
-                    ServiceMeta serviceMeta = new ServiceMeta(registerMeta.getServiceMeta().getGroup(),
-                            registerMeta.getServiceMeta().getServiceProviderName(),
-                            registerMeta.getServiceMeta().getVersion());
-                    DefaultConsumer.this.client().addChannelGroup(serviceMeta, client().group(registerMeta.getAddress()));
-                    break;
-                }
-                default:
-                    throw new UnsupportedOperationException("RegisterProcess Unsupported MessageCode: " + request.getMessageCode());
-            }
-            return null;
-        }
-
-        @Override
-        public boolean rejectRequest() {
-            return false;
-        }
     }
 
 }

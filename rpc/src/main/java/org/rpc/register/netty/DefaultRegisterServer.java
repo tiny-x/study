@@ -45,7 +45,7 @@ public class DefaultRegisterServer implements RegisterServer {
             AttributeKey.valueOf("server.subscribed");
 
     private static final AttributeKey<ConcurrentSet<RegisterMeta>> PUBLISH_KEY =
-            AttributeKey.valueOf("server.subscribed");
+            AttributeKey.valueOf("server.publish");
 
     private static final ConcurrentMap<String, ConcurrentSet<ServiceMeta>> CONSUMER_MAP = new ConcurrentHashMap<>();
 
@@ -94,10 +94,10 @@ public class DefaultRegisterServer implements RegisterServer {
                 // 通知订阅下线服务
                 Notify notify = new Notify(address);
                 Serializer serializer = SerializerFactory.serializer(SerializerType.PROTO_STUFF);
-                ResponseBytes responseBytesNotify = new ResponseBytes(ProtocolHead.OFFLINE_RECEIVE,
+                RequestBytes requestBytes = new RequestBytes(ProtocolHead.OFFLINE_SERVICE,
                         SerializerType.PROTO_STUFF.value(),
                         serializer.serialize(notify));
-                subscriberChannels.writeAndFlush(responseBytesNotify);
+                subscriberChannels.writeAndFlush(requestBytes);
             }
         }
     }
@@ -202,10 +202,10 @@ public class DefaultRegisterServer implements RegisterServer {
                     registerMetas
             );
 
-            ResponseBytes responseBytesNotify = new ResponseBytes(ProtocolHead.SUBSCRIBE_RECEIVE,
+            RequestBytes requestBytes = new RequestBytes(ProtocolHead.SUBSCRIBE_SERVICE,
                     SerializerType.PROTO_STUFF.value(),
                     serializer.serialize(notify));
-            subscriberChannels.writeAndFlush(responseBytesNotify, new ChannelMatcher() {
+            subscriberChannels.writeAndFlush(requestBytes, new ChannelMatcher() {
                 @Override
                 public boolean matches(Channel channel) {
                     Attribute<ConcurrentSet<ServiceMeta>> attr = channel.attr(SUBSCRIBE_KEY);

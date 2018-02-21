@@ -1,6 +1,5 @@
 package org.rpc.remoting.api;
 
-import io.netty.channel.Channel;
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.exception.RemotingConnectException;
 import org.rpc.exception.RemotingException;
@@ -17,20 +16,20 @@ public interface RpcClient extends RpcService {
     void connect(UnresolvedAddress address)
             throws InterruptedException, RemotingConnectException;
 
-    ChannelGroup group(UnresolvedAddress address);
+    boolean addChannelGroup(Directory directory, UnresolvedAddress address);
 
-    boolean addChannelGroup(Directory directory, ChannelGroup group);
+    boolean removeChannelGroup(Directory directory, UnresolvedAddress address);
 
-    boolean removeChannelGroup(Directory directory, ChannelGroup group);
+    boolean hasAvailableChannelGroup(UnresolvedAddress address);
 
     CopyOnWriteArrayList<ChannelGroup> directory(Directory directory);
 
     boolean isDirectoryAvailable(Directory directory);
 
-    ResponseBytes invokeSync(final Channel channel, final RequestBytes request, long timeout, TimeUnit timeUnit)
+    ResponseBytes invokeSync(final UnresolvedAddress address, final RequestBytes request, long timeout, TimeUnit timeUnit)
             throws RemotingException, InterruptedException;
 
-    void invokeAsync(final Channel channel, final RequestBytes request
+    void invokeAsync(final UnresolvedAddress address, final RequestBytes request
             , long timeout, TimeUnit timeUnit, InvokeCallback<ResponseBytes> invokeCallback)
             throws RemotingException, InterruptedException;
 

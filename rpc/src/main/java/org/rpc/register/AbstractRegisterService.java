@@ -75,7 +75,7 @@ public abstract class AbstractRegisterService implements RegisterService {
         // remove & notify
         CopyOnWriteArrayList<OfflineListener> offlineListenerList = offlineListeners.remove(address);
         for (OfflineListener offlineListener : offlineListenerList) {
-            offlineListener.notify();
+            offlineListener.offline();
         }
     }
 

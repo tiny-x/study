@@ -56,11 +56,10 @@ public class RemotingServerTest {
         }, Executors.newCachedThreadPool());
 
         RequestBytes request = new RequestBytes(ProtocolHead.REQUEST, ProtocolHead.JSON, "hello register".getBytes());
-        UnresolvedAddress address = new UnresolvedAddress("127.0.0.1", 9000);
+        UnresolvedAddress address = new UnresolvedAddress("127.0.0.1", 9180);
         rpcClient.connect(address);
-        ChannelGroup group = rpcClient.group(address);
 
-        ResponseBytes response = rpcClient.invokeSync(group.next(),
+        ResponseBytes response = rpcClient.invokeSync(address,
                 request,
                 3000L,
                 TimeUnit.SECONDS
@@ -95,9 +94,8 @@ public class RemotingServerTest {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         UnresolvedAddress address = new UnresolvedAddress("127.0.0.1", 9000);
         rpcClient.connect(address);
-        ChannelGroup group = rpcClient.group(address);
 
-        rpcClient.invokeAsync(group.next(),
+        rpcClient.invokeAsync(address,
                 request,
                 3000L,
                 TimeUnit.SECONDS,

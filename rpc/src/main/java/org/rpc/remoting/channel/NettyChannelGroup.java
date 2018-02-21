@@ -5,11 +5,15 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.remoting.api.channel.ChannelGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NettyChannelGroup implements ChannelGroup {
+
+    private static final Logger logger = LoggerFactory.getLogger(NettyChannelGroup.class);
 
     private final CopyOnWriteArrayList<Channel> channels = new CopyOnWriteArrayList<>();
 
@@ -27,6 +31,7 @@ public class NettyChannelGroup implements ChannelGroup {
     private final ChannelFutureListener remover = new ChannelFutureListener() {
         @Override
         public void operationComplete(ChannelFuture future) throws Exception {
+            logger.info("channel close , remove channel: {}", future.channel());
             removeChannel(future.channel());
         }
     };

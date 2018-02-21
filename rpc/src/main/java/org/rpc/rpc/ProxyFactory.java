@@ -18,6 +18,7 @@ import org.rpc.utils.InetUtils;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 
 public class ProxyFactory {
 
@@ -73,29 +74,27 @@ public class ProxyFactory {
             public void notify(RegisterMeta registerMeta, NotifyEvent event) {
                 switch (event) {
                     case ADD: {
-                        ChannelGroup group = consumer.client().group(registerMeta.getAddress());
-                        if (!group.isAvailable()) {
+                        if (!consumer.client().hasAvailableChannelGroup(registerMeta.getAddress())) {
                             for (int i = 0; i < registerMeta.getConnCount(); i++) {
                                 consumer.connect(registerMeta.getAddress());
-                                consumer.client().addChannelGroup(serviceMeta, group);
-
+                                consumer.client().addChannelGroup(serviceMeta, registerMeta.getAddress());
                             }
                             consumer.offlineListening(registerMeta.getAddress(), new OfflineListener() {
                                 @Override
                                 public void offline() {
-                                    consumer.client().removeChannelGroup(serviceMeta, group);
+                                    consumer.client().removeChannelGroup(serviceMeta, registerMeta.getAddress());
                                 }
                             });
                         }
+                        break;
                     }
                     case REMOVE: {
-                        ChannelGroup group = consumer.client().group(registerMeta.getAddress());
-                        consumer.client().removeChannelGroup(serviceMeta, group);
+                        consumer.client().removeChannelGroup(serviceMeta, registerMeta.getAddress());
+                        break;
                     }
                 }
             }
         });
-
 
         return (T) Proxies.getDefault().newProxy(interfaces, new SyncInvoker(dispatcher, serviceMeta));
     }

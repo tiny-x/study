@@ -59,7 +59,7 @@ public class DefaultRegisterClient {
                 serializer.serialize(registerMeta));
 
         try {
-            rpcClient.invokeSync(rpcClient.group(unresolvedAddress).next(),
+            rpcClient.invokeSync(unresolvedAddress,
                     requestBytes, config.getInvokeTimeoutMillis(), TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             logger.error("register service fail", e);
@@ -79,7 +79,7 @@ public class DefaultRegisterClient {
                 serializer.serialize(serviceMeta));
 
         try {
-            ResponseBytes responseBytes = rpcClient.invokeSync(rpcClient.group(unresolvedAddress).next(),
+            ResponseBytes responseBytes = rpcClient.invokeSync(unresolvedAddress,
                     requestBytes, config.getInvokeTimeoutMillis(), TimeUnit.MILLISECONDS);
 
             Notify notifyData = serializer.deserialize(responseBytes.getBody(), Notify.class);
@@ -109,12 +109,12 @@ public class DefaultRegisterClient {
             Serializer serializer = SerializerFactory.serializer(SerializerType.parse(request.getSerializerCode()));
             Notify notifyData = serializer.deserialize(request.getBody(), Notify.class);
             switch (request.getMessageCode()) {
-                case ProtocolHead.SUBSCRIBE_RECEIVE: {
+                case ProtocolHead.SUBSCRIBE_SERVICE: {
                     registerService.notify(notifyData.getServiceMeta(),
                             notifyData.getEvent(),
                             notifyData.getRegisterMetas());
                 }
-                case ProtocolHead.OFFLINE_RECEIVE: {
+                case ProtocolHead.OFFLINE_SERVICE: {
                     UnresolvedAddress address = notifyData.getAddress();
                     registerService.offline(address);
                 }

@@ -16,7 +16,7 @@ public class ConsumerExample {
         consumer.connect(address);
 
         ServiceMeta serviceMeta = new ServiceMeta("test", "org.rpc.example.demo.HelloService", "1.0.0");
-        consumer.client().addChannelGroup(serviceMeta, consumer.client().group(address));
+        consumer.client().addChannelGroup(serviceMeta, address);
 
         HelloService helloService = ProxyFactory.factory(HelloService.class)
                 .consumer(consumer)

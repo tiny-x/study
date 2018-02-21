@@ -22,12 +22,7 @@ public class ConsumerExample {
                 .timeMillis(300000L)
                 .newProxy();
 
-        long l = System.currentTimeMillis();
-        for (int i = 0; i < 20000; i++) {
-            String s = helloService.sayHello(" biu biu biu!!!");
-            //System.out.printf("---------->: receive provider message %s \n", s);
-        }
-        System.out.printf("耗时 %s \n", System.currentTimeMillis() - l);
+        String s = helloService.sayHello(" biu biu biu!!!");
 
     }
 }

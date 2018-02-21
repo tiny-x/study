@@ -38,20 +38,20 @@ public abstract class AbstractDispatcher implements Dispatcher {
         this.serializerType = serializerType;
     }
 
-    protected Channel select(ServiceMeta metadata) {
+    protected ChannelGroup select(ServiceMeta metadata) {
         CopyOnWriteArrayList<ChannelGroup> groups = consumer.client().directory(metadata);
 
         ChannelGroup group = loadBalancer.select(groups, metadata);
 
         if (group != null) {
             if (group.isAvailable()) {
-                return group.next();
+                return group;
             }
         }
 
         for (ChannelGroup g : groups) {
             if (g.isAvailable()) {
-                return g.next();
+                return g;
             }
         }
         throw new IllegalStateException("no channel");
@@ -75,7 +75,7 @@ public abstract class AbstractDispatcher implements Dispatcher {
         return serializerType.value();
     }
 
-    protected ResponseBytes invoke(Channel channel,
+    protected ResponseBytes invoke(ChannelGroup channelGroup,
                            final Request request,
                            final DispatchType dispatchType,
                            boolean sync) {
@@ -84,12 +84,12 @@ public abstract class AbstractDispatcher implements Dispatcher {
         try {
             if (sync) {
                 responseBytes = consumer.client()
-                        .invokeSync(channel, request.getRequestBytes(), timeoutMillis, TimeUnit.MILLISECONDS);
+                        .invokeSync(channelGroup.remoteAddress(), request.getRequestBytes(), timeoutMillis, TimeUnit.MILLISECONDS);
 
             } else {
 
                consumer.client()
-                        .invokeAsync(channel,
+                        .invokeAsync(channelGroup.remoteAddress(),
                                 request.getRequestBytes(),
                                 timeoutMillis,
                                 TimeUnit.MILLISECONDS

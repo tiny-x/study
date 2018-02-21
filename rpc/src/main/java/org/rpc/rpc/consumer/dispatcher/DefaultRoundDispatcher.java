@@ -17,6 +17,7 @@
 package org.rpc.rpc.consumer.dispatcher;
 
 import io.netty.channel.Channel;
+import org.rpc.remoting.api.channel.ChannelGroup;
 import org.rpc.remoting.api.payload.RequestBytes;
 import org.rpc.remoting.api.payload.ResponseBytes;
 import org.rpc.remoting.api.procotol.ProtocolHead;
@@ -40,14 +41,14 @@ public class DefaultRoundDispatcher extends AbstractDispatcher {
         final RequestWrapper requestWrapper = request.getRequestWrapper();
 
         // 通过软负载均衡选择一个channel
-        Channel channel = select(requestWrapper.getServiceMeta());
+        ChannelGroup channelGroup = select(requestWrapper.getServiceMeta());
         Serializer serializer = getSerializer();
 
         byte[] bytes = serializer.serialize(requestWrapper);
         RequestBytes requestBytes = new RequestBytes(ProtocolHead.REQUEST, getSerializerCode(), bytes);
         request.setRequestBytes(requestBytes);
 
-        ResponseBytes responseBytes = invoke(channel, request, DispatchType.ROUND, true);
+        ResponseBytes responseBytes = invoke(channelGroup, request, DispatchType.ROUND, true);
 
         T result = serializer.deserialize(responseBytes.getBody(), returnType);
         return result;

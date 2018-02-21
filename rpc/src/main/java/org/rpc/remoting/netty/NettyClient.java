@@ -73,8 +73,7 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
         }
     }
 
-    @Override
-    public ChannelGroup group(UnresolvedAddress address) {
+    private ChannelGroup group(UnresolvedAddress address) {
 
         ChannelGroup group = addressGroups.get(address);
         if (group == null) {
@@ -88,7 +87,13 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
     }
 
     @Override
-    public boolean addChannelGroup(Directory directory, ChannelGroup group) {
+    public boolean hasAvailableChannelGroup(UnresolvedAddress address) {
+        return group(address).isAvailable();
+    }
+
+    @Override
+    public boolean addChannelGroup(Directory directory, UnresolvedAddress address) {
+        ChannelGroup group = group(address);
         CopyOnWriteArrayList groups = directoryChannelGroup.find(directory);
         boolean added = groups.addIfAbsent(group);
         if (added) {
@@ -100,7 +105,8 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
     }
 
     @Override
-    public boolean removeChannelGroup(Directory directory, ChannelGroup group) {
+    public boolean removeChannelGroup(Directory directory, UnresolvedAddress address) {
+        ChannelGroup group = group(address);
         CopyOnWriteArrayList groups = directoryChannelGroup.find(directory);
         boolean removed = groups.remove(group);
         if (removed) {
@@ -128,19 +134,20 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
     }
 
     @Override
-    public ResponseBytes invokeSync(final Channel channel, RequestBytes request, long timeout, TimeUnit timeUnit) throws RemotingException, InterruptedException {
-        return invokeSync0(channel, request, timeout, timeUnit);
+    public ResponseBytes invokeSync(final UnresolvedAddress address, RequestBytes request, long timeout, TimeUnit timeUnit) throws RemotingException, InterruptedException {
+        return invokeSync0(group(address).next(), request, timeout, timeUnit);
     }
 
     @Override
-    public void invokeAsync(final Channel channel, RequestBytes request,
+    public void invokeAsync(final UnresolvedAddress address, RequestBytes request,
                             long timeout, TimeUnit timeUnit, InvokeCallback<ResponseBytes> invokeCallback) throws RemotingException, InterruptedException {
-        invokeAsync0(channel, request, timeout, timeUnit, invokeCallback);
+        invokeAsync0(group(address).next(), request, timeout, timeUnit, invokeCallback);
     }
 
     @Override
     public void registerRequestProcess(RequestProcessor requestProcessor, ExecutorService executor) {
-
+        defaultProcessor.setA(requestProcessor);
+        defaultProcessor.setB(executor);
     }
 
     @Override
@@ -154,7 +161,7 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
                         socketChannel.pipeline().addLast("NettyEncoder", new NettyEncoder());
                         socketChannel.pipeline().addLast("NettyDecoder", new NettyDecoder());
                         socketChannel.pipeline().addLast("NettyClientHandler", new NettyClientHandler());
-                        socketChannel.pipeline().addLast("IdleStateHandler", new IdleStateHandler(0, 0, 10));
+                        socketChannel.pipeline().addLast("IdleStateHandler", new IdleStateHandler(0, 0, 60));
                         socketChannel.pipeline().addLast("NettyConnectManageHandler", new NettyConnectManageHandler());
                     }
                 });
