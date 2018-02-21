@@ -102,13 +102,13 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
     @Override
     public boolean removeChannelGroup(Directory directory, ChannelGroup group) {
         CopyOnWriteArrayList groups = directoryChannelGroup.find(directory);
-        boolean added = groups.remove(group);
-        if (added) {
+        boolean removed = groups.remove(group);
+        if (removed) {
             if (logger.isInfoEnabled()) {
-                logger.info("Added channel group: {} to {}.", group, directory.directory());
+                logger.info("Removed channel group: {} to {}.", group, directory.directory());
             }
         }
-        return added;
+        return removed;
     }
 
     @Override

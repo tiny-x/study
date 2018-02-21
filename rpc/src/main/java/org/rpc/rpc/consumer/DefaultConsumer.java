@@ -3,6 +3,7 @@ package org.rpc.rpc.consumer;
 import io.netty.channel.ChannelHandlerContext;
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.register.NotifyListener;
+import org.rpc.register.OfflineListener;
 import org.rpc.register.RegisterService;
 import org.rpc.register.model.RegisterMeta;
 import org.rpc.register.netty.DefaultRegisterService;
@@ -60,6 +61,11 @@ public class DefaultConsumer implements Consumer {
     @Override
     public void subscribe(Directory directory, NotifyListener listener) {
         registerService.subscribe((ServiceMeta) directory, listener);
+    }
+
+    @Override
+    public void offlineListening(UnresolvedAddress address, OfflineListener listener) {
+        registerService.offlineListening(address, listener);
     }
 
     @Override

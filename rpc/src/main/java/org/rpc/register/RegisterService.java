@@ -1,5 +1,6 @@
 package org.rpc.register;
 
+import org.rpc.comm.UnresolvedAddress;
 import org.rpc.register.model.RegisterMeta;
 import org.rpc.rpc.model.ServiceMeta;
 
@@ -17,4 +18,6 @@ public interface RegisterService {
     void unSubscribe(ServiceMeta serviceMeta);
 
     List<RegisterMeta> lookup(RegisterMeta RegisterMeta);
+
+    void offlineListening(UnresolvedAddress address, OfflineListener listener);
 }

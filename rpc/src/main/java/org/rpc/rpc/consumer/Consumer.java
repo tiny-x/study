@@ -2,6 +2,7 @@ package org.rpc.rpc.consumer;
 
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.register.NotifyListener;
+import org.rpc.register.OfflineListener;
 import org.rpc.register.model.RegisterMeta;
 import org.rpc.remoting.api.Directory;
 import org.rpc.remoting.api.RpcClient;
@@ -30,6 +31,11 @@ public interface Consumer {
      * 从注册中心订阅一个服务.
      */
     void subscribe(Directory directory, NotifyListener listener);
+
+    /**
+     * 服务下线通知.
+     */
+    void offlineListening(UnresolvedAddress address, OfflineListener listener);
 
     /**
      * 查找服务

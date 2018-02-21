@@ -20,7 +20,6 @@ import org.rpc.utils.InetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -97,21 +96,9 @@ public class DefaultRegisterClient {
     }
 
     public List<RegisterMeta> lookup(RegisterMeta registerMeta) {
-        Serializer serializer = SerializerFactory.serializer(SerializerType.PROTO_STUFF);
-
-        RequestBytes requestBytes = new RequestBytes(ProtocolHead.LOOKUP_SERVICE,
-                SerializerType.PROTO_STUFF.value(),
-                serializer.serialize(registerMeta));
 
         List<RegisterMeta> registerMetaList = null;
-        try {
-            ResponseBytes responseBytes = rpcClient.invokeSync(rpcClient.group(unresolvedAddress).next(),
-                    requestBytes, config.getInvokeTimeoutMillis(), TimeUnit.MILLISECONDS);
 
-            registerMetaList = serializer.deserialize(responseBytes.getBody(), ArrayList.class);
-        } catch (Exception e) {
-            logger.error("lookup service fail", e);
-        }
         return registerMetaList;
     }
 
@@ -126,6 +113,10 @@ public class DefaultRegisterClient {
                     registerService.notify(notifyData.getServiceMeta(),
                             notifyData.getEvent(),
                             notifyData.getRegisterMetas());
+                }
+                case ProtocolHead.OFFLINE_RECEIVE: {
+                    UnresolvedAddress address = notifyData.getAddress();
+                    registerService.offline(address);
                 }
                 default:
                     throw new UnsupportedOperationException("RegisterClientProcess Unsupported MessageCode: " + request.getMessageCode());

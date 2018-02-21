@@ -24,10 +24,8 @@ public class ProtocolHead {
     public static final byte SUBSCRIBE_SERVICE = 0x05;    // 监听服务
     public static final byte SUBSCRIBE_RECEIVE = 0x06;
 
-    public static final byte LOOKUP_SERVICE = 0x07;  // 查找服务
-    public static final byte LOOKUP_RECEIVE = 0x08;
-
-    public static final byte REGISTER_NOTIFY = 0x0A; // 通知客户端
+    public static final byte OFFLINE_SERVICE = 0x07;  // 下线服务
+    public static final byte OFFLINE_RECEIVE = 0x08;
 
     // ====== serializerCode
     public static final byte PROTO_STUFF = 0x01;

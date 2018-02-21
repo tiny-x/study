@@ -4,6 +4,7 @@ import org.rpc.comm.UnresolvedAddress;
 import org.rpc.comm.utils.Proxies;
 import org.rpc.register.NotifyEvent;
 import org.rpc.register.NotifyListener;
+import org.rpc.register.OfflineListener;
 import org.rpc.register.model.RegisterMeta;
 import org.rpc.remoting.api.Directory;
 import org.rpc.remoting.api.channel.ChannelGroup;
@@ -77,12 +78,24 @@ public class ProxyFactory {
                             for (int i = 0; i < registerMeta.getConnCount(); i++) {
                                 consumer.connect(registerMeta.getAddress());
                                 consumer.client().addChannelGroup(serviceMeta, group);
+
                             }
+                            consumer.offlineListening(registerMeta.getAddress(), new OfflineListener() {
+                                @Override
+                                public void offline() {
+                                    consumer.client().removeChannelGroup(serviceMeta, group);
+                                }
+                            });
                         }
+                    }
+                    case REMOVE: {
+                        ChannelGroup group = consumer.client().group(registerMeta.getAddress());
+                        consumer.client().removeChannelGroup(serviceMeta, group);
                     }
                 }
             }
         });
+
 
         return (T) Proxies.getDefault().newProxy(interfaces, new SyncInvoker(dispatcher, serviceMeta));
     }

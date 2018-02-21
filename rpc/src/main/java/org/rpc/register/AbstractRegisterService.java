@@ -1,5 +1,6 @@
 package org.rpc.register;
 
+import org.rpc.comm.UnresolvedAddress;
 import org.rpc.comm.collection.ConcurrentSet;
 import org.rpc.register.model.RegisterMeta;
 import org.rpc.rpc.model.ServiceMeta;
@@ -7,6 +8,7 @@ import org.rpc.rpc.model.ServiceMeta;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public abstract class AbstractRegisterService implements RegisterService {
@@ -15,6 +17,10 @@ public abstract class AbstractRegisterService implements RegisterService {
      * 订阅者监听器
      */
     private final ConcurrentMap<ServiceMeta, NotifyListener> subscribeListeners = new ConcurrentHashMap<>();
+
+
+    private final ConcurrentMap<UnresolvedAddress, CopyOnWriteArrayList<OfflineListener>> offlineListeners =
+            new ConcurrentHashMap<>();
 
     /**
      * 服务提供者
@@ -50,6 +56,27 @@ public abstract class AbstractRegisterService implements RegisterService {
     public void unSubscribe(ServiceMeta serviceMeta) {
         subscribeListeners.remove(serviceMeta);
         doUnSubscribe(serviceMeta);
+    }
+
+    @Override
+    public void offlineListening(UnresolvedAddress address, OfflineListener listener) {
+        CopyOnWriteArrayList<OfflineListener> offlineListenerList = offlineListeners.get(address);
+        if (offlineListenerList == null) {
+            CopyOnWriteArrayList<OfflineListener> newOfflineListenerList = new CopyOnWriteArrayList<>();
+            offlineListenerList = offlineListeners.putIfAbsent(address, newOfflineListenerList);
+            if (offlineListenerList == null) {
+                offlineListenerList = newOfflineListenerList;
+            }
+        }
+        offlineListenerList.add(listener);
+    }
+
+    public void offline(UnresolvedAddress address) {
+        // remove & notify
+        CopyOnWriteArrayList<OfflineListener> offlineListenerList = offlineListeners.remove(address);
+        for (OfflineListener offlineListener : offlineListenerList) {
+            offlineListener.notify();
+        }
     }
 
     public void notify(ServiceMeta serviceMeta, NotifyEvent event, List<RegisterMeta> registerMetas) {
