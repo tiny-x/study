@@ -53,12 +53,6 @@ public abstract class AbstractRegisterService implements RegisterService {
     }
 
     @Override
-    public void unSubscribe(ServiceMeta serviceMeta) {
-        subscribeListeners.remove(serviceMeta);
-        doUnSubscribe(serviceMeta);
-    }
-
-    @Override
     public void offlineListening(UnresolvedAddress address, OfflineListener listener) {
         CopyOnWriteArrayList<OfflineListener> offlineListenerList = offlineListeners.get(address);
         if (offlineListenerList == null) {
@@ -101,8 +95,5 @@ public abstract class AbstractRegisterService implements RegisterService {
     protected abstract void doUnRegister(RegisterMeta registerMeta);
 
     protected abstract void doSubscribe(ServiceMeta serviceMeta);
-
-    protected abstract void doUnSubscribe(ServiceMeta serviceMeta);
-
 
 }

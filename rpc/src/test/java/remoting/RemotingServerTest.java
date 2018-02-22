@@ -91,7 +91,7 @@ public class RemotingServerTest {
         RequestBytes request = new RequestBytes(ProtocolHead.REQUEST, ProtocolHead.JSON, "hello register".getBytes());
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        UnresolvedAddress address = new UnresolvedAddress("127.0.0.1", 9000);
+        UnresolvedAddress address = new UnresolvedAddress("127.0.0.1", 9180);
         rpcClient.connect(address);
 
         rpcClient.invokeAsync(address,

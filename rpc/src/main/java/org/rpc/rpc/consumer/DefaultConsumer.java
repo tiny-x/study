@@ -1,6 +1,5 @@
 package org.rpc.rpc.consumer;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.register.NotifyListener;
 import org.rpc.register.OfflineListener;
@@ -8,24 +7,16 @@ import org.rpc.register.RegisterService;
 import org.rpc.register.model.RegisterMeta;
 import org.rpc.register.netty.DefaultRegisterService;
 import org.rpc.remoting.api.Directory;
-import org.rpc.remoting.api.RequestProcessor;
 import org.rpc.remoting.api.RpcClient;
-import org.rpc.remoting.api.payload.RequestBytes;
-import org.rpc.remoting.api.payload.ResponseBytes;
 import org.rpc.remoting.netty.NettyClient;
 import org.rpc.remoting.netty.NettyClientConfig;
 import org.rpc.rpc.model.ServiceMeta;
-import org.rpc.serializer.Serializer;
-import org.rpc.serializer.SerializerFactory;
-import org.rpc.serializer.SerializerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.concurrent.Executors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.rpc.remoting.api.procotol.ProtocolHead.SUBSCRIBE_RECEIVE;
 
 public class DefaultConsumer implements Consumer {
 
@@ -84,4 +75,8 @@ public class DefaultConsumer implements Consumer {
         return application;
     }
 
+    @Override
+    public RegisterService registerService() {
+        return registerService;
+    }
 }

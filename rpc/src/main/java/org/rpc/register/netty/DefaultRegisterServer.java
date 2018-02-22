@@ -33,9 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
 
-import static org.rpc.remoting.api.procotol.ProtocolHead.OFFLINE_SERVICE;
-import static org.rpc.remoting.api.procotol.ProtocolHead.REGISTER_SERVICE;
-import static org.rpc.remoting.api.procotol.ProtocolHead.SUBSCRIBE_SERVICE;
+import static org.rpc.remoting.api.procotol.ProtocolHead.*;
 
 public class DefaultRegisterServer implements RegisterServer {
 
@@ -115,20 +113,8 @@ public class DefaultRegisterServer implements RegisterServer {
                 case SUBSCRIBE_SERVICE: {
                     return handleSubscribeService(context, request, serializer);
                 }
-                case OFFLINE_SERVICE: {
-                    RegisterMeta registerMeta = serializer.deserialize(request.getBody(), RegisterMeta.class);
-                    logger.debug("[OFFLINE] provider: {} offline service: {}", registerMeta.getAddress().getHost(), registerMeta);
-                    String serviceProviderName = registerMeta.getServiceMeta().getServiceProviderName();
-                    PROVIDER_MAP.remove(serviceProviderName);
-
-                    // 回复服务端下线服务成功
-                    ResponseBytes responseBytes = new ResponseBytes(ProtocolHead.OFFLINE_RECEIVE,
-                            SerializerType.PROTO_STUFF.value(),
-                            null);
-                    responseBytes.setStatus(ProtocolHead.STATUS_SUCCESS);
-                    responseBytes.setInvokeId(request.getInvokeId());
-                    return responseBytes;
-
+                case CANCEL_REGISTER_SERVICE: {
+                    return handleUnRegisterService(request, serializer);
                 }
                 default:
                     throw new UnsupportedOperationException("RegisterProcess Unsupported MessageCode: " + request.getMessageCode());
@@ -164,7 +150,7 @@ public class DefaultRegisterServer implements RegisterServer {
             );
 
             // 返回给客户端已经注册的服务
-            ResponseBytes responseBytes = new ResponseBytes(ProtocolHead.SUBSCRIBE_RECEIVE,
+            ResponseBytes responseBytes = new ResponseBytes(ProtocolHead.ACK,
                     SerializerType.PROTO_STUFF.value(),
                     serializer.serialize(notify));
             responseBytes.setStatus(ProtocolHead.STATUS_SUCCESS);
@@ -214,7 +200,7 @@ public class DefaultRegisterServer implements RegisterServer {
             });
 
             // 回复服务端注册成功
-            ResponseBytes responseBytes = new ResponseBytes(ProtocolHead.REGISTER_RECEIVE,
+            ResponseBytes responseBytes = new ResponseBytes(ProtocolHead.ACK,
                     SerializerType.PROTO_STUFF.value(),
                     null);
             responseBytes.setStatus(ProtocolHead.STATUS_SUCCESS);
@@ -226,6 +212,45 @@ public class DefaultRegisterServer implements RegisterServer {
         public boolean rejectRequest() {
             return false;
         }
+    }
+
+    private static ResponseBytes handleUnRegisterService(RequestBytes request, Serializer serializer) {
+        RegisterMeta registerMeta = serializer.deserialize(request.getBody(), RegisterMeta.class);
+        logger.debug("[UN_REGISTER] provider: {} cancel register service: {}", registerMeta.getAddress().getHost(), registerMeta);
+        String serviceProviderName = registerMeta.getServiceMeta().getServiceProviderName();
+        ConcurrentSet<RegisterMeta> registerMetaList = PROVIDER_MAP.get(serviceProviderName);
+        if (registerMetaList != null && registerMetaList.size() > 0) {
+            registerMetaList.remove(registerMeta);
+        }
+
+        // 通知订阅者
+        ArrayList<RegisterMeta> registerMetas = new ArrayList<>(1);
+        registerMetas.add(registerMeta);
+        Notify notify = new Notify(
+                NotifyEvent.REMOVE,
+                registerMeta.getServiceMeta(),
+                registerMetas
+        );
+
+        RequestBytes requestBytes = new RequestBytes(ProtocolHead.SUBSCRIBE_SERVICE,
+                SerializerType.PROTO_STUFF.value(),
+                serializer.serialize(notify));
+        subscriberChannels.writeAndFlush(requestBytes, new ChannelMatcher() {
+            @Override
+            public boolean matches(Channel channel) {
+                Attribute<ConcurrentSet<ServiceMeta>> attr = channel.attr(SUBSCRIBE_KEY);
+                ConcurrentSet<ServiceMeta> serviceMetas = attr.get();
+                return serviceMetas != null && serviceMetas.contains(registerMeta.getServiceMeta());
+            }
+        });
+
+        // 回复服务端下线服务成功
+        ResponseBytes responseBytes = new ResponseBytes(ProtocolHead.ACK,
+                SerializerType.PROTO_STUFF.value(),
+                null);
+        responseBytes.setStatus(ProtocolHead.STATUS_SUCCESS);
+        responseBytes.setInvokeId(request.getInvokeId());
+        return responseBytes;
     }
 
     private static void attachRegisterEvent(RegisterMeta registerMeta, Channel channel) {

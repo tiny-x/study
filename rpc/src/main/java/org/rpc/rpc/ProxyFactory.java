@@ -16,9 +16,7 @@ import org.rpc.rpc.model.ServiceMeta;
 import org.rpc.serializer.SerializerType;
 import org.rpc.utils.InetUtils;
 
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
 
 public class ProxyFactory {
 
@@ -69,32 +67,34 @@ public class ProxyFactory {
         registerMeta.setServiceMeta(serviceMeta);
         registerMeta.setAddress(new UnresolvedAddress(InetUtils.getLocalHost(), 9180));
 
-        consumer.subscribe(serviceMeta, new NotifyListener() {
-            @Override
-            public void notify(RegisterMeta registerMeta, NotifyEvent event) {
-                switch (event) {
-                    case ADD: {
-                        if (!consumer.client().hasAvailableChannelGroup(registerMeta.getAddress())) {
-                            for (int i = 0; i < registerMeta.getConnCount(); i++) {
-                                consumer.connect(registerMeta.getAddress());
-                                consumer.client().addChannelGroup(serviceMeta, registerMeta.getAddress());
-                            }
-                            consumer.offlineListening(registerMeta.getAddress(), new OfflineListener() {
-                                @Override
-                                public void offline() {
-                                    consumer.client().removeChannelGroup(serviceMeta, registerMeta.getAddress());
+        if (consumer.registerService() != null) {
+            consumer.subscribe(serviceMeta, new NotifyListener() {
+                @Override
+                public void notify(RegisterMeta registerMeta, NotifyEvent event) {
+                    switch (event) {
+                        case ADD: {
+                            if (!consumer.client().hasAvailableChannelGroup(registerMeta.getAddress())) {
+                                for (int i = 0; i < registerMeta.getConnCount(); i++) {
+                                    consumer.connect(registerMeta.getAddress());
+                                    consumer.client().addChannelGroup(serviceMeta, registerMeta.getAddress());
                                 }
-                            });
+                                consumer.offlineListening(registerMeta.getAddress(), new OfflineListener() {
+                                    @Override
+                                    public void offline() {
+                                        consumer.client().removeChannelGroup(serviceMeta, registerMeta.getAddress());
+                                    }
+                                });
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case REMOVE: {
-                        consumer.client().removeChannelGroup(serviceMeta, registerMeta.getAddress());
-                        break;
+                        case REMOVE: {
+                            consumer.client().removeChannelGroup(serviceMeta, registerMeta.getAddress());
+                            break;
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
 
         return (T) Proxies.getDefault().newProxy(interfaces, new SyncInvoker(dispatcher, serviceMeta));
     }

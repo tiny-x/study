@@ -12,7 +12,7 @@ public class ConsumerExample {
     public static void main(String[] args) {
         NettyClientConfig config = new NettyClientConfig();
         Consumer consumer = new DefaultConsumer("consumer", config);
-        UnresolvedAddress address = new UnresolvedAddress("127.0.0.1", 9018);
+        UnresolvedAddress address = new UnresolvedAddress("127.0.0.1", 9180);
         consumer.connect(address);
 
         ServiceMeta serviceMeta = new ServiceMeta("test", "org.rpc.example.demo.HelloService", "1.0.0");

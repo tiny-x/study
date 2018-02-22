@@ -22,17 +22,12 @@ public class DefaultRegisterService extends AbstractRegisterService implements R
 
     @Override
     public void doUnRegister(RegisterMeta registerMeta) {
-
+        registerClient.unRegister(registerMeta);
     }
 
     @Override
     public void doSubscribe(ServiceMeta serviceMeta) {
         registerClient.subscribe(serviceMeta);
-    }
-
-    @Override
-    public void doUnSubscribe(ServiceMeta serviceMeta) {
-
     }
 
     @Override

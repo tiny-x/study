@@ -8,13 +8,14 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.rpc.exception.RemotingException;
 import org.rpc.remoting.api.ChannelEventListener;
 import org.rpc.remoting.api.InvokeCallback;
 import org.rpc.remoting.api.RequestProcessor;
 import org.rpc.remoting.api.RpcServer;
-import org.rpc.remoting.api.future.ResponseFuture;
 import org.rpc.remoting.api.payload.ByteHolder;
 import org.rpc.remoting.api.payload.RequestBytes;
+import org.rpc.remoting.api.payload.ResponseBytes;
 import org.rpc.remoting.netty.event.ChannelEvent;
 import org.rpc.remoting.netty.event.ChannelEventType;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class NettyServer extends NettyServiceAbstract implements RpcServer {
 
@@ -51,13 +53,13 @@ public class NettyServer extends NettyServiceAbstract implements RpcServer {
     }
 
     @Override
-    public void invokeSync(Channel channel, RequestBytes request, long timeout) {
-
+    public void invokeSync(Channel channel, RequestBytes request, long timeoutMillis) throws RemotingException, InterruptedException {
+        invokeSync0(channel, request, timeoutMillis, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public void invokeAsync(Channel channel, RequestBytes request, long timeout, InvokeCallback<ResponseFuture> invokeCallback) throws Exception {
-
+    public void invokeAsync(Channel channel, RequestBytes request, long timeoutMillis, InvokeCallback<ResponseBytes> invokeCallback) throws RemotingException, InterruptedException {
+        invokeAsync0(channel, request, timeoutMillis, TimeUnit.MILLISECONDS, invokeCallback);
     }
 
     @Override

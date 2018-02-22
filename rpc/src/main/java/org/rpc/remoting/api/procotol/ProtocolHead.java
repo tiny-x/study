@@ -15,17 +15,17 @@ package org.rpc.remoting.api.procotol;
 public class ProtocolHead {
 
     // ====== messageCode 奇数 request 偶数 response
-    public static final byte REQUEST = 0x01;     // Request
-    public static final byte RESPONSE = 0x02;     // Response
+    public static final byte REQUEST = 0x01;     // rpc request
+    public static final byte RESPONSE = 0x02;     // rpc response
 
     public static final byte REGISTER_SERVICE = 0x03;     // 注册服务
-    public static final byte REGISTER_RECEIVE = 0x04;
+    public static final byte ACK = 0x04;
 
     public static final byte SUBSCRIBE_SERVICE = 0x05;    // 监听服务
-    public static final byte SUBSCRIBE_RECEIVE = 0x06;
 
-    public static final byte OFFLINE_SERVICE = 0x07;  // 下线服务
-    public static final byte OFFLINE_RECEIVE = 0x08;
+    public static final byte OFFLINE_SERVICE = 0x07;  // 服务端下线
+
+    public static final byte CANCEL_REGISTER_SERVICE = 0x09;  // 取消注册服务
 
     // ====== serializerCode
     public static final byte PROTO_STUFF = 0x01;

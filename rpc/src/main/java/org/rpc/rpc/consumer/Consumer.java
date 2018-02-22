@@ -3,6 +3,7 @@ package org.rpc.rpc.consumer;
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.register.NotifyListener;
 import org.rpc.register.OfflineListener;
+import org.rpc.register.RegisterService;
 import org.rpc.register.model.RegisterMeta;
 import org.rpc.remoting.api.Directory;
 import org.rpc.remoting.api.RpcClient;
@@ -14,6 +15,12 @@ public interface Consumer {
     RpcClient client() ;
 
     String application();
+
+    /**
+     * 注册中心
+     * @return
+     */
+    RegisterService registerService();
 
     /**
      * 直连调用

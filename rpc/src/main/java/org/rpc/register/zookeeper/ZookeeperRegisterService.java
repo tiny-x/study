@@ -72,17 +72,6 @@ public class ZookeeperRegisterService extends AbstractRegisterService {
     }
 
     @Override
-    public void doUnSubscribe(ServiceMeta serviceMeta) {
-        try {
-            pathChildrenCaches.get(serviceMeta).clearAndRefresh();
-            pathChildrenCaches.remove(serviceMeta);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    @Override
     public List<RegisterMeta> lookup(RegisterMeta RegisterMeta) {
         return null;
     }

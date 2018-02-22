@@ -77,12 +77,22 @@ public class DefaultRegisterClient {
         } catch (Exception e) {
             logger.error("register service fail", e);
         }
-
     }
 
     public void unRegister(RegisterMeta registerMeta) {
-
+        Serializer serializer = SerializerFactory.serializer(SerializerType.PROTO_STUFF);
+        RequestBytes requestBytes = new RequestBytes(ProtocolHead.CANCEL_REGISTER_SERVICE,
+                SerializerType.PROTO_STUFF.value(),
+                serializer.serialize(registerMeta));
+        try {
+            if (attachCancelRegisterEvent(registerMeta, channel)) {
+                rpcClient.invokeSync(channel, requestBytes, config.getInvokeTimeoutMillis());
+            }
+        } catch (Exception e) {
+            logger.error("unRegister service fail", e);
+        }
     }
+
 
     public void subscribe(ServiceMeta serviceMeta) {
         Serializer serializer = SerializerFactory.serializer(SerializerType.PROTO_STUFF);
@@ -102,10 +112,6 @@ public class DefaultRegisterClient {
         } catch (Exception e) {
             logger.error("subscribe service fail", e);
         }
-    }
-
-    public void unSubscribe(RegisterMeta RegisterMeta) {
-
     }
 
     public List<RegisterMeta> lookup(RegisterMeta registerMeta) {
@@ -163,6 +169,7 @@ public class DefaultRegisterClient {
         }
     }
 
+    // channel 附着注册的服务，忽略重复注册
     private boolean attachRegisterEvent(RegisterMeta registerMeta, Channel channel) {
         ConcurrentSet<RegisterMeta> registerMetas = channel.attr(REGISTER_KEY).get();
         if (registerMetas == null) {
@@ -175,6 +182,15 @@ public class DefaultRegisterClient {
         return registerMetas.add(registerMeta);
     }
 
+    private boolean attachCancelRegisterEvent(RegisterMeta registerMeta, Channel channel) {
+        ConcurrentSet<RegisterMeta> registerMetas = channel.attr(REGISTER_KEY).get();
+        if (registerMetas == null) {
+            return false;
+        }
+        return registerMetas.remove(registerMeta);
+    }
+
+    // channel 附着订阅的服务，忽略重复订阅
     private boolean attachSubscribeEvent(ServiceMeta serviceMeta, Channel channel) {
         ConcurrentSet<ServiceMeta> serviceMetas = channel.attr(SUBSCRIBE_KEY).get();
         if (serviceMetas == null) {

@@ -15,8 +15,6 @@ public interface RegisterService {
 
     void subscribe(ServiceMeta serviceMeta, NotifyListener notifyListener);
 
-    void unSubscribe(ServiceMeta serviceMeta);
-
     List<RegisterMeta> lookup(RegisterMeta RegisterMeta);
 
     void offlineListening(UnresolvedAddress address, OfflineListener listener);
