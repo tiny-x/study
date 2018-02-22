@@ -8,13 +8,13 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.rpc.remoting.api.ChannelEventListener;
 import org.rpc.remoting.api.InvokeCallback;
+import org.rpc.remoting.api.RequestProcessor;
+import org.rpc.remoting.api.RpcServer;
 import org.rpc.remoting.api.future.ResponseFuture;
 import org.rpc.remoting.api.payload.ByteHolder;
 import org.rpc.remoting.api.payload.RequestBytes;
-import org.rpc.remoting.api.ChannelEventListener;
-import org.rpc.remoting.api.RequestProcessor;
-import org.rpc.remoting.api.RpcServer;
 import org.rpc.remoting.netty.event.ChannelEvent;
 import org.rpc.remoting.netty.event.ChannelEventType;
 import org.slf4j.Logger;
@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class NettyServer extends NettyServiceAbstract implements RpcServer {
 
@@ -43,7 +42,7 @@ public class NettyServer extends NettyServiceAbstract implements RpcServer {
     }
 
     public NettyServer(NettyServerConfig config, ChannelEventListener listener) {
-        super(256, 256);
+        super(config.getServerAsyncSemaphoreValue(), config.getServerOnewaySemaphoreValue());
         this.config = config;
         this.channelEventListener = listener;
         this.serverBootstrap = new ServerBootstrap();
@@ -52,12 +51,12 @@ public class NettyServer extends NettyServiceAbstract implements RpcServer {
     }
 
     @Override
-    public void invokeSync(Channel channel, RequestBytes request, long timeout, TimeUnit timeUnit) {
+    public void invokeSync(Channel channel, RequestBytes request, long timeout) {
 
     }
 
     @Override
-    public void invokeAsync(Channel channel, RequestBytes request, long timeout, TimeUnit timeUnit, InvokeCallback<ResponseFuture> invokeCallback) throws Exception {
+    public void invokeAsync(Channel channel, RequestBytes request, long timeout, InvokeCallback<ResponseFuture> invokeCallback) throws Exception {
 
     }
 
@@ -73,20 +72,27 @@ public class NettyServer extends NettyServiceAbstract implements RpcServer {
         serverBootstrap.group(nioEventLoopGroupMain, nioEventLoopGroupWorker)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 32768)
+                .childOption(ChannelOption.SO_SNDBUF, config.getServerSocketSndBufSize())
+                .childOption(ChannelOption.SO_RCVBUF, config.getServerSocketRcvBufSize())
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline().addLast("NettyEncoder", new NettyEncoder());
                         socketChannel.pipeline().addLast("NettyDecoder", new NettyDecoder());
                         socketChannel.pipeline().addLast("NettyServerHandler", new NettyServerHandler());
-                        socketChannel.pipeline().addLast("IdleStateHandler", new IdleStateHandler(0, 0, 60));
+                        socketChannel.pipeline().addLast("IdleStateHandler", new IdleStateHandler(0, 0, config.getIdleAllSeconds()));
                         socketChannel.pipeline().addLast("NettyConnectManageHandler", new NettyConnectManageHandler());
                     }
                 });
         try {
-            serverBootstrap.bind(config.getPort()).sync();
+            serverBootstrap.bind(config.getPort()).sync().addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    logger.info("NettyServer start complete, listen port: {}", config.getPort());
+                }
+            });
         } catch (InterruptedException e) {
-            logger.error("serverBootstrap start error ", e);
+            logger.error("NettyServer start error ", e);
         }
     }
 
@@ -121,7 +127,7 @@ public class NettyServer extends NettyServiceAbstract implements RpcServer {
             super.channelActive(ctx);
 
             if (NettyServer.this.channelEventListener != null) {
-                NettyServer.this.putChannelEvent(new ChannelEvent(ChannelEventType.CONNECT, remoteAddress, ctx.channel()));
+                NettyServer.this.putChannelEvent(new ChannelEvent(ChannelEventType.ACTIVE, remoteAddress, ctx.channel()));
             }
         }
 
@@ -132,7 +138,7 @@ public class NettyServer extends NettyServiceAbstract implements RpcServer {
             super.channelInactive(ctx);
 
             if (NettyServer.this.channelEventListener != null) {
-                NettyServer.this.putChannelEvent(new ChannelEvent(ChannelEventType.CLOSE, remoteAddress, ctx.channel()));
+                NettyServer.this.putChannelEvent(new ChannelEvent(ChannelEventType.INACTIVE, remoteAddress, ctx.channel()));
             }
         }
 

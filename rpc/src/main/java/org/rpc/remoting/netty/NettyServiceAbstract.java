@@ -69,7 +69,7 @@ public abstract class NettyServiceAbstract {
                 future.executeInvokeCallback();
             }
         } else {
-            logger.warn("processResponseCommand invokeId: {}, ResponseFuture is null!", invokeId);
+            logger.warn("processResponseCommand invokeId: {}, responseFuture is null!", invokeId);
         }
     }
 
@@ -83,7 +83,7 @@ public abstract class NettyServiceAbstract {
                 }
             });
         } else {
-            logger.warn("RequestProcessor is null!");
+            logger.warn("requestProcessor is null!");
         }
     }
 
@@ -193,11 +193,10 @@ public abstract class NettyServiceAbstract {
                                 break;
                         }
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    // ignore
                 }
             }
-
         }
 
     }

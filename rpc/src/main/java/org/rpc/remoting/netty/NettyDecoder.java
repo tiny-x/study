@@ -25,7 +25,7 @@ public class NettyDecoder extends ReplayingDecoder<NettyDecoder.State> {
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         switch (state()) {
             case HEADER_MAGIC:
-                in.readShort();
+                checkMagic(in.readShort());
                 checkpoint(State.HEADER_SIGN);
             case HEADER_SIGN:
                 head.setSign(in.readByte());
@@ -65,6 +65,11 @@ public class NettyDecoder extends ReplayingDecoder<NettyDecoder.State> {
         }
     }
 
+    private void checkMagic(Short magic) {
+        if (magic != ProtocolHead.MAGIC) {
+            throw new UnsupportedOperationException("unsupported" + Integer.toHexString(magic));
+        }
+    }
 
     enum State {
         HEADER_MAGIC,

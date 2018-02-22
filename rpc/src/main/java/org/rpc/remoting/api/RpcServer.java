@@ -9,11 +9,10 @@ import java.util.concurrent.TimeUnit;
 
 public interface RpcServer extends RpcService {
 
-    void invokeSync(final Channel channel, final RequestBytes request
-                    , long timeout, TimeUnit timeUnit);
+    void invokeSync(final Channel channel, final RequestBytes request, long timeoutMillis);
 
     void invokeAsync(final Channel channel, final RequestBytes request
-            , long timeout, TimeUnit timeUnit, InvokeCallback<ResponseFuture> invokeCallback) throws Exception;
+            , long timeoutMillis, InvokeCallback<ResponseFuture> invokeCallback) throws Exception;
 
     void registerRequestProcess(RequestProcessor requestProcessor, ExecutorService executor);
 

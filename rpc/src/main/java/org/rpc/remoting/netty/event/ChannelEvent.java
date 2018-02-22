@@ -28,6 +28,6 @@ public class ChannelEvent {
 
     @Override
     public String toString() {
-        return "NettyEvent [type=" + type + ", remoteAddr=" + remoteAddr + ", channel=" + channel + "]";
+        return "ChannelEvent [type=" + type + ", remoteAddr=" + remoteAddr + ", channel=" + channel + "]";
     }
 }

@@ -17,7 +17,7 @@ public class InetUtils {
         return hostAddress;
     }
 
-    public static UnresolvedAddress[] spiltAddrss(String address) {
+    public static UnresolvedAddress[] spiltAddress(String address) {
         String[] add = address.split(",");
         UnresolvedAddress[] unresolvedAddresses = new UnresolvedAddress[add.length];
 

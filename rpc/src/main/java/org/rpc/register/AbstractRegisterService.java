@@ -23,7 +23,7 @@ public abstract class AbstractRegisterService implements RegisterService {
             new ConcurrentHashMap<>();
 
     /**
-     * 服务提供者
+     * 服务提供者(断线重连是重现注册服务)
      */
     protected final ConcurrentSet<RegisterMeta> providers = new ConcurrentSet<>();
 
@@ -86,6 +86,14 @@ public abstract class AbstractRegisterService implements RegisterService {
                 notifyListener.notify(registerMeta, event);
             }
         }
+    }
+
+    public ConcurrentSet<RegisterMeta> getProviders() {
+        return providers;
+    }
+
+    public ConcurrentSet<ServiceMeta> getConsumers() {
+        return consumers;
     }
 
     protected abstract void doRegister(RegisterMeta registerMeta);

@@ -29,6 +29,16 @@ public class Server {
             public void onChannelIdle(String remoteAddr, Channel channel) {
 
             }
+
+            @Override
+            public void onChannelActive(String remoteAddr, Channel channel) {
+
+            }
+
+            @Override
+            public void onChannelInActive(String remoteAddr, Channel channel) {
+
+            }
         });
 
         server.start();

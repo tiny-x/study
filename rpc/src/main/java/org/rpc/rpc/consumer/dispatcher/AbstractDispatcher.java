@@ -84,15 +84,14 @@ public abstract class AbstractDispatcher implements Dispatcher {
         try {
             if (sync) {
                 responseBytes = consumer.client()
-                        .invokeSync(channelGroup.remoteAddress(), request.getRequestBytes(), timeoutMillis, TimeUnit.MILLISECONDS);
+                        .invokeSync(channelGroup.remoteAddress(), request.getRequestBytes(), timeoutMillis);
 
             } else {
 
                consumer.client()
                         .invokeAsync(channelGroup.remoteAddress(),
                                 request.getRequestBytes(),
-                                timeoutMillis,
-                                TimeUnit.MILLISECONDS
+                                timeoutMillis
                                 , new InvokeCallback<ResponseBytes>() {
                                     @Override
                                     public void operationComplete(ResponseFuture<ResponseBytes> responseFuture) throws ExecutionException, InterruptedException {

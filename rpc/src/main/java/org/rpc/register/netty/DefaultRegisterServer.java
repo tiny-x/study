@@ -66,21 +66,20 @@ public class DefaultRegisterServer implements RegisterServer {
         this.rpcServer.registerRequestProcess(new RegisterProcess(), Executors.newCachedThreadPool());
     }
 
+    public DefaultRegisterServer(NettyServerConfig config) {
+        this.rpcServer = new NettyServer(config, new RegisterChannelEventProcess());
+        this.rpcServer.registerRequestProcess(new RegisterProcess(), Executors.newCachedThreadPool());
+    }
+
     @Override
     public void start() {
         rpcServer.start();
     }
 
-    @Override
-    public RpcServer server() {
-        return rpcServer;
-    }
-
-
     static class RegisterChannelEventProcess extends ChannelEventAdapter {
 
         @Override
-        public void onChannelClose(String remoteAddr, Channel channel) {
+        public void onChannelInActive(String remoteAddr, Channel channel) {
             ConcurrentSet<RegisterMeta> registerMetas = channel.attr(PUBLISH_KEY).get();
             if (registerMetas != null && registerMetas.size() > 0) {
                 UnresolvedAddress address = null;

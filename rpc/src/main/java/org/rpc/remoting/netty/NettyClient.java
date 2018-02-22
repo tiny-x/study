@@ -36,7 +36,7 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
 
     private final NioEventLoopGroup nioEventLoopGroupWorker = new NioEventLoopGroup();
 
-    private final NettyClientConfig nettyClientConfig;
+    private final NettyClientConfig config;
 
     private final ConcurrentMap<String, ChannelGroup> addressGroups = new ConcurrentHashMap<>();
 
@@ -44,13 +44,13 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
 
     private final ChannelEventListener channelEventListener;
 
-    public NettyClient(NettyClientConfig nettyClientConfig) {
-        this(nettyClientConfig, null);
+    public NettyClient(NettyClientConfig config) {
+        this(config, null);
     }
 
-    public NettyClient(NettyClientConfig nettyClientConfig, ChannelEventListener listener) {
-        super(256, 256);
-        this.nettyClientConfig = nettyClientConfig;
+    public NettyClient(NettyClientConfig config, ChannelEventListener listener) {
+        super(config.getClientAsyncSemaphoreValue(), config.getClientOnewaySemaphoreValue());
+        this.config = config;
         this.channelEventListener = listener;
     }
 
@@ -60,7 +60,7 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
         ChannelGroup group = group(address);
         ChannelFuture future = bootstrap.connect(address.getHost(), address.getPort());
 
-        long connectTimeoutMillis = this.nettyClientConfig.getConnectTimeoutMillis();
+        long connectTimeoutMillis = this.config.getConnectTimeoutMillis();
         if (future.awaitUninterruptibly(connectTimeoutMillis, TimeUnit.MILLISECONDS)) {
             if (future.channel() != null && future.channel().isActive()) {
                 group.addChannel(future.channel());
@@ -73,7 +73,8 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
         }
     }
 
-    private ChannelGroup group(UnresolvedAddress address) {
+    @Override
+    public ChannelGroup group(UnresolvedAddress address) {
 
         ChannelGroup group = addressGroups.get(address);
         if (group == null) {
@@ -134,14 +135,24 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
     }
 
     @Override
-    public ResponseBytes invokeSync(final UnresolvedAddress address, RequestBytes request, long timeout, TimeUnit timeUnit) throws RemotingException, InterruptedException {
-        return invokeSync0(group(address).next(), request, timeout, timeUnit);
+    public ResponseBytes invokeSync(Channel channel, RequestBytes request, long timeoutMillis) throws RemotingException, InterruptedException {
+        return invokeSync0(channel, request, timeoutMillis, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void invokeAsync(Channel channel, RequestBytes request, long timeoutMillis, InvokeCallback<ResponseBytes> invokeCallback) throws RemotingException, InterruptedException {
+        invokeAsync0(channel, request, timeoutMillis, TimeUnit.MILLISECONDS, invokeCallback);
+    }
+
+    @Override
+    public ResponseBytes invokeSync(final UnresolvedAddress address, RequestBytes request, long timeoutMillis) throws RemotingException, InterruptedException {
+        return invokeSync0(group(address).next(), request, timeoutMillis, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void invokeAsync(final UnresolvedAddress address, RequestBytes request,
-                            long timeout, TimeUnit timeUnit, InvokeCallback<ResponseBytes> invokeCallback) throws RemotingException, InterruptedException {
-        invokeAsync0(group(address).next(), request, timeout, timeUnit, invokeCallback);
+                            long timeoutMillis, InvokeCallback<ResponseBytes> invokeCallback) throws RemotingException, InterruptedException {
+        invokeAsync0(group(address).next(), request, timeoutMillis, TimeUnit.MILLISECONDS, invokeCallback);
     }
 
     @Override
@@ -155,13 +166,15 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
         bootstrap.group(nioEventLoopGroupWorker)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.SO_KEEPALIVE, false)
+                .option(ChannelOption.SO_SNDBUF, config.getClientSocketSndBufSize())
+                .option(ChannelOption.SO_RCVBUF, config.getClientSocketRcvBufSize())
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline().addLast("NettyEncoder", new NettyEncoder());
                         socketChannel.pipeline().addLast("NettyDecoder", new NettyDecoder());
                         socketChannel.pipeline().addLast("NettyClientHandler", new NettyClientHandler());
-                        socketChannel.pipeline().addLast("IdleStateHandler", new IdleStateHandler(0, 0, 60));
+                        socketChannel.pipeline().addLast("IdleStateHandler", new IdleStateHandler(0, 0, config.getIdleAllSeconds()));
                         socketChannel.pipeline().addLast("NettyConnectManageHandler", new NettyConnectManageHandler());
                     }
                 });
@@ -187,6 +200,17 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
 
             if (NettyClient.this.channelEventListener != null) {
                 NettyClient.this.putChannelEvent(new ChannelEvent(ChannelEventType.CONNECT, remote, ctx.channel()));
+            }
+        }
+
+        @Override
+        public void channelActive(ChannelHandlerContext ctx) throws Exception {
+            final String remoteAddress = ctx.channel().remoteAddress().toString();
+            logger.info("NETTY SERVER PIPELINE: channelActive, the channel[{}]", remoteAddress);
+            super.channelActive(ctx);
+
+            if (NettyClient.this.channelEventListener != null) {
+                NettyClient.this.putChannelEvent(new ChannelEvent(ChannelEventType.ACTIVE, remoteAddress, ctx.channel()));
             }
         }
 

@@ -61,8 +61,7 @@ public class RemotingServerTest {
 
         ResponseBytes response = rpcClient.invokeSync(address,
                 request,
-                3000L,
-                TimeUnit.SECONDS
+                3000L
         );
         System.out.printf("------- > receive register message: %s\n", new String(response.getBody()));
     }
@@ -98,7 +97,6 @@ public class RemotingServerTest {
         rpcClient.invokeAsync(address,
                 request,
                 3000L,
-                TimeUnit.SECONDS,
                 (future) -> {
                     ResponseBytes response = future.get();
                     System.out.printf("------- > receive register message: %s\n", new String(response.getBody()));

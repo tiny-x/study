@@ -10,6 +10,16 @@ public abstract class ChannelEventAdapter implements ChannelEventListener {
     }
 
     @Override
+    public void onChannelActive(String remoteAddr, Channel channel) {
+
+    }
+
+    @Override
+    public void onChannelInActive(String remoteAddr, Channel channel) {
+
+    }
+
+    @Override
     public void onChannelClose(String remoteAddr, Channel channel) {
 
     }
