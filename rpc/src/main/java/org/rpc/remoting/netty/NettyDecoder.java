@@ -1,6 +1,7 @@
 package org.rpc.remoting.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 import org.rpc.remoting.api.payload.RequestBytes;

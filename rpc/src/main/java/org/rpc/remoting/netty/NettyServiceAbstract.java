@@ -44,8 +44,6 @@ public abstract class NettyServiceAbstract {
     public NettyServiceAbstract(final int permitsAsync, final int permitsOneWay) {
         this.semaphoreAsync = new Semaphore(permitsAsync, true);
         this.semaphoreOneWay = new Semaphore(permitsOneWay, true);
-
-        new Thread(channelEventExecutor).start();
     }
 
     public void processMessageReceived(ChannelHandlerContext ctx, ByteHolder msg) throws Exception {
@@ -186,6 +184,12 @@ public abstract class NettyServiceAbstract {
                             case CONNECT:
                                 listener.onChannelConnect(event.getRemoteAddr(), event.getChannel());
                                 break;
+                            case ACTIVE:
+                                listener.onChannelActive(event.getRemoteAddr(), event.getChannel());
+                                break;
+                            case INACTIVE:
+                                listener.onChannelInActive(event.getRemoteAddr(), event.getChannel());
+                                break;
                             case EXCEPTION:
                                 listener.onChannelException(event.getRemoteAddr(), event.getChannel());
                                 break;
@@ -193,7 +197,7 @@ public abstract class NettyServiceAbstract {
                                 break;
                         }
                     }
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     // ignore
                 }
             }

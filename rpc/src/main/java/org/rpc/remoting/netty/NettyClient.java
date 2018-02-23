@@ -8,6 +8,10 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.Timer;
+import io.netty.util.TimerTask;
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.exception.RemotingConnectException;
 import org.rpc.exception.RemotingException;
@@ -34,6 +38,10 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
 
     private final Bootstrap bootstrap = new Bootstrap();
 
+    private final NettyEncoder encoder = new NettyEncoder();
+
+    private final NettyConnectManageHandler nettyConnectManageHandler = new NettyConnectManageHandler();
+
     private final NioEventLoopGroup nioEventLoopGroupWorker = new NioEventLoopGroup();
 
     private final NettyClientConfig config;
@@ -57,14 +65,15 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
     @Override
     public void connect(UnresolvedAddress address) throws InterruptedException, RemotingConnectException {
         checkNotNull(address);
-        ChannelGroup group = group(address);
+
         ChannelFuture future = bootstrap.connect(address.getHost(), address.getPort());
 
-        long connectTimeoutMillis = this.config.getConnectTimeoutMillis();
-        if (future.awaitUninterruptibly(connectTimeoutMillis, TimeUnit.MILLISECONDS)) {
+        if (future.awaitUninterruptibly(config.getConnectTimeoutMillis(), TimeUnit.MILLISECONDS)) {
             if (future.channel() != null && future.channel().isActive()) {
-                group.addChannel(future.channel());
+                future.channel().pipeline().addLast(new NettyClientHandler(address));
+                group(address).addChannel(future.channel());
                 logger.info("connect with: {}", future.channel());
+
             } else {
                 throw new RemotingConnectException(address.toString());
             }
@@ -171,23 +180,59 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        socketChannel.pipeline().addLast("NettyEncoder", new NettyEncoder());
-                        socketChannel.pipeline().addLast("NettyDecoder", new NettyDecoder());
-                        socketChannel.pipeline().addLast("NettyClientHandler", new NettyClientHandler());
-                        socketChannel.pipeline().addLast("IdleStateHandler", new IdleStateHandler(0, 0, config.getIdleAllSeconds()));
-                        socketChannel.pipeline().addLast("NettyConnectManageHandler", new NettyConnectManageHandler());
+                        socketChannel.pipeline().addLast(encoder);
+                        socketChannel.pipeline().addLast(new NettyDecoder());
+                        socketChannel.pipeline().addLast(new IdleStateHandler(0, 0, config.getIdleAllSeconds()));
+                        socketChannel.pipeline().addLast(nettyConnectManageHandler);
                     }
                 });
 
+        if (channelEventListener != null) {
+            new Thread(channelEventExecutor).start();
+        }
     }
 
-    class NettyClientHandler extends SimpleChannelInboundHandler<ByteHolder> {
+    @ChannelHandler.Sharable
+    class NettyClientHandler extends SimpleChannelInboundHandler<ByteHolder> implements TimerTask {
+
+        private Timer timer = new HashedWheelTimer();
+
+        private UnresolvedAddress address;
+
+        public NettyClientHandler(UnresolvedAddress address) {
+            this.address = address;
+        }
+
         @Override
         protected void channelRead0(ChannelHandlerContext ctx, ByteHolder msg) throws Exception {
             processMessageReceived(ctx, msg);
         }
+
+        @Override
+        public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+            timer.newTimeout(this, 2000, TimeUnit.MILLISECONDS);
+        }
+
+        @Override
+        public void run(Timeout timeout) throws Exception {
+            bootstrap.connect(address.getHost(), address.getPort())
+                    .addListener(new ChannelFutureListener() {
+                        @Override
+                        public void operationComplete(ChannelFuture future) throws Exception {
+                            future.channel().pipeline().addLast(NettyClientHandler.this);
+                            boolean isSuccess = future.isSuccess();
+                            logger.warn("Reconnects with {}, {}.", address, isSuccess ? "succeed" : "failed");
+                            if (!isSuccess) {
+                                future.channel().pipeline().fireChannelInactive();
+                            } else {
+                                group(address).addChannel(future.channel());
+                            }
+                        }
+                    });
+        }
     }
 
+    @ChannelHandler.Sharable
     class NettyConnectManageHandler extends ChannelDuplexHandler {
         @Override
         public void connect(ChannelHandlerContext ctx, SocketAddress remoteAddress, SocketAddress localAddress,
@@ -206,7 +251,7 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
             final String remoteAddress = ctx.channel().remoteAddress().toString();
-            logger.info("NETTY SERVER PIPELINE: channelActive, the channel[{}]", remoteAddress);
+            logger.debug("NETTY SERVER PIPELINE: channelActive, the channel[{}]", remoteAddress);
             super.channelActive(ctx);
 
             if (NettyClient.this.channelEventListener != null) {
@@ -217,7 +262,7 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
         @Override
         public void disconnect(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
             final String remoteAddress = ctx.channel().remoteAddress().toString();
-            logger.info("NETTY CLIENT PIPELINE: DISCONNECT {}", remoteAddress);
+            logger.debug("NETTY CLIENT PIPELINE: DISCONNECT {}", remoteAddress);
             ctx.channel().close();
             super.disconnect(ctx, promise);
 
@@ -229,7 +274,7 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
         @Override
         public void close(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
             final String remoteAddress = ctx.channel().remoteAddress().toString();
-            logger.info("NETTY CLIENT PIPELINE: CLOSE {}", remoteAddress);
+            logger.debug("NETTY CLIENT PIPELINE: CLOSE {}", remoteAddress);
             ctx.channel().close();
             super.close(ctx, promise);
 

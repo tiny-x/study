@@ -23,6 +23,5 @@ public class ProviderExample {
                 .version("1.0.0")
                 .register();
 
-
     }
 }

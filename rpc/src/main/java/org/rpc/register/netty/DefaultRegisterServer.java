@@ -78,6 +78,7 @@ public class DefaultRegisterServer implements RegisterServer {
 
         @Override
         public void onChannelInActive(String remoteAddr, Channel channel) {
+            logger.info("[OFFLINE_SERVICE] server: {} offline", remoteAddr);
             ConcurrentSet<RegisterMeta> registerMetas = channel.attr(PUBLISH_KEY).get();
             if (registerMetas != null && registerMetas.size() > 0) {
                 UnresolvedAddress address = null;
@@ -125,7 +126,7 @@ public class DefaultRegisterServer implements RegisterServer {
         private ResponseBytes handleSubscribeService(ChannelHandlerContext context, RequestBytes request, Serializer serializer) {
             ServiceMeta serviceMeta = serializer.deserialize(request.getBody(), ServiceMeta.class);
 
-            logger.debug("[SUBSCRIBE] consumer: subscribe service: {}", serviceMeta);
+            logger.info("[SUBSCRIBE] consumer: subscribe service: {}", serviceMeta);
 
             // channel 附上 订阅的服务（三元素）
             Channel channel = context.channel();
@@ -162,7 +163,7 @@ public class DefaultRegisterServer implements RegisterServer {
         private ResponseBytes handleRegisterService(ChannelHandlerContext context, RequestBytes request, Serializer serializer) {
             RegisterMeta registerMeta = serializer.deserialize(request.getBody(), RegisterMeta.class);
 
-            logger.debug("[REGISTER] provider: {} register service: {}", registerMeta.getAddress().getHost(), registerMeta);
+            logger.info("[REGISTER] provider: {} register service: {}", registerMeta.getAddress().getHost(), registerMeta);
             String serviceProviderName = registerMeta.getServiceMeta().getServiceProviderName();
             ConcurrentSet<RegisterMeta> providers = PROVIDER_MAP.get(serviceProviderName);
             if (providers == null) {
@@ -216,7 +217,7 @@ public class DefaultRegisterServer implements RegisterServer {
 
     private static ResponseBytes handleUnRegisterService(RequestBytes request, Serializer serializer) {
         RegisterMeta registerMeta = serializer.deserialize(request.getBody(), RegisterMeta.class);
-        logger.debug("[UN_REGISTER] provider: {} cancel register service: {}", registerMeta.getAddress().getHost(), registerMeta);
+        logger.info("[UN_REGISTER] provider: {} cancel register service: {}", registerMeta.getAddress().getHost(), registerMeta);
         String serviceProviderName = registerMeta.getServiceMeta().getServiceProviderName();
         ConcurrentSet<RegisterMeta> registerMetaList = PROVIDER_MAP.get(serviceProviderName);
         if (registerMetaList != null && registerMetaList.size() > 0) {

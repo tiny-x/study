@@ -1,6 +1,7 @@
 package org.rpc.remoting.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import org.rpc.remoting.api.payload.ByteHolder;
@@ -11,6 +12,7 @@ import org.rpc.remoting.api.procotol.ProtocolHead;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@ChannelHandler.Sharable
 public class NettyEncoder extends MessageToByteEncoder<ByteHolder> {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyEncoder.class);

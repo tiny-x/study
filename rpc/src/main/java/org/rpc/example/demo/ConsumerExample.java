@@ -25,7 +25,7 @@ public class ConsumerExample {
                 .newProxy();
 
         long l = System.currentTimeMillis();
-        for (int i = 0; i < 20000; i++) {
+        for (int i = 0; i < 100; i++) {
             String s = helloService.sayHello(" biu biu biu!!!");
             //System.out.printf("---------->: receive provider message %s \n", s);
         }
