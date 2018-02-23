@@ -1,7 +1,6 @@
 package org.rpc.rpc;
 
 import io.netty.util.internal.SystemPropertyUtil;
-import org.rpc.comm.UnresolvedAddress;
 import org.rpc.comm.utils.Proxies;
 import org.rpc.register.NotifyEvent;
 import org.rpc.register.NotifyListener;
@@ -14,11 +13,10 @@ import org.rpc.rpc.consumer.StrategyConfig;
 import org.rpc.rpc.consumer.cluster.ClusterInvoker;
 import org.rpc.rpc.consumer.dispatcher.DefaultRoundDispatcher;
 import org.rpc.rpc.consumer.dispatcher.Dispatcher;
-import org.rpc.rpc.consumer.invoke.SyncInvoker;
+import org.rpc.rpc.consumer.invoke.DefaultInvoker;
 import org.rpc.rpc.load.balancer.LoadBalancer;
 import org.rpc.rpc.model.ServiceMeta;
 import org.rpc.serializer.SerializerType;
-import org.rpc.utils.InetUtils;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -116,7 +114,7 @@ public class ProxyFactory {
 
         return (T) Proxies.getDefault().newProxy(
                 interfaces,
-                new SyncInvoker(dispatcher,
+                new DefaultInvoker(dispatcher,
                         serviceMeta,
                         new StrategyConfig(ClusterInvoker.Strategy.FAIL_FAST),
                         sync

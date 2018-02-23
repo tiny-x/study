@@ -14,7 +14,7 @@ import org.rpc.rpc.model.ServiceMeta;
 
 import java.lang.reflect.Method;
 
-public class SyncInvoker {
+public class DefaultInvoker {
 
     private Dispatcher dispatcher;
 
@@ -24,10 +24,10 @@ public class SyncInvoker {
 
     private boolean sync;
 
-    public SyncInvoker(Dispatcher dispatcher,
-                       ServiceMeta serviceMeta,
-                       StrategyConfig strategyConfig,
-                       boolean sync) {
+    public DefaultInvoker(Dispatcher dispatcher,
+                          ServiceMeta serviceMeta,
+                          StrategyConfig strategyConfig,
+                          boolean sync) {
         this.dispatcher = dispatcher;
         this.serviceMeta = serviceMeta;
         this.strategyConfig = strategyConfig;
