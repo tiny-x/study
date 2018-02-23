@@ -4,10 +4,13 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import org.rpc.comm.UnresolvedAddress;
+import org.rpc.remoting.api.Directory;
 import org.rpc.remoting.api.channel.ChannelGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,7 +24,9 @@ public class NettyChannelGroup implements ChannelGroup {
 
     private final UnresolvedAddress address;
 
-    private volatile int weight = 50;
+    private static final int DEFAULT_WEIGHT = 50;
+
+    private final ConcurrentMap<String, Integer> weights = new ConcurrentHashMap<>();
 
     public NettyChannelGroup(UnresolvedAddress address) {
         this.address = address;
@@ -71,13 +76,25 @@ public class NettyChannelGroup implements ChannelGroup {
     }
 
     @Override
-    public void setWeight(int weight) {
-        this.weight = weight;
+    public void setWeight(Directory directory, int weight) {
+        if (weight == DEFAULT_WEIGHT) {
+            return;
+        }
+        weights.put(directory.directory(), weight);
     }
 
     @Override
-    public int getWeight() {
+    public int getWeight(Directory directory) {
+        Integer weight = weights.get(directory.directory());
+        if (weight == null) {
+            weight = DEFAULT_WEIGHT;
+        }
         return weight;
+    }
+
+    @Override
+    public void removeWeight(Directory directory) {
+        weights.remove(directory.directory());
     }
 
     @Override

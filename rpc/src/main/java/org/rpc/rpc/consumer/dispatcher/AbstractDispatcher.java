@@ -1,6 +1,5 @@
 package org.rpc.rpc.consumer.dispatcher;
 
-import io.netty.channel.Channel;
 import org.rpc.exception.RemotingException;
 import org.rpc.remoting.api.InvokeCallback;
 import org.rpc.remoting.api.channel.ChannelGroup;
@@ -8,6 +7,8 @@ import org.rpc.remoting.api.future.ResponseFuture;
 import org.rpc.remoting.api.payload.ResponseBytes;
 import org.rpc.rpc.Request;
 import org.rpc.rpc.consumer.Consumer;
+import org.rpc.rpc.consumer.future.RpcContext;
+import org.rpc.rpc.consumer.future.RpcFuture;
 import org.rpc.rpc.load.balancer.LoadBalancer;
 import org.rpc.rpc.model.ServiceMeta;
 import org.rpc.serializer.Serializer;
@@ -18,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractDispatcher implements Dispatcher {
 
@@ -75,37 +75,38 @@ public abstract class AbstractDispatcher implements Dispatcher {
         return serializerType.value();
     }
 
-    protected ResponseBytes invoke(ChannelGroup channelGroup,
-                           final Request request,
-                           final DispatchType dispatchType,
-                           boolean sync) {
+    protected Object invoke(ChannelGroup channelGroup,
+                            final Request request,
+                            final DispatchType dispatchType,
+                            Class<?> returnType,
+                            boolean sync) throws RemotingException, InterruptedException {
 
-        ResponseBytes responseBytes = null;
-        try {
-            if (sync) {
-                responseBytes = consumer.client()
-                        .invokeSync(channelGroup.remoteAddress(), request.getRequestBytes(), timeoutMillis);
+        if (sync) {
+            ResponseBytes responseBytes = consumer.client()
+                    .invokeSync(channelGroup.remoteAddress(),
+                            request.getRequestBytes(),
+                            timeoutMillis);
+            return getSerializer().deserialize(responseBytes.getBody(), returnType);
+        } else {
 
-            } else {
+            RpcFuture future = new RpcFuture();
+            RpcContext.setFuture(future);
+            consumer.client()
+                    .invokeAsync(channelGroup.remoteAddress(),
+                            request.getRequestBytes(),
+                            timeoutMillis
+                            , new InvokeCallback<ResponseBytes>() {
+                                @Override
+                                public void operationComplete(ResponseFuture<ResponseBytes> responseFuture)
+                                        throws ExecutionException, InterruptedException {
+                                    ResponseBytes responseBytes = responseFuture.get();
+                                    Object result = getSerializer().deserialize(responseBytes.getBody(), returnType);
+                                    future.set(result);
+                                }
+                            });
 
-               consumer.client()
-                        .invokeAsync(channelGroup.remoteAddress(),
-                                request.getRequestBytes(),
-                                timeoutMillis
-                                , new InvokeCallback<ResponseBytes>() {
-                                    @Override
-                                    public void operationComplete(ResponseFuture<ResponseBytes> responseFuture) throws ExecutionException, InterruptedException {
-
-                                    }
-                                });
-
-            }
-        } catch (RemotingException e) {
-            logger.error(e.getMessage(), e);
-        } catch (InterruptedException e) {
-            logger.error(e.getMessage(), e);
+            return null;
         }
 
-        return responseBytes;
     }
 }

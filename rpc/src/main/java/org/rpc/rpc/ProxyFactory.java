@@ -1,5 +1,6 @@
 package org.rpc.rpc;
 
+import io.netty.util.internal.SystemPropertyUtil;
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.comm.utils.Proxies;
 import org.rpc.register.NotifyEvent;
@@ -9,8 +10,11 @@ import org.rpc.register.model.RegisterMeta;
 import org.rpc.remoting.api.Directory;
 import org.rpc.remoting.api.channel.ChannelGroup;
 import org.rpc.rpc.consumer.Consumer;
+import org.rpc.rpc.consumer.StrategyConfig;
+import org.rpc.rpc.consumer.cluster.ClusterInvoker;
 import org.rpc.rpc.consumer.dispatcher.DefaultRoundDispatcher;
 import org.rpc.rpc.consumer.dispatcher.Dispatcher;
+import org.rpc.rpc.consumer.invoke.SyncInvoker;
 import org.rpc.rpc.load.balancer.LoadBalancer;
 import org.rpc.rpc.model.ServiceMeta;
 import org.rpc.serializer.SerializerType;
@@ -27,6 +31,15 @@ public class ProxyFactory {
     private Consumer consumer;
 
     private long timeoutMillis;
+
+    private boolean sync = true;
+
+    private static final SerializerType serializerType;
+
+    static {
+        serializerType = SerializerType.parse(
+                (byte) SystemPropertyUtil.getInt("serializer.serializerType", SerializerType.PROTO_STUFF.value()));
+    }
 
     public static ProxyFactory factory(Class<?> interfaces) {
 
@@ -50,6 +63,11 @@ public class ProxyFactory {
         return this;
     }
 
+    public ProxyFactory sync(boolean sync) {
+        this.sync = sync;
+        return this;
+    }
+
 
     @SuppressWarnings("unchecked")
     public <T> T newProxy() {
@@ -59,13 +77,9 @@ public class ProxyFactory {
                 // TODO
                 return list.get(0);
             }
-        }, SerializerType.PROTO_STUFF);
+        }, serializerType);
 
         dispatcher.timeoutMillis(timeoutMillis);
-
-        RegisterMeta registerMeta = new RegisterMeta();
-        registerMeta.setServiceMeta(serviceMeta);
-        registerMeta.setAddress(new UnresolvedAddress(InetUtils.getLocalHost(), 9180));
 
         if (consumer.registerService() != null) {
             consumer.subscribe(serviceMeta, new NotifyListener() {
@@ -78,6 +92,10 @@ public class ProxyFactory {
                                     consumer.connect(registerMeta.getAddress());
                                     consumer.client().addChannelGroup(serviceMeta, registerMeta.getAddress());
                                 }
+
+                                consumer.client().group(registerMeta.getAddress())
+                                        .setWeight(serviceMeta, registerMeta.getWeight());
+
                                 consumer.offlineListening(registerMeta.getAddress(), new OfflineListener() {
                                     @Override
                                     public void offline() {
@@ -96,7 +114,13 @@ public class ProxyFactory {
             });
         }
 
-        return (T) Proxies.getDefault().newProxy(interfaces, new SyncInvoker(dispatcher, serviceMeta));
+        return (T) Proxies.getDefault().newProxy(
+                interfaces,
+                new SyncInvoker(dispatcher,
+                        serviceMeta,
+                        new StrategyConfig(ClusterInvoker.Strategy.FAIL_FAST),
+                        sync
+                ));
     }
 
 }

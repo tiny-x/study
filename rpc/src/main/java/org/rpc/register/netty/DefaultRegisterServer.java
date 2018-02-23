@@ -8,6 +8,7 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import io.netty.util.internal.SystemPropertyUtil;
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.comm.collection.ConcurrentSet;
 import org.rpc.register.NotifyEvent;
@@ -57,6 +58,13 @@ public class DefaultRegisterServer implements RegisterServer {
 
     private RpcServer rpcServer;
 
+    private static final SerializerType serializerType;
+
+    static {
+        serializerType = SerializerType.parse(
+                (byte) SystemPropertyUtil.getInt("serializer.serializerType", SerializerType.PROTO_STUFF.value()));
+    }
+
     public DefaultRegisterServer() {
         NettyServerConfig config = new NettyServerConfig();
         config.setPort(DEFAULT_PORT);
@@ -91,9 +99,9 @@ public class DefaultRegisterServer implements RegisterServer {
 
                 // 通知订阅下线服务
                 Notify notify = new Notify(address);
-                Serializer serializer = SerializerFactory.serializer(SerializerType.PROTO_STUFF);
+                Serializer serializer = SerializerFactory.serializer(serializerType);
                 RequestBytes requestBytes = new RequestBytes(ProtocolHead.OFFLINE_SERVICE,
-                        SerializerType.PROTO_STUFF.value(),
+                        serializerType.value(),
                         serializer.serialize(notify));
                 subscriberChannels.writeAndFlush(requestBytes);
             }
@@ -152,7 +160,7 @@ public class DefaultRegisterServer implements RegisterServer {
 
             // 返回给客户端已经注册的服务
             ResponseBytes responseBytes = new ResponseBytes(ProtocolHead.ACK,
-                    SerializerType.PROTO_STUFF.value(),
+                    serializerType.value(),
                     serializer.serialize(notify));
             responseBytes.setStatus(ProtocolHead.STATUS_SUCCESS);
             responseBytes.setInvokeId(request.getInvokeId());
@@ -189,7 +197,7 @@ public class DefaultRegisterServer implements RegisterServer {
             );
 
             RequestBytes requestBytes = new RequestBytes(ProtocolHead.SUBSCRIBE_SERVICE,
-                    SerializerType.PROTO_STUFF.value(),
+                    serializerType.value(),
                     serializer.serialize(notify));
             subscriberChannels.writeAndFlush(requestBytes, new ChannelMatcher() {
                 @Override
@@ -202,7 +210,7 @@ public class DefaultRegisterServer implements RegisterServer {
 
             // 回复服务端注册成功
             ResponseBytes responseBytes = new ResponseBytes(ProtocolHead.ACK,
-                    SerializerType.PROTO_STUFF.value(),
+                    serializerType.value(),
                     null);
             responseBytes.setStatus(ProtocolHead.STATUS_SUCCESS);
             responseBytes.setInvokeId(request.getInvokeId());
@@ -234,7 +242,7 @@ public class DefaultRegisterServer implements RegisterServer {
         );
 
         RequestBytes requestBytes = new RequestBytes(ProtocolHead.SUBSCRIBE_SERVICE,
-                SerializerType.PROTO_STUFF.value(),
+                serializerType.value(),
                 serializer.serialize(notify));
         subscriberChannels.writeAndFlush(requestBytes, new ChannelMatcher() {
             @Override
@@ -247,7 +255,7 @@ public class DefaultRegisterServer implements RegisterServer {
 
         // 回复服务端下线服务成功
         ResponseBytes responseBytes = new ResponseBytes(ProtocolHead.ACK,
-                SerializerType.PROTO_STUFF.value(),
+                serializerType.value(),
                 null);
         responseBytes.setStatus(ProtocolHead.STATUS_SUCCESS);
         responseBytes.setInvokeId(request.getInvokeId());

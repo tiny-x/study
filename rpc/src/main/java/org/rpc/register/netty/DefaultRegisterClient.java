@@ -3,6 +3,7 @@ package org.rpc.register.netty;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
+import io.netty.util.internal.SystemPropertyUtil;
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.comm.collection.ConcurrentSet;
 import org.rpc.register.AbstractRegisterService;
@@ -47,6 +48,13 @@ public class DefaultRegisterClient {
 
     private volatile Channel channel;
 
+    private static final SerializerType serializerType;
+
+    static {
+        serializerType = SerializerType.parse(
+                (byte) SystemPropertyUtil.getInt("serializer.serializerType", SerializerType.PROTO_STUFF.value()));
+    }
+
     public DefaultRegisterClient(String address, AbstractRegisterService registerService) {
         this.registerService = registerService;
         // TODO 先按一个注册中心写完功能
@@ -66,9 +74,9 @@ public class DefaultRegisterClient {
     }
 
     public void register(RegisterMeta registerMeta) {
-        Serializer serializer = SerializerFactory.serializer(SerializerType.PROTO_STUFF);
+        Serializer serializer = SerializerFactory.serializer(serializerType);
         RequestBytes requestBytes = new RequestBytes(ProtocolHead.REGISTER_SERVICE,
-                SerializerType.PROTO_STUFF.value(),
+                serializerType.value(),
                 serializer.serialize(registerMeta));
         try {
             if (attachRegisterEvent(registerMeta, channel)) {
@@ -80,9 +88,9 @@ public class DefaultRegisterClient {
     }
 
     public void unRegister(RegisterMeta registerMeta) {
-        Serializer serializer = SerializerFactory.serializer(SerializerType.PROTO_STUFF);
+        Serializer serializer = SerializerFactory.serializer(serializerType);
         RequestBytes requestBytes = new RequestBytes(ProtocolHead.CANCEL_REGISTER_SERVICE,
-                SerializerType.PROTO_STUFF.value(),
+                serializerType.value(),
                 serializer.serialize(registerMeta));
         try {
             if (attachCancelRegisterEvent(registerMeta, channel)) {
@@ -95,10 +103,10 @@ public class DefaultRegisterClient {
 
 
     public void subscribe(ServiceMeta serviceMeta) {
-        Serializer serializer = SerializerFactory.serializer(SerializerType.PROTO_STUFF);
+        Serializer serializer = SerializerFactory.serializer(serializerType);
 
         RequestBytes requestBytes = new RequestBytes(ProtocolHead.SUBSCRIBE_SERVICE,
-                SerializerType.PROTO_STUFF.value(),
+                serializerType.value(),
                 serializer.serialize(serviceMeta));
 
         try {
