@@ -5,6 +5,7 @@ import org.rpc.remoting.api.InvokeCallback;
 import org.rpc.remoting.api.channel.ChannelGroup;
 import org.rpc.remoting.api.future.ResponseFuture;
 import org.rpc.remoting.api.payload.ResponseBytes;
+import org.rpc.remoting.api.procotol.ProtocolHead;
 import org.rpc.rpc.Request;
 import org.rpc.rpc.consumer.Consumer;
 import org.rpc.rpc.consumer.future.RpcContext;
@@ -86,7 +87,12 @@ public abstract class AbstractDispatcher implements Dispatcher {
                     .invokeSync(channelGroup.remoteAddress(),
                             request.getRequestBytes(),
                             timeoutMillis);
-            return getSerializer().deserialize(responseBytes.getBody(), returnType);
+            if (responseBytes.getStatus() == ProtocolHead.STATUS_SUCCESS) {
+                return getSerializer().deserialize(responseBytes.getBody(), returnType);
+            } else {
+                logger.error("error",responseBytes.getStatus());
+                return null;
+            }
         } else {
 
             RpcFuture future = new RpcFuture();

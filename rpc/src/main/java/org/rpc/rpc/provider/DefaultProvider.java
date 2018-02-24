@@ -17,6 +17,7 @@ import org.rpc.remoting.netty.NettyServer;
 import org.rpc.remoting.netty.NettyServerConfig;
 import org.rpc.rpc.container.DefaultServiceProviderContainer;
 import org.rpc.rpc.container.ServiceProviderContainer;
+import org.rpc.rpc.flow.controller.FlowController;
 import org.rpc.rpc.model.RequestWrapper;
 import org.rpc.rpc.model.ServiceWrapper;
 import org.rpc.rpc.register.local.DefaultServiceRegistry;
@@ -25,19 +26,26 @@ import org.rpc.serializer.Serializer;
 import org.rpc.serializer.SerializerFactory;
 import org.rpc.serializer.SerializerType;
 import org.rpc.utils.InetUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DefaultProvider implements Provider{
+
+    private static final Logger logger = LoggerFactory.getLogger(DefaultProvider.class);
 
     private RpcServer server;
 
     private ServiceProviderContainer serviceProviderContainer;
 
     private RegisterService registerService = null;
+
+    private FlowController[] flowControllers;
 
     public DefaultProvider(NettyServerConfig nettyServerConfig) {
         this.serviceProviderContainer = new DefaultServiceProviderContainer();
@@ -63,6 +71,11 @@ public class DefaultProvider implements Provider{
     @Override
     public ServiceRegistry serviceRegistry() {
         return new DefaultServiceRegistry(serviceProviderContainer);
+    }
+
+    @Override
+    public void registerGlobalFlowController(FlowController... flowControllers) {
+        this.flowControllers = flowControllers;
     }
 
     @Override
@@ -117,6 +130,16 @@ public class DefaultProvider implements Provider{
 
         @Override
         public boolean rejectRequest() {
+            if(flowControllers != null && flowControllers.length > 0) {
+                for (FlowController flowController : flowControllers) {
+                    try {
+                        flowController.flowController();
+                    } catch (RejectedExecutionException e) {
+                        logger.error(e.getMessage(), e);
+                        return true;
+                    }
+                }
+            }
             return false;
         }
     }

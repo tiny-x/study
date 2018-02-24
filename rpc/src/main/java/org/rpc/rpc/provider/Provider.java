@@ -1,6 +1,7 @@
 package org.rpc.rpc.provider;
 
 import org.rpc.remoting.api.Directory;
+import org.rpc.rpc.flow.controller.FlowController;
 import org.rpc.rpc.model.ServiceWrapper;
 import org.rpc.rpc.register.local.ServiceRegistry;
 
@@ -39,4 +40,10 @@ public interface Provider {
      * @param serviceWrapper
      */
     void publishService(ServiceWrapper serviceWrapper);
+
+    /**
+     * 注册全局流量控制器
+     *
+     */
+    void registerGlobalFlowController(FlowController... flowControllers);
 }

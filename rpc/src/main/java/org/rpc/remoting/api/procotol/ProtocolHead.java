@@ -36,6 +36,7 @@ public class ProtocolHead {
     public static final byte STATUS_SUCCESS = 0x01; // success
     public static final byte STATUS_ERROR = 0x02; //
     public static final byte STATUS_TIMEOUT = 0x03;
+    public static final byte STATUS_SYSTEM_BUSY = 0x03;
 
     /**
      * 消息类型（高四位），序列化方式（低四位）

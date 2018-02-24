@@ -77,6 +77,19 @@ public abstract class NettyServiceAbstract {
 
         if (defaultProcessor != null && defaultProcessor.getA() != null && defaultProcessor.getB() != null) {
             defaultProcessor.getB().submit(() -> {
+                if (defaultProcessor.getA().rejectRequest()) {
+                    logger.warn("[REJECT] provider reject request!");
+                    ResponseBytes responseBytes = new ResponseBytes(
+                            ProtocolHead.RESPONSE,
+                            cmd.getSerializerCode(),
+                            null);
+                    responseBytes.setInvokeId(cmd.getInvokeId());
+                    responseBytes.setStatus(ProtocolHead.STATUS_SYSTEM_BUSY);
+                    if (responseBytes != null) {
+                        ctx.channel().writeAndFlush(responseBytes);
+                    }
+                    return;
+                }
                 ResponseBytes responseBytes = defaultProcessor.getA().process(ctx, cmd);
                 if (responseBytes != null) {
                     ctx.channel().writeAndFlush(responseBytes);
