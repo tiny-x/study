@@ -2,6 +2,7 @@ package org.rpc.register.netty;
 
 import org.rpc.register.AbstractRegisterService;
 import org.rpc.register.RegisterService;
+import org.rpc.register.RegisterType;
 import org.rpc.register.model.RegisterMeta;
 import org.rpc.rpc.model.ServiceMeta;
 
@@ -33,5 +34,10 @@ public class DefaultRegisterService extends AbstractRegisterService implements R
     @Override
     public List<RegisterMeta> lookup(RegisterMeta registerMeta) {
         return registerClient.lookup(registerMeta);
+    }
+
+    @Override
+    public RegisterType registerType() {
+        return RegisterType.DEFAULT;
     }
 }

@@ -16,6 +16,8 @@ import java.lang.reflect.Method;
 
 public class DefaultInvoker {
 
+    private String application;
+
     private Dispatcher dispatcher;
 
     private ServiceMeta serviceMeta;
@@ -24,10 +26,13 @@ public class DefaultInvoker {
 
     private boolean sync;
 
-    public DefaultInvoker(Dispatcher dispatcher,
-                          ServiceMeta serviceMeta,
-                          StrategyConfig strategyConfig,
-                          boolean sync) {
+    public DefaultInvoker(
+                String application,
+                Dispatcher dispatcher,
+                ServiceMeta serviceMeta,
+                StrategyConfig strategyConfig,
+                boolean sync) {
+
         this.dispatcher = dispatcher;
         this.serviceMeta = serviceMeta;
         this.strategyConfig = strategyConfig;

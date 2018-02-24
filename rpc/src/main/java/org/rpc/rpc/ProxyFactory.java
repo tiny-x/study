@@ -114,7 +114,9 @@ public class ProxyFactory {
 
         return (T) Proxies.getDefault().newProxy(
                 interfaces,
-                new DefaultInvoker(dispatcher,
+                new DefaultInvoker(
+                        consumer.application(),
+                        dispatcher,
                         serviceMeta,
                         new StrategyConfig(ClusterInvoker.Strategy.FAIL_FAST),
                         sync

@@ -1,11 +1,8 @@
 package org.rpc.rpc.consumer;
 
 import org.rpc.comm.UnresolvedAddress;
-import org.rpc.register.NotifyListener;
-import org.rpc.register.OfflineListener;
-import org.rpc.register.RegisterService;
+import org.rpc.register.*;
 import org.rpc.register.model.RegisterMeta;
-import org.rpc.register.netty.DefaultRegisterService;
 import org.rpc.remoting.api.Directory;
 import org.rpc.remoting.api.RpcClient;
 import org.rpc.remoting.netty.NettyClient;
@@ -60,7 +57,7 @@ public class DefaultConsumer implements Consumer {
 
     @Override
     public void connectToRegistryServer(String address) {
-        registerService = new DefaultRegisterService(address);
+        registerService = RegisterFactory.registerService(RegisterType.DEFAULT);
     }
 
     @Override

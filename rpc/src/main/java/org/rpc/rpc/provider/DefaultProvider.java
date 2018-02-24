@@ -3,9 +3,10 @@ package org.rpc.rpc.provider;
 import com.esotericsoftware.reflectasm.MethodAccess;
 import io.netty.channel.ChannelHandlerContext;
 import org.rpc.comm.UnresolvedAddress;
+import org.rpc.register.RegisterFactory;
 import org.rpc.register.RegisterService;
+import org.rpc.register.RegisterType;
 import org.rpc.register.model.RegisterMeta;
-import org.rpc.register.netty.DefaultRegisterService;
 import org.rpc.remoting.api.Directory;
 import org.rpc.remoting.api.RequestProcessor;
 import org.rpc.remoting.api.RpcServer;
@@ -51,7 +52,7 @@ public class DefaultProvider implements Provider{
 
     @Override
     public void connectToRegistryServer(String address) {
-        registerService = new DefaultRegisterService(address);
+        registerService = RegisterFactory.registerService(RegisterType.DEFAULT);
     }
 
     @Override

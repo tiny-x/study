@@ -18,4 +18,7 @@ public interface RegisterService {
     List<RegisterMeta> lookup(RegisterMeta RegisterMeta);
 
     void offlineListening(UnresolvedAddress address, OfflineListener listener);
+
+    RegisterType registerType();
+
 }

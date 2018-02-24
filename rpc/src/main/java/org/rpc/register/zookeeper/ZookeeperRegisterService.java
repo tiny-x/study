@@ -7,6 +7,7 @@ import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.rpc.register.AbstractRegisterService;
+import org.rpc.register.RegisterType;
 import org.rpc.register.model.RegisterMeta;
 import org.rpc.rpc.model.ServiceMeta;
 import org.slf4j.Logger;
@@ -69,6 +70,11 @@ public class ZookeeperRegisterService extends AbstractRegisterService {
     public void doSubscribe(ServiceMeta serviceMeta) {
 
 
+    }
+
+    @Override
+    public RegisterType registerType() {
+        return RegisterType.ZOOKEEPER;
     }
 
     @Override

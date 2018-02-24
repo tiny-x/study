@@ -12,6 +12,7 @@ import io.netty.util.internal.SystemPropertyUtil;
 import org.rpc.comm.UnresolvedAddress;
 import org.rpc.comm.collection.ConcurrentSet;
 import org.rpc.register.NotifyEvent;
+import org.rpc.register.RegisterType;
 import org.rpc.register.model.Notify;
 import org.rpc.register.model.RegisterMeta;
 import org.rpc.remoting.api.ChannelEventAdapter;
