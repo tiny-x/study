@@ -6,19 +6,15 @@ import org.rpc.register.NotifyEvent;
 import org.rpc.register.NotifyListener;
 import org.rpc.register.OfflineListener;
 import org.rpc.register.model.RegisterMeta;
-import org.rpc.remoting.api.Directory;
-import org.rpc.remoting.api.channel.ChannelGroup;
 import org.rpc.rpc.consumer.Consumer;
 import org.rpc.rpc.consumer.StrategyConfig;
 import org.rpc.rpc.consumer.cluster.ClusterInvoker;
 import org.rpc.rpc.consumer.dispatcher.DefaultRoundDispatcher;
 import org.rpc.rpc.consumer.dispatcher.Dispatcher;
 import org.rpc.rpc.consumer.invoke.DefaultInvoker;
-import org.rpc.rpc.load.balancer.LoadBalancer;
+import org.rpc.rpc.load.balancer.RandomRobinLoadBalancer;
 import org.rpc.rpc.model.ServiceMeta;
 import org.rpc.serializer.SerializerType;
-
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ProxyFactory {
 
@@ -69,13 +65,10 @@ public class ProxyFactory {
 
     @SuppressWarnings("unchecked")
     public <T> T newProxy() {
-        Dispatcher dispatcher = new DefaultRoundDispatcher(consumer, new LoadBalancer() {
-            @Override
-            public ChannelGroup select(CopyOnWriteArrayList<ChannelGroup> list, Directory directory) {
-                // TODO
-                return list.get(0);
-            }
-        }, serializerType);
+        Dispatcher dispatcher = new DefaultRoundDispatcher(
+                consumer,
+                RandomRobinLoadBalancer.instance(),
+                serializerType);
 
         dispatcher.timeoutMillis(timeoutMillis);
 

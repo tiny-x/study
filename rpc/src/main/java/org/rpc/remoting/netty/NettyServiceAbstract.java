@@ -3,20 +3,22 @@ package org.rpc.remoting.netty;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.internal.SystemPropertyUtil;
 import org.rpc.exception.RemotingException;
+import org.rpc.exception.RemotingSendRequestException;
 import org.rpc.exception.RemotingTimeoutException;
 import org.rpc.exception.RemotingTooMuchRequestException;
 import org.rpc.remoting.Pair;
 import org.rpc.remoting.api.ChannelEventListener;
 import org.rpc.remoting.api.InvokeCallback;
 import org.rpc.remoting.api.RequestProcessor;
+import org.rpc.remoting.api.ResponseStatus;
 import org.rpc.remoting.api.future.ResponseFuture;
 import org.rpc.remoting.api.payload.ByteHolder;
 import org.rpc.remoting.api.payload.RequestBytes;
 import org.rpc.remoting.api.payload.ResponseBytes;
-import org.rpc.remoting.api.procotol.ProtocolHead;
 import org.rpc.remoting.netty.event.ChannelEvent;
+import org.rpc.serializer.Serializer;
+import org.rpc.serializer.SerializerFactory;
 import org.rpc.serializer.SerializerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,64 +76,88 @@ public abstract class NettyServiceAbstract {
     }
 
     private void processRequestCommand(ChannelHandlerContext ctx, RequestBytes cmd) {
+        SerializerType serializerType = SerializerType.parse(cmd.getSerializerCode());
+        Serializer serializer = SerializerFactory.serializer(serializerType);
 
-        if (defaultProcessor != null && defaultProcessor.getA() != null && defaultProcessor.getB() != null) {
-            defaultProcessor.getB().submit(() -> {
-                if (defaultProcessor.getA().rejectRequest()) {
-                    logger.warn("[REJECT] provider reject request!");
-                    ResponseBytes responseBytes = new ResponseBytes(
-                            ProtocolHead.RESPONSE,
-                            cmd.getSerializerCode(),
-                            null);
-                    responseBytes.setInvokeId(cmd.getInvokeId());
-                    responseBytes.setStatus(ProtocolHead.STATUS_SYSTEM_BUSY);
-                    if (responseBytes != null) {
+        if (defaultProcessor.getA() != null && defaultProcessor.getB() != null) {
+            try {
+                defaultProcessor.getB().submit(() -> {
+                    if (defaultProcessor.getA().rejectRequest()) {
+                        String message = "[REJECT_REQUEST] system busy, start flow control for a while";
+
+                        ResponseBytes responseBytes = new ResponseBytes(
+                                cmd.getSerializerCode(),
+                                serializer.serialize(message));
+                        responseBytes.setInvokeId(cmd.getInvokeId());
+                        responseBytes.setStatus(ResponseStatus.FLOW_CONTROL.value());
                         ctx.channel().writeAndFlush(responseBytes);
+                    } else {
+                        ResponseBytes responseBytes = defaultProcessor.getA().process(ctx, cmd);
+                        if (responseBytes != null) {
+                            ctx.channel().writeAndFlush(responseBytes);
+                        }
                     }
-                    return;
-                }
-                ResponseBytes responseBytes = defaultProcessor.getA().process(ctx, cmd);
-                if (responseBytes != null) {
-                    ctx.channel().writeAndFlush(responseBytes);
-                }
-            });
+                });
+            } catch (RejectedExecutionException e) {
+
+                String message = "[OVERLOAD]system busy, start flow control for a while";
+
+                ResponseBytes responseBytes = new ResponseBytes(
+                        cmd.getSerializerCode(),
+                        serializer.serialize(message));
+                responseBytes.setInvokeId(cmd.getInvokeId());
+                responseBytes.setStatus(ResponseStatus.SYSTEM_BUSY.value());
+                ctx.channel().writeAndFlush(responseBytes);
+            }
         } else {
-            logger.warn("requestProcessor is null!");
+            String message = "[ERROR]system error, request process not register";
+
+            ResponseBytes responseBytes = new ResponseBytes(
+                    cmd.getSerializerCode(),
+                    serializer.serialize(message));
+            responseBytes.setInvokeId(cmd.getInvokeId());
+            responseBytes.setStatus(ResponseStatus.SERVER_ERROR.value());
+            ctx.channel().writeAndFlush(responseBytes);
+
+            logger.error(ctx.channel() + message);
         }
     }
 
-    protected ResponseBytes invokeSync0(Channel channel, RequestBytes request, long timeout, TimeUnit timeUnit) throws RemotingException, InterruptedException {
+    protected ResponseBytes invokeSync0(Channel channel, RequestBytes request, long timeout, TimeUnit timeUnit)
+            throws RemotingException, InterruptedException {
         ResponseFuture<ResponseBytes> responseFuture = new ResponseFuture<>();
         responseTable.putIfAbsent(request.getInvokeId(), responseFuture);
-        ResponseBytes response = new ResponseBytes(request.getSerializerCode(), null);
-
         try {
             channel.writeAndFlush(request).addListener((ChannelFuture future) -> {
+                responseFuture.setSuccess(future.isSuccess());
                 if (!future.isSuccess()) {
-                    ResponseBytes responseFail = new ResponseBytes(request.getSerializerCode(), null);
-
                     responseTable.remove(request.getInvokeId());
-                    responseFail.setInvokeId(request.getInvokeId());
-                    responseFail.setStatus(ProtocolHead.STATUS_ERROR);
-                    responseFuture.complete(responseFail);
-                    throw new RemotingException("", future.cause());
+                    responseFuture.complete(null);
+                    responseFuture.failure(future.cause());
+                    logger.warn("send a request command to channel <" + channel + "> failed.");
                 }
             });
-            response = responseFuture.get(timeout, timeUnit);
-        } catch (ExecutionException e) {
-            throw new RemotingException("ExecutionException", e);
-        } catch (TimeoutException e) {
-            response.setInvokeId(request.getInvokeId());
-            response.setStatus(ProtocolHead.STATUS_TIMEOUT);
-            throw new RemotingTimeoutException(channel.remoteAddress().toString(), timeUnit.convert(timeout, TimeUnit.MILLISECONDS));
+            ResponseBytes response = responseFuture.get(timeout, timeUnit);
+            if (response == null) {
+                if (responseFuture.isSuccess()) {
+                    response.setInvokeId(request.getInvokeId());
+                    response.setStatus(ResponseStatus.SERVER_TIME_OUT.value());
+                    throw new RemotingTimeoutException(channel.remoteAddress().toString(),
+                            timeUnit.convert(timeout, TimeUnit.MILLISECONDS));
+
+                } else {
+                    throw new RemotingSendRequestException("send request failed", responseFuture.cause());
+                }
+            }
+            return response;
         } finally {
             responseTable.remove(request.getInvokeId());
         }
-        return response;
     }
 
     protected void invokeAsync0(Channel channel, RequestBytes request,
-                                long timeout, TimeUnit timeUnit, InvokeCallback<ResponseBytes> invokeCallback) throws RemotingException, InterruptedException {
+                                long timeout, TimeUnit timeUnit, InvokeCallback<ResponseBytes> invokeCallback)
+            throws RemotingException, InterruptedException {
 
         ResponseFuture<ResponseBytes> responseFuture = new ResponseFuture<>(invokeCallback);
         responseTable.putIfAbsent(request.getInvokeId(), responseFuture);
@@ -139,16 +165,13 @@ public abstract class NettyServiceAbstract {
         if (semaphoreAsync.tryAcquire(timeout, timeUnit)) {
 
             channel.writeAndFlush(request).addListener((ChannelFuture future) -> {
+                responseFuture.setSuccess(future.isSuccess());
                 if (!future.isSuccess()) {
                     responseTable.remove(request.getInvokeId());
-                    ResponseBytes response = new ResponseBytes(request.getSerializerCode(), null);
-                    response.setInvokeId(request.getInvokeId());
-                    response.setStatus(ProtocolHead.STATUS_ERROR);
-
-                    responseFuture.complete(response);
+                    responseFuture.complete(null);
                     responseFuture.executeInvokeCallback();
-
-                    logger.error("invokeAsync0 error!", future.cause());
+                    responseFuture.failure(future.cause());
+                    logger.warn("send a request command to channel <" + channel + "> failed.");
                 }
             });
         } else {

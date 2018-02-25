@@ -29,7 +29,6 @@ public class ReferenceExample {
                     Reference reference = null;
                     try {
                         reference = queue.remove();
-
                         flag = true;
                         System.out.println("------> gc");
 

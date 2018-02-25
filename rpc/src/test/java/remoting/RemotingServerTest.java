@@ -17,6 +17,7 @@ import org.rpc.remoting.api.payload.ResponseBytes;
 import org.rpc.remoting.api.procotol.ProtocolHead;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +45,6 @@ public class RemotingServerTest {
                 ResponseBytes response = new ResponseBytes(
                         request.getSerializerCode(),
                         info.getBytes());
-                response.setStatus(ProtocolHead.STATUS_SUCCESS);
                 response.setInvokeId(request.getInvokeId());
                 return response;
             }
@@ -55,7 +55,7 @@ public class RemotingServerTest {
             }
         }, Executors.newCachedThreadPool());
 
-        RequestBytes request = new RequestBytes(ProtocolHead.REQUEST, ProtocolHead.JSON, "hello register".getBytes());
+        RequestBytes request = new RequestBytes(ProtocolHead.REQUEST, ProtocolHead.PROTO_STUFF, "hello register".getBytes());
         UnresolvedAddress address = new UnresolvedAddress("127.0.0.1", 9180);
         rpcClient.connect(address);
 
@@ -77,7 +77,6 @@ public class RemotingServerTest {
                 ResponseBytes response = new ResponseBytes(
                         request.getSerializerCode(),
                         info.getBytes());
-                response.setStatus(ProtocolHead.STATUS_SUCCESS);
                 response.setInvokeId(request.getInvokeId());
                 return response;
             }
@@ -88,7 +87,7 @@ public class RemotingServerTest {
             }
         }, Executors.newCachedThreadPool());
 
-        RequestBytes request = new RequestBytes(ProtocolHead.REQUEST, ProtocolHead.JSON, "hello register".getBytes());
+        RequestBytes request = new RequestBytes(ProtocolHead.REQUEST, ProtocolHead.PROTO_STUFF, "hello register".getBytes());
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         UnresolvedAddress address = new UnresolvedAddress("127.0.0.1", 9180);
@@ -98,7 +97,12 @@ public class RemotingServerTest {
                 request,
                 3000L,
                 (future) -> {
-                    ResponseBytes response = future.get();
+                    ResponseBytes response = null;
+                    try {
+                        response = future.get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     System.out.printf("------- > receive register message: %s\n", new String(response.getBody()));
                     //countDownLatch.countDown();
                 }

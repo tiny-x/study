@@ -239,7 +239,7 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
                             ChannelPromise promise) throws Exception {
             final String local = localAddress == null ? "UNKNOWN" : localAddress.toString();
             final String remote = remoteAddress == null ? "UNKNOWN" : remoteAddress.toString();
-            logger.info("NETTY CLIENT PIPELINE: CONNECT  {} => {}", local, remote);
+            logger.debug("NETTY CLIENT PIPELINE: CONNECT  {} => {}", local, remote);
 
             super.connect(ctx, remoteAddress, localAddress, promise);
 

@@ -1,6 +1,7 @@
 package org.rpc.rpc.consumer;
 
 import org.rpc.comm.UnresolvedAddress;
+import org.rpc.exception.RemotingConnectException;
 import org.rpc.register.*;
 import org.rpc.register.model.RegisterMeta;
 import org.rpc.remoting.api.Directory;
@@ -40,8 +41,10 @@ public class DefaultConsumer implements Consumer {
     public void connect(UnresolvedAddress address) {
         try {
             rpcClient.connect(address);
-        } catch (Exception e) {
-            logger.error("connect to: {} fail", address, e);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (RemotingConnectException e) {
+            e.printStackTrace();
         }
     }
 

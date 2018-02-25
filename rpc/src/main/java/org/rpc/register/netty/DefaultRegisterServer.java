@@ -163,7 +163,7 @@ public class DefaultRegisterServer implements RegisterServer {
             ResponseBytes responseBytes = new ResponseBytes(ProtocolHead.ACK,
                     serializerType.value(),
                     serializer.serialize(notify));
-            responseBytes.setStatus(ProtocolHead.STATUS_SUCCESS);
+
             responseBytes.setInvokeId(request.getInvokeId());
             return responseBytes;
         }
@@ -213,7 +213,7 @@ public class DefaultRegisterServer implements RegisterServer {
             ResponseBytes responseBytes = new ResponseBytes(ProtocolHead.ACK,
                     serializerType.value(),
                     null);
-            responseBytes.setStatus(ProtocolHead.STATUS_SUCCESS);
+
             responseBytes.setInvokeId(request.getInvokeId());
             return responseBytes;
         }
@@ -258,7 +258,7 @@ public class DefaultRegisterServer implements RegisterServer {
         ResponseBytes responseBytes = new ResponseBytes(ProtocolHead.ACK,
                 serializerType.value(),
                 null);
-        responseBytes.setStatus(ProtocolHead.STATUS_SUCCESS);
+
         responseBytes.setInvokeId(request.getInvokeId());
         return responseBytes;
     }

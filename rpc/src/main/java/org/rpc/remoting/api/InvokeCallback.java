@@ -6,5 +6,5 @@ import java.util.concurrent.ExecutionException;
 
 public interface InvokeCallback<T> {
 
-    void operationComplete(final ResponseFuture<T> responseFuture) throws ExecutionException, InterruptedException;
+    void operationComplete(final ResponseFuture<T> responseFuture) ;
 }

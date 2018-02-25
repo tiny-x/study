@@ -8,6 +8,8 @@ public class RpcFuture<V> {
 
     private CountDownLatch countDownLatch = new CountDownLatch(1);
 
+    private RpcFutureListener<V> listener;
+
     public void set(V v) {
         this.v = v;
         countDownLatch.countDown();
@@ -20,5 +22,13 @@ public class RpcFuture<V> {
 
         }
         return v;
+    }
+
+    public void addListener(RpcFutureListener<V> listener) {
+        this.listener = listener;
+    }
+
+    public RpcFutureListener<V> getListener() {
+        return listener;
     }
 }

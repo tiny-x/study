@@ -1,6 +1,7 @@
 package org.rpc.example.flow;
 
 import org.rpc.comm.UnresolvedAddress;
+import org.rpc.exception.RemotingConnectException;
 import org.rpc.remoting.netty.NettyClientConfig;
 import org.rpc.rpc.ProxyFactory;
 import org.rpc.rpc.consumer.Consumer;
@@ -9,7 +10,7 @@ import org.rpc.rpc.model.ServiceMeta;
 
 public class ConsumerExample {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RemotingConnectException, InterruptedException {
         NettyClientConfig config = new NettyClientConfig();
         Consumer consumer = new DefaultConsumer("consumer", config);
         UnresolvedAddress address = new UnresolvedAddress("127.0.0.1", 9180);

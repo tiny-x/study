@@ -1,6 +1,7 @@
 package org.rpc.rpc.consumer;
 
 import org.rpc.comm.UnresolvedAddress;
+import org.rpc.exception.RemotingConnectException;
 import org.rpc.register.NotifyListener;
 import org.rpc.register.OfflineListener;
 import org.rpc.register.RegisterService;

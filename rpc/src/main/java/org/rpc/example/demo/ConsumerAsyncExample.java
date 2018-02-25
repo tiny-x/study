@@ -7,6 +7,7 @@ import org.rpc.rpc.consumer.Consumer;
 import org.rpc.rpc.consumer.DefaultConsumer;
 import org.rpc.rpc.consumer.future.RpcContext;
 import org.rpc.rpc.consumer.future.RpcFuture;
+import org.rpc.rpc.consumer.future.RpcFutureListener;
 import org.rpc.rpc.model.ServiceMeta;
 
 public class ConsumerAsyncExample {
@@ -31,6 +32,17 @@ public class ConsumerAsyncExample {
         System.out.println(s);
 
         RpcFuture<String> future = RpcContext.getFuture();
+        future.addListener(new RpcFutureListener<String>() {
+            @Override
+            public void complete(String result) {
+                System.out.println("result: " + result);
+            }
+
+            @Override
+            public void failure(Throwable cause) {
+                System.out.println("error: " + cause);
+            }
+        });
         System.out.println(future.get());
 
     }

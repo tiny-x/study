@@ -9,6 +9,7 @@ import org.rpc.register.RegisterType;
 import org.rpc.register.model.RegisterMeta;
 import org.rpc.remoting.api.Directory;
 import org.rpc.remoting.api.RequestProcessor;
+import org.rpc.remoting.api.ResponseStatus;
 import org.rpc.remoting.api.RpcServer;
 import org.rpc.remoting.api.payload.RequestBytes;
 import org.rpc.remoting.api.payload.ResponseBytes;
@@ -29,13 +30,12 @@ import org.rpc.utils.InetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.ref.SoftReference;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-public class DefaultProvider implements Provider{
+public class DefaultProvider implements Provider {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultProvider.class);
 
@@ -91,7 +91,7 @@ public class DefaultProvider implements Provider{
 
     class DefaultProviderProcessor implements RequestProcessor {
 
-        private ConcurrentHashMap<Class<?>, MethodAccess> methodAccessCache = new ConcurrentHashMap<>();
+        private ConcurrentHashMap<Class<?>, SoftReference<MethodAccess>> methodAccessCache = new ConcurrentHashMap<>();
 
         @Override
         public ResponseBytes process(ChannelHandlerContext context, RequestBytes request) {
@@ -100,27 +100,43 @@ public class DefaultProvider implements Provider{
             Serializer serializer = SerializerFactory.serializer(serializerType);
 
             switch (request.getMessageCode()) {
-                case ProtocolHead.REQUEST : {
+                case ProtocolHead.REQUEST: {
                     RequestWrapper requestWrapper = serializer.deserialize(request.getBody(), RequestWrapper.class);
                     ServiceWrapper serviceWrapper = DefaultProvider.this.lookupService(requestWrapper.getServiceMeta());
 
-                    String errorMessage = String.format("%s not register local serviceContainer", requestWrapper.getServiceMeta().directory());
-                    checkNotNull(serviceWrapper, errorMessage);
+                    ResponseBytes responseBytes;
+                    if (serviceWrapper == null) {
+                        String message = context.channel() + "service: [" + requestWrapper.getServiceMeta() + "] not found";
+                        responseBytes = new ResponseBytes(
+                                request.getSerializerCode(),
+                                serializer.serialize(message));
 
-                    MethodAccess methodAccess = methodAccessCache.get(serviceWrapper.getServiceProvider().getClass());
-                    if (methodAccess == null) {
-                        MethodAccess newMethodAccess = MethodAccess.get(serviceWrapper.getServiceProvider().getClass());
-                        methodAccess = methodAccessCache.putIfAbsent(serviceWrapper.getServiceProvider().getClass(), newMethodAccess);
+                        responseBytes.setStatus(ResponseStatus.SERVICE_NOT_FOUND.value());
+                        responseBytes.setInvokeId(request.getInvokeId());
+                    } else {
+                        Class<?> aClass = serviceWrapper.getServiceProvider().getClass();
+                        SoftReference<MethodAccess> methodAccess = methodAccessCache.get(aClass);
                         if (methodAccess == null) {
-                            methodAccess = newMethodAccess;
+                            SoftReference<MethodAccess> newMethodAccess = new SoftReference<>(MethodAccess.get(aClass));
+                            methodAccess = methodAccessCache.putIfAbsent(aClass, newMethodAccess);
+                            if (methodAccess == null) {
+                                methodAccess = newMethodAccess;
+                            }
                         }
+                        MethodAccess invoker = methodAccess.get();
+                        if (invoker == null) {
+                            methodAccessCache.remove(aClass);
+                            invoker = MethodAccess.get(aClass);
+                        }
+
+                        Object result = invoker
+                                .invoke(serviceWrapper.getServiceProvider(),
+                                        requestWrapper.getMethodName(),
+                                        requestWrapper.getArgs());
+
+                        responseBytes = new ResponseBytes(request.getSerializerCode(), serializer.serialize(result));
+                        responseBytes.setInvokeId(request.getInvokeId());
                     }
-                    Object result = methodAccess.invoke(serviceWrapper.getServiceProvider(), requestWrapper.getMethodName(), requestWrapper.getArgs());
-
-                    ResponseBytes responseBytes = new ResponseBytes(request.getSerializerCode(), serializer.serialize(result));
-                    responseBytes.setStatus(ProtocolHead.STATUS_SUCCESS);
-                    responseBytes.setInvokeId(request.getInvokeId());
-
                     return responseBytes;
                 }
                 default:
@@ -130,7 +146,7 @@ public class DefaultProvider implements Provider{
 
         @Override
         public boolean rejectRequest() {
-            if(flowControllers != null && flowControllers.length > 0) {
+            if (flowControllers != null && flowControllers.length > 0) {
                 for (FlowController flowController : flowControllers) {
                     try {
                         flowController.flowController();

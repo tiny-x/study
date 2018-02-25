@@ -2,18 +2,21 @@ package org.rpc.remoting.api.future;
 
 import org.rpc.remoting.api.InvokeCallback;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 public class ResponseFuture<T> {
 
-    private final CompletableFuture<T> future = new CompletableFuture();
+    private final CountDownLatch countDownLatch = new CountDownLatch(1);
 
     private InvokeCallback<T> invokeCallback;
 
-    public void executeInvokeCallback() throws ExecutionException, InterruptedException {
+    private Throwable cause;
+
+    private T result;
+
+    private volatile boolean success;
+
+    public void executeInvokeCallback() {
         if (invokeCallback != null) {
             invokeCallback.operationComplete(this);
         }
@@ -26,20 +29,42 @@ public class ResponseFuture<T> {
         this.invokeCallback = invokeCallback;
     }
 
-    public T get() throws ExecutionException, InterruptedException {
-        return future.get();
+    public T get() throws InterruptedException {
+        countDownLatch.await();
+        return result;
     }
 
-    public T get(long timeout, TimeUnit timeUnit)
-            throws ExecutionException, InterruptedException, TimeoutException {
-        return future.get(timeout, timeUnit);
+    public T get(long timeout, TimeUnit timeUnit) throws InterruptedException {
+        countDownLatch.await(timeout, timeUnit);
+        return result;
     }
 
     public void complete(T t) {
-        future.complete(t);
+        this.result = t;
+        countDownLatch.countDown();
+    }
+
+    public T result() {
+        return result;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 
     public InvokeCallback<T> getInvokeCallback() {
         return invokeCallback;
+    }
+
+    public void failure(Throwable cause) {
+        this.cause = cause;
+    }
+
+    public Throwable cause() {
+        return cause;
     }
 }
