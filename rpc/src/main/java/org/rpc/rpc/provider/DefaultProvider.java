@@ -31,13 +31,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.ref.SoftReference;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.*;
 
 public class DefaultProvider implements Provider {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultProvider.class);
+
+    private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
 
     private RpcServer server;
 
@@ -47,10 +47,22 @@ public class DefaultProvider implements Provider {
 
     private FlowController[] flowControllers;
 
+    private NettyServerConfig config;
+
+
     public DefaultProvider(NettyServerConfig nettyServerConfig) {
+        this.config = nettyServerConfig;
         this.serviceProviderContainer = new DefaultServiceProviderContainer();
         this.server = new NettyServer(nettyServerConfig);
-        this.server.registerRequestProcess(new DefaultProviderProcessor(), Executors.newCachedThreadPool());
+
+        ExecutorService executorService = new ThreadPoolExecutor(
+                AVAILABLE_PROCESSORS << 1,
+                512,
+                120L,
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue(32768)
+        );
+        this.server.registerRequestProcess(new DefaultProviderProcessor(), executorService);
     }
 
     @Override
@@ -84,14 +96,14 @@ public class DefaultProvider implements Provider {
         RegisterMeta registerMeta = new RegisterMeta();
         registerMeta.setServiceMeta(serviceWrapper.getServiceMeta());
         registerMeta.setConnCount(4);
-        registerMeta.setAddress(new UnresolvedAddress(InetUtils.getLocalHost(), 9180));
+        registerMeta.setAddress(new UnresolvedAddress(InetUtils.getLocalHost(), config.getPort()));
 
         registerService.register(registerMeta);
     }
 
     class DefaultProviderProcessor implements RequestProcessor {
 
-        private ConcurrentHashMap<Class<?>, SoftReference<MethodAccess>> methodAccessCache = new ConcurrentHashMap<>();
+        private final ConcurrentHashMap<Class<?>, SoftReference<MethodAccess>> methodAccessCache = new ConcurrentHashMap<>();
 
         @Override
         public ResponseBytes process(ChannelHandlerContext context, RequestBytes request) {

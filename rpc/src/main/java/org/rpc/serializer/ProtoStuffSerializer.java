@@ -10,12 +10,6 @@ import org.objenesis.ObjenesisStd;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * The type Serialization util.
- *
- * @author yefei
- * @date 2017 -6-20 15:05:50
- */
 public class ProtoStuffSerializer implements Serializer {
 
     private static Map<Class<?>, Schema<?>> cachedSchema = new ConcurrentHashMap<>();

@@ -9,10 +9,10 @@ public class Benchmark {
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
-                .include(BenchmarkTest.class.getSimpleName())
+                .include(ReflectBenchmark.class.getSimpleName())
                 .forks(1)
-                .warmupIterations(10) //预热次数
-                .measurementIterations(10) //真正执行次数
+                .warmupIterations(5) //预热次数
+                .measurementIterations(5) //真正执行次数
                 .build();
 
         new Runner(opt).run();

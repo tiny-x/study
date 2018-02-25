@@ -9,27 +9,32 @@ import org.rpc.rpc.model.ServiceMeta;
 
 public class ConsumerExample {
 
-    public static void main(String[] args) {
+    private static HelloService helloService;
+
+    static {
         NettyClientConfig config = new NettyClientConfig();
         Consumer consumer = new DefaultConsumer("consumer", config);
         UnresolvedAddress address = new UnresolvedAddress("127.0.0.1", 9180);
+        consumer.connect(address);
+        consumer.connect(address);
+        consumer.connect(address);
         consumer.connect(address);
 
         ServiceMeta serviceMeta = new ServiceMeta("test", "org.rpc.example.demo.HelloService", "1.0.0");
         consumer.client().addChannelGroup(serviceMeta, address);
 
-        HelloService helloService = ProxyFactory.factory(HelloService.class)
+        helloService = ProxyFactory.factory(HelloService.class)
                 .consumer(consumer)
                 .directory(serviceMeta)
                 .timeMillis(300000L)
                 .newProxy();
+    }
 
-        long l = System.currentTimeMillis();
-        for (int i = 0; i < 100; i++) {
-            String s = helloService.sayHello(" biu biu biu!!!");
-            //System.out.printf("---------->: receive provider message %s \n", s);
-        }
-        System.out.printf("耗时 %s \n", System.currentTimeMillis() - l);
+    public static void main(String[] args) {
+        new ConsumerExample().invoke();
+    }
 
+    public void invoke() {
+        String s = helloService.sayHello(" biu biu biu!!!");
     }
 }

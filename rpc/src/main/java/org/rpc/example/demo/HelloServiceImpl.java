@@ -1,6 +1,5 @@
 package org.rpc.example.demo;
 
-import org.rpc.comm.bean.RpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +16,7 @@ public class HelloServiceImpl implements HelloService {
 
     @Override
     public String sayHello(String name) {
-        logger.info("HelloServiceImpl param:{}", name);
+        //logger.info("HelloServiceImpl param:{}", name);
         return "hello" + name;
     }
 }
