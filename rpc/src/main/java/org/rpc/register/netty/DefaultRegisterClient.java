@@ -33,9 +33,6 @@ public class DefaultRegisterClient {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultRegisterClient.class);
 
-    // 注册中心地址
-    private UnresolvedAddress unresolvedAddress = null;
-
     private RpcClient rpcClient;
 
     private NettyClientConfig config = new NettyClientConfig();
@@ -55,12 +52,8 @@ public class DefaultRegisterClient {
                 (byte) SystemPropertyUtil.getInt("serializer.serializerType", SerializerType.PROTO_STUFF.value()));
     }
 
-    public DefaultRegisterClient(String address, AbstractRegisterService registerService) {
+    public DefaultRegisterClient(UnresolvedAddress unresolvedAddress, AbstractRegisterService registerService) {
         this.registerService = registerService;
-        // TODO 先按一个注册中心写完功能
-        UnresolvedAddress[] addresses = InetUtils.spiltAddress(address);
-        unresolvedAddress = addresses[0];
-
         this.rpcClient = new NettyClient(config, new RegisterClientChannelEventProcess());
         rpcClient.start();
         try {
@@ -70,6 +63,7 @@ public class DefaultRegisterClient {
             this.channel = group.next();
         } catch (Exception e) {
             logger.error("connect register fail", e);
+            throw new RuntimeException(e);
         }
     }
 

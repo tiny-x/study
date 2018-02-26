@@ -82,4 +82,8 @@ public class ZookeeperRegisterService extends AbstractRegisterService {
         return null;
     }
 
+    @Override
+    public void connectToRegistryServer(String addresses) {
+
+    }
 }

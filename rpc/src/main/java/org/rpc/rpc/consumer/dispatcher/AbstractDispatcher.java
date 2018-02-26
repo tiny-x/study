@@ -128,7 +128,7 @@ public abstract class AbstractDispatcher implements Dispatcher {
                 return null;
             }
             case ONE_WAY: {
-                consumer.client().invokeSync(channelGroup.remoteAddress(),
+                consumer.client().invokeOneWay(channelGroup.remoteAddress(),
                                 request.getRequestCommand(),
                                 timeoutMillis);
             }

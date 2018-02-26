@@ -79,7 +79,7 @@ public class DefaultRegisterServer implements RegisterServer {
 
     private static ResponseCommand handleUnRegisterService(RequestCommand request, Serializer serializer) {
         RegisterMeta registerMeta = serializer.deserialize(request.getBody(), RegisterMeta.class);
-        logger.info("[UN_REGISTER] provider: {} cancel register service: {}", registerMeta.getAddress().getHost(), registerMeta);
+        logger.info("[UN_REGISTER] cancel register service: {}", registerMeta);
         String serviceProviderName = registerMeta.getServiceMeta().getServiceProviderName();
         ConcurrentSet<RegisterMeta> registerMetaList = PROVIDER_MAP.get(serviceProviderName);
         if (registerMetaList != null && registerMetaList.size() > 0) {
@@ -212,7 +212,7 @@ public class DefaultRegisterServer implements RegisterServer {
         private ResponseCommand handleSubscribeService(ChannelHandlerContext context, RequestCommand request, Serializer serializer) {
             ServiceMeta serviceMeta = serializer.deserialize(request.getBody(), ServiceMeta.class);
 
-            logger.info("[SUBSCRIBE] consumer: subscribe service: {}", serviceMeta);
+            logger.info("[SUBSCRIBE] subscribe service: {}", serviceMeta);
 
             // channel 附上 订阅的服务（三元素）
             Channel channel = context.channel();
@@ -251,7 +251,7 @@ public class DefaultRegisterServer implements RegisterServer {
         private ResponseCommand handleRegisterService(ChannelHandlerContext context, RequestCommand request, Serializer serializer) {
             RegisterMeta registerMeta = serializer.deserialize(request.getBody(), RegisterMeta.class);
 
-            logger.info("[REGISTER] provider: {} register service: {}", registerMeta.getAddress().getHost(), registerMeta);
+            logger.info("[REGISTER] register service: {}", registerMeta);
             String serviceProviderName = registerMeta.getServiceMeta().getServiceProviderName();
             ConcurrentSet<RegisterMeta> providers = PROVIDER_MAP.get(serviceProviderName);
             if (providers == null) {

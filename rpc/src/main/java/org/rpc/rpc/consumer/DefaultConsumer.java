@@ -56,8 +56,9 @@ public class DefaultConsumer implements Consumer {
     }
 
     @Override
-    public void connectToRegistryServer(String address) {
+    public void connectToRegistryServer(String addressess) {
         registerService = RegisterFactory.registerService(RegisterType.DEFAULT);
+        registerService.connectToRegistryServer(addressess);
     }
 
     @Override

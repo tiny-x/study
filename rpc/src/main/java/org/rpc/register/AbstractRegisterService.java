@@ -4,6 +4,8 @@ import org.rpc.comm.UnresolvedAddress;
 import org.rpc.comm.collection.ConcurrentSet;
 import org.rpc.register.model.RegisterMeta;
 import org.rpc.rpc.model.ServiceMeta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,6 +14,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public abstract class AbstractRegisterService implements RegisterService {
+
+    /**
+     * logger
+     */
+    private final static Logger logger = LoggerFactory.getLogger(AbstractRegisterService.class);
 
     /**
      * 订阅者监听器
@@ -35,18 +42,21 @@ public abstract class AbstractRegisterService implements RegisterService {
 
     @Override
     public void register(RegisterMeta registerMeta) {
+        logger.info("[REGISTER] register service: {}", registerMeta);
         providers.add(registerMeta);
         doRegister(registerMeta);
     }
 
     @Override
     public void unRegister(RegisterMeta registerMeta) {
+        logger.info("[UN_REGISTER] unRegister service: {}", registerMeta);
         consumers.remove(registerMeta);
         doUnRegister(registerMeta);
     }
 
     @Override
     public void subscribe(ServiceMeta serviceMeta, NotifyListener notifyListener) {
+        logger.info("[SUBSCRIBE] subscribe service: {}", serviceMeta);
         subscribeListeners.put(serviceMeta, notifyListener);
         consumers.add(serviceMeta);
         doSubscribe(serviceMeta);
@@ -74,12 +84,22 @@ public abstract class AbstractRegisterService implements RegisterService {
     }
 
     public void notify(ServiceMeta serviceMeta, NotifyEvent event, List<RegisterMeta> registerMetas) {
+        logger.info("[NOTIFY] consumer service: {} notifyEvent：{}, registerMetas: {}",
+                serviceMeta,
+                event.name(),
+                registerMetas);
+
         if (registerMetas != null && registerMetas.size() > 0) {
             NotifyListener notifyListener = subscribeListeners.get(serviceMeta);
             for (RegisterMeta registerMeta : registerMetas) {
                 notifyListener.notify(registerMeta, event);
             }
         }
+    }
+
+    @Override
+    public List<RegisterMeta> lookup(RegisterMeta RegisterMeta) {
+        return null;
     }
 
     public ConcurrentSet<RegisterMeta> getProviders() {

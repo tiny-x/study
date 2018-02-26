@@ -42,7 +42,7 @@ public class FailOverClusterInvoker implements ClusterInvoker {
                 logger.warn("[FAILOVER] tryCount: {} directory: {}, method: {}",
                         tryCount,
                         request.getRequestWrapper().getServiceMeta().directory(),
-                        request.getRequestWrapper().getMethodName());
+                        request.getRequestWrapper().getMethodName(), e);
                 return invoke0(request, tryCount, classType, invokeType);
             } else {
                 throw e;

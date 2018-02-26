@@ -5,7 +5,7 @@ public class NettyServerConfig {
     private int serverOnewaySemaphoreValue = 256;
     private int serverAsyncSemaphoreValue = 64;
 
-    private int connCount;
+    private int connCount = 4;
 
     private int idleAllSeconds = NettySystemConfig.IO_IDLE_ALL_TIME_SECONDS;
 

@@ -19,22 +19,20 @@ import org.rpc.serializer.SerializerType;
 
 public class ProxyFactory {
 
-    private ServiceMeta serviceMeta;
-
-    private Class<?> interfaces;
-
-    private Consumer consumer;
-
-    private long timeoutMillis;
-
-    private InvokeType invokeType = InvokeType.SYNC;
-
     private static final SerializerType serializerType;
 
     static {
         serializerType = SerializerType.parse(
                 (byte) SystemPropertyUtil.getInt("serializer.serializerType", SerializerType.PROTO_STUFF.value()));
     }
+
+    private ServiceMeta serviceMeta;
+    private Class<?> interfaces;
+    private Consumer consumer;
+    private long timeoutMillis;
+    private InvokeType invokeType = InvokeType.SYNC;
+    private ClusterInvoker.Strategy strategy = ClusterInvoker.Strategy.FAIL_FAST;
+    private int retries = 0;
 
     public static ProxyFactory factory(Class<?> interfaces) {
 
@@ -63,6 +61,16 @@ public class ProxyFactory {
         return this;
     }
 
+    public ProxyFactory strategy(ClusterInvoker.Strategy strategy) {
+        this.strategy = strategy;
+        return this;
+    }
+
+    public ProxyFactory retries(int retries) {
+        this.retries = retries;
+        return this;
+    }
+
 
     @SuppressWarnings("unchecked")
     public <T> T newProxy() {
@@ -80,7 +88,8 @@ public class ProxyFactory {
                     switch (event) {
                         case ADD: {
                             if (!consumer.client().hasAvailableChannelGroup(registerMeta.getAddress())) {
-                                for (int i = 0; i < registerMeta.getConnCount(); i++) {
+                                int connCount = registerMeta.getConnCount() < 1 ? 1 : registerMeta.getConnCount();
+                                for (int i = 0; i < connCount; i++) {
                                     consumer.connect(registerMeta.getAddress());
                                     consumer.client().addChannelGroup(serviceMeta, registerMeta.getAddress());
                                 }
@@ -112,7 +121,7 @@ public class ProxyFactory {
                         consumer.application(),
                         dispatcher,
                         serviceMeta,
-                        new StrategyConfig(ClusterInvoker.Strategy.FAIL_FAST),
+                        new StrategyConfig(strategy, retries),
                         invokeType
                 ));
     }

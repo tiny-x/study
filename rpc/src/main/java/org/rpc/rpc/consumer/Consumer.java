@@ -33,7 +33,7 @@ public interface Consumer {
      * 连接到注册中心
      * @param address
      */
-    void connectToRegistryServer(String address);
+    void connectToRegistryServer(String addressess);
 
     /**
      * 从注册中心订阅一个服务.

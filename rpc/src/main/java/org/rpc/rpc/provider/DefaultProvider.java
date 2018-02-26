@@ -51,8 +51,9 @@ public class DefaultProvider implements Provider {
     }
 
     @Override
-    public void connectToRegistryServer(String address) {
+    public void connectToRegistryServer(String addressess) {
         registerService = RegisterFactory.registerService(RegisterType.DEFAULT);
+        registerService.connectToRegistryServer(addressess);
     }
 
     @Override
@@ -82,6 +83,7 @@ public class DefaultProvider implements Provider {
         registerMeta.setServiceMeta(serviceWrapper.getServiceMeta());
         registerMeta.setConnCount(config.getConnCount());
         registerMeta.setAddress(new UnresolvedAddress(InetUtils.getLocalHost(), config.getPort()));
+        registerMeta.setWeight(50);
 
         registerService.register(registerMeta);
     }

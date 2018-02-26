@@ -69,6 +69,11 @@ public class NettyServer extends NettyServiceAbstract implements RpcServer {
     }
 
     @Override
+    public void invokeOneWay(Channel channel, RequestCommand request, long timeoutMillis) throws RemotingException, InterruptedException {
+        invokeOneWay0(channel, request, timeoutMillis, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
     public void registerRequestProcess(RequestProcessor requestProcessor, ExecutorService executor) {
         defaultProcessor.setA(requestProcessor);
         defaultProcessor.setB(executor);

@@ -1,9 +1,13 @@
-package org.rpc.example.register;
+package org.rpc.example.failover;
 
 import org.rpc.remoting.netty.NettyServerConfig;
+import org.rpc.rpc.flow.controller.FlowController;
 import org.rpc.rpc.model.ServiceWrapper;
 import org.rpc.rpc.provider.DefaultProvider;
 import org.rpc.rpc.provider.Provider;
+
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ProviderExample {
 
@@ -11,7 +15,17 @@ public class ProviderExample {
         NettyServerConfig config = new NettyServerConfig();
         Provider provider = new DefaultProvider(config);
         provider.start();
-        provider.connectToRegistryServer("127.0.0.1:9876");
+        provider.registerGlobalFlowController(new FlowController() {
+
+            private AtomicInteger atomicInteger = new AtomicInteger(0);
+
+            @Override
+            public void flowController() throws RejectedExecutionException {
+                if (atomicInteger.incrementAndGet() > 500) {
+                    throw new RejectedExecutionException("flowController count:" + atomicInteger.get());
+                }
+            }
+        });
 
         HelloService helloService = new HelloServiceImpl();
 
@@ -22,11 +36,7 @@ public class ProviderExample {
                 .providerName("org.rpc.example.demo.HelloService")
                 .group("test")
                 .version("1.0.0")
-                .weight(50)
                 .register();
-
-        // 发布到注册中心
-        provider.publishService(serviceWrapper);
 
     }
 }

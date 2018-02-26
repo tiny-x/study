@@ -14,6 +14,9 @@ public interface RpcServer extends RpcService {
     void invokeAsync(final Channel channel, final RequestCommand request
             , long timeoutMillis, InvokeCallback<ResponseCommand> invokeCallback) throws RemotingException, InterruptedException;
 
+    void invokeOneWay(final Channel channel, final RequestCommand request, long timeoutMillis)
+            throws RemotingException, InterruptedException;
+
     void registerRequestProcess(RequestProcessor requestProcessor, ExecutorService executor);
 
 }

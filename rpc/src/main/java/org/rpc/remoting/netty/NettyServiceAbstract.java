@@ -68,7 +68,8 @@ public abstract class NettyServiceAbstract {
                 future.executeInvokeCallback();
             }
         } else {
-            logger.warn("processResponseCommand invokeId: {}, responseFuture is null!", invokeId);
+            logger.warn("receive response, but not matched any request, " + ctx.channel());
+            logger.warn(cmd.toString());
         }
     }
 
@@ -145,11 +146,8 @@ public abstract class NettyServiceAbstract {
             ResponseCommand response = responseFuture.get(timeout, timeUnit);
             if (response == null) {
                 if (responseFuture.isSuccess()) {
-                    response.setInvokeId(request.getInvokeId());
-                    response.setStatus(ResponseStatus.SERVER_TIME_OUT.value());
                     throw new RemotingTimeoutException(channel.remoteAddress().toString(),
                             timeUnit.convert(timeout, TimeUnit.MILLISECONDS));
-
                 } else {
                     throw new RemotingSendRequestException("send request failed", responseFuture.cause());
                 }

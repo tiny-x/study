@@ -30,9 +30,9 @@ public interface Provider {
     /**
      * 连接注册中心
      *
-     * @param address
+     * @param addressess
      */
-    void connectToRegistryServer(String address);
+    void connectToRegistryServer(String addressess);
 
     /**
      * 发布服务到注册中心

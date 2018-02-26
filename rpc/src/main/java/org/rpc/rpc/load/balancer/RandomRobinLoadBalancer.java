@@ -18,7 +18,7 @@ public class RandomRobinLoadBalancer implements LoadBalancer {
     
     @Override
     public ChannelGroup select(CopyOnWriteArrayList<ChannelGroup> list, Directory directory) {
-        if (list == null && list.size() == 0) {
+        if (list == null || list.size() == 0) {
             return null;
         }
         ChannelGroup[] channelGroups = new ChannelGroup[list.size()];

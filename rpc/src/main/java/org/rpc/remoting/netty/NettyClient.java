@@ -175,7 +175,7 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
     }
 
     @Override
-    public void invokeeOneWay(UnresolvedAddress address, RequestCommand request, long timeoutMillis)
+    public void invokeOneWay(UnresolvedAddress address, RequestCommand request, long timeoutMillis)
             throws RemotingException, InterruptedException {
         invokeOneWay0(group(address).next(), request, timeoutMillis, TimeUnit.MILLISECONDS);
     }

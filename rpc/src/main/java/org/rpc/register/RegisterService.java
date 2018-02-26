@@ -21,4 +21,6 @@ public interface RegisterService {
 
     RegisterType registerType();
 
+    void connectToRegistryServer(String addresses);
+
 }

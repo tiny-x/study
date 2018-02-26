@@ -11,25 +11,24 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Reflects {
 
-    private static final ConcurrentHashMap<Class<?>, SoftReference<MethodAccess>> METHOD_ACCESS_CACHE = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Class<?>, SoftReference<MethodAccess>> METHODACCESS_CACHE = new ConcurrentHashMap<>();
 
     public static Object Invoke(Object obj, String methodName, Object[] args) {
         Class<?> aClass = obj.getClass();
-        SoftReference<MethodAccess> methodAccess = METHOD_ACCESS_CACHE.get(aClass);
+        SoftReference<MethodAccess> methodAccess = METHODACCESS_CACHE.get(aClass);
 
         if (methodAccess == null) {
             SoftReference<MethodAccess> newMethodAccess = new SoftReference<>(MethodAccess.get(aClass));
-            methodAccess = METHOD_ACCESS_CACHE.putIfAbsent(aClass, newMethodAccess);
+            methodAccess = METHODACCESS_CACHE.putIfAbsent(aClass, newMethodAccess);
             if (methodAccess == null) {
                 methodAccess = newMethodAccess;
             }
         }
         MethodAccess invoker = methodAccess.get();
         if (invoker == null) {
-            METHOD_ACCESS_CACHE.remove(aClass);
+            METHODACCESS_CACHE.remove(aClass);
             invoker = MethodAccess.get(aClass);
         }
         return invoker.invoke(obj, methodName, args);
-
     }
 }

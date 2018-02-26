@@ -1,7 +1,9 @@
-package org.rpc.example.register;
+package org.rpc.example.failover;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author yefei
@@ -17,6 +19,11 @@ public class HelloServiceImpl implements HelloService {
     @Override
     public String sayHello(String name) {
         logger.info("HelloServiceImpl param:{}", name);
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return "hello" + name;
     }
 }
