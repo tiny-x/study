@@ -7,6 +7,7 @@ import org.rpc.register.NotifyListener;
 import org.rpc.register.OfflineListener;
 import org.rpc.register.model.RegisterMeta;
 import org.rpc.rpc.consumer.Consumer;
+import org.rpc.rpc.consumer.InvokeType;
 import org.rpc.rpc.consumer.StrategyConfig;
 import org.rpc.rpc.consumer.cluster.ClusterInvoker;
 import org.rpc.rpc.consumer.dispatcher.DefaultRoundDispatcher;
@@ -26,7 +27,7 @@ public class ProxyFactory {
 
     private long timeoutMillis;
 
-    private boolean sync = true;
+    private InvokeType invokeType = InvokeType.SYNC;
 
     private static final SerializerType serializerType;
 
@@ -57,8 +58,8 @@ public class ProxyFactory {
         return this;
     }
 
-    public ProxyFactory sync(boolean sync) {
-        this.sync = sync;
+    public ProxyFactory invokeType(InvokeType invokeType) {
+        this.invokeType = invokeType;
         return this;
     }
 
@@ -112,7 +113,7 @@ public class ProxyFactory {
                         dispatcher,
                         serviceMeta,
                         new StrategyConfig(ClusterInvoker.Strategy.FAIL_FAST),
-                        sync
+                        invokeType
                 ));
     }
 

@@ -1,12 +1,12 @@
 package org.rpc.remoting.api;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.rpc.remoting.api.payload.RequestBytes;
-import org.rpc.remoting.api.payload.ResponseBytes;
+import org.rpc.remoting.api.payload.RequestCommand;
+import org.rpc.remoting.api.payload.ResponseCommand;
 
 public interface RequestProcessor {
 
-    ResponseBytes process(ChannelHandlerContext context, RequestBytes request);
+    ResponseCommand process(ChannelHandlerContext context, RequestCommand request);
 
     boolean rejectRequest();
 }

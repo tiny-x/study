@@ -4,6 +4,7 @@ import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import org.rpc.rpc.Request;
+import org.rpc.rpc.consumer.InvokeType;
 import org.rpc.rpc.consumer.StrategyConfig;
 import org.rpc.rpc.consumer.cluster.ClusterInvoker;
 import org.rpc.rpc.consumer.cluster.FailFastClusterInvoker;
@@ -24,19 +25,19 @@ public class DefaultInvoker {
 
     private StrategyConfig strategyConfig;
 
-    private boolean sync;
+    private InvokeType invokeType;
 
     public DefaultInvoker(
                 String application,
                 Dispatcher dispatcher,
                 ServiceMeta serviceMeta,
                 StrategyConfig strategyConfig,
-                boolean sync) {
+                InvokeType invokeType) {
 
         this.dispatcher = dispatcher;
         this.serviceMeta = serviceMeta;
         this.strategyConfig = strategyConfig;
-        this.sync = sync;
+        this.invokeType = invokeType;
     }
 
     @RuntimeType
@@ -51,7 +52,7 @@ public class DefaultInvoker {
         request.setRequestWrapper(requestWrapper);
         ClusterInvoker clusterInvoker = createClusterInvoker(dispatcher, strategyConfig);
 
-        return clusterInvoker.invoke(request, method.getReturnType(), sync);
+        return clusterInvoker.invoke(request, method.getReturnType(), invokeType);
     }
 
 

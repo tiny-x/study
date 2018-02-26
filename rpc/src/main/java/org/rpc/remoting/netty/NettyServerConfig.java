@@ -5,6 +5,8 @@ public class NettyServerConfig {
     private int serverOnewaySemaphoreValue = 256;
     private int serverAsyncSemaphoreValue = 64;
 
+    private int connCount;
+
     private int idleAllSeconds = NettySystemConfig.IO_IDLE_ALL_TIME_SECONDS;
 
     private int serverSocketSndBufSize = NettySystemConfig.socketSndbufSize;
@@ -58,5 +60,13 @@ public class NettyServerConfig {
 
     public void setServerAsyncSemaphoreValue(int serverAsyncSemaphoreValue) {
         this.serverAsyncSemaphoreValue = serverAsyncSemaphoreValue;
+    }
+
+    public int getConnCount() {
+        return connCount;
+    }
+
+    public void setConnCount(int connCount) {
+        this.connCount = connCount;
     }
 }

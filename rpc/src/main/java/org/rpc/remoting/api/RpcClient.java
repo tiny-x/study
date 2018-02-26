@@ -5,8 +5,8 @@ import org.rpc.comm.UnresolvedAddress;
 import org.rpc.exception.RemotingConnectException;
 import org.rpc.exception.RemotingException;
 import org.rpc.remoting.api.channel.ChannelGroup;
-import org.rpc.remoting.api.payload.RequestBytes;
-import org.rpc.remoting.api.payload.ResponseBytes;
+import org.rpc.remoting.api.payload.RequestCommand;
+import org.rpc.remoting.api.payload.ResponseCommand;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -28,18 +28,24 @@ public interface RpcClient extends RpcService {
 
     boolean isDirectoryAvailable(Directory directory);
 
-    ResponseBytes invokeSync(final Channel channel, final RequestBytes request, long timeoutMillis)
+    ResponseCommand invokeSync(final Channel channel, final RequestCommand request, long timeoutMillis)
             throws RemotingException, InterruptedException;
 
-    ResponseBytes invokeSync(final UnresolvedAddress address, final RequestBytes request, long timeoutMillis)
+    ResponseCommand invokeSync(final UnresolvedAddress address, final RequestCommand request, long timeoutMillis)
             throws RemotingException, InterruptedException;
 
-    void invokeAsync(final Channel channel, final RequestBytes request
-            , long timeout, InvokeCallback<ResponseBytes> invokeCallback)
+    void invokeAsync(final Channel channel, final RequestCommand request
+            , long timeoutMillis, InvokeCallback<ResponseCommand> invokeCallback)
             throws RemotingException, InterruptedException;
 
-    void invokeAsync(final UnresolvedAddress address, final RequestBytes request
-            , long timeout, InvokeCallback<ResponseBytes> invokeCallback)
+    void invokeAsync(final UnresolvedAddress address, final RequestCommand request
+            , long timeoutMillis, InvokeCallback<ResponseCommand> invokeCallback)
+            throws RemotingException, InterruptedException;
+
+    void invokeOneWay(final Channel channel, final RequestCommand request, long timeoutMillis)
+            throws RemotingException, InterruptedException;
+
+    void invokeeOneWay(final UnresolvedAddress address, final RequestCommand request, long timeoutMillis)
             throws RemotingException, InterruptedException;
 
     void registerRequestProcess(RequestProcessor requestProcessor, ExecutorService executor);

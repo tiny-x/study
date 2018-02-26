@@ -1,11 +1,11 @@
 package org.rpc.remoting.netty;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
-import org.rpc.remoting.api.payload.RequestBytes;
-import org.rpc.remoting.api.payload.ResponseBytes;
+import org.rpc.remoting.api.RemotingCommandFactory;
+import org.rpc.remoting.api.payload.RequestCommand;
+import org.rpc.remoting.api.payload.ResponseCommand;
 import org.rpc.remoting.api.procotol.ProtocolHead;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,22 +45,26 @@ public class NettyDecoder extends ReplayingDecoder<NettyDecoder.State> {
                 if (isRequest) {
                     byte[] body = new byte[head.getBodyLength()];
                     in.readBytes(body);
-                    RequestBytes requestBytes = new RequestBytes(
+                    RequestCommand requestCommand = RemotingCommandFactory.createRequestCommand(
                             head.getMessageCode(),
-                            head.getInvokeId(),
                             head.getSerializerCode(),
-                            body);
-                    out.add(requestBytes);
+                            body,
+                            head.getInvokeId()
+                    );
+
+                    out.add(requestCommand);
                 } else {
                     byte[] body = new byte[head.getBodyLength()];
                     in.readBytes(body);
-                    ResponseBytes responseBytes = new ResponseBytes(
+                    ResponseCommand responseCommand = RemotingCommandFactory.createResponseCommand(
                             head.getMessageCode(),
                             head.getSerializerCode(),
-                            body);
-                    responseBytes.setInvokeId(head.getInvokeId());
-                    responseBytes.setStatus(head.getStatus());
-                    out.add(responseBytes);
+                            body,
+                            head.getInvokeId()
+                    );
+
+                    responseCommand.setStatus(head.getStatus());
+                    out.add(responseCommand);
                 }
                 checkpoint(State.HEADER_MAGIC);
         }

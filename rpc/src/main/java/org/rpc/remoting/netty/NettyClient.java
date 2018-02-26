@@ -19,8 +19,8 @@ import org.rpc.remoting.api.*;
 import org.rpc.remoting.api.channel.ChannelGroup;
 import org.rpc.remoting.api.channel.DirectoryChannelGroup;
 import org.rpc.remoting.api.payload.ByteHolder;
-import org.rpc.remoting.api.payload.RequestBytes;
-import org.rpc.remoting.api.payload.ResponseBytes;
+import org.rpc.remoting.api.payload.RequestCommand;
+import org.rpc.remoting.api.payload.ResponseCommand;
 import org.rpc.remoting.channel.NettyChannelGroup;
 import org.rpc.remoting.netty.event.ChannelEvent;
 import org.rpc.remoting.netty.event.ChannelEventType;
@@ -144,24 +144,40 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
     }
 
     @Override
-    public ResponseBytes invokeSync(Channel channel, RequestBytes request, long timeoutMillis) throws RemotingException, InterruptedException {
+    public ResponseCommand invokeSync(Channel channel, RequestCommand request, long timeoutMillis)
+            throws RemotingException, InterruptedException {
         return invokeSync0(channel, request, timeoutMillis, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public void invokeAsync(Channel channel, RequestBytes request, long timeoutMillis, InvokeCallback<ResponseBytes> invokeCallback) throws RemotingException, InterruptedException {
+    public void invokeAsync(Channel channel, RequestCommand request, long timeoutMillis, InvokeCallback<ResponseCommand> invokeCallback)
+            throws RemotingException, InterruptedException {
         invokeAsync0(channel, request, timeoutMillis, TimeUnit.MILLISECONDS, invokeCallback);
     }
 
     @Override
-    public ResponseBytes invokeSync(final UnresolvedAddress address, RequestBytes request, long timeoutMillis) throws RemotingException, InterruptedException {
+    public ResponseCommand invokeSync(final UnresolvedAddress address, RequestCommand request, long timeoutMillis)
+            throws RemotingException, InterruptedException {
         return invokeSync0(group(address).next(), request, timeoutMillis, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public void invokeAsync(final UnresolvedAddress address, RequestBytes request,
-                            long timeoutMillis, InvokeCallback<ResponseBytes> invokeCallback) throws RemotingException, InterruptedException {
+    public void invokeAsync(final UnresolvedAddress address, RequestCommand request,
+                            long timeoutMillis, InvokeCallback<ResponseCommand> invokeCallback)
+            throws RemotingException, InterruptedException {
         invokeAsync0(group(address).next(), request, timeoutMillis, TimeUnit.MILLISECONDS, invokeCallback);
+    }
+
+    @Override
+    public void invokeOneWay(Channel channel, RequestCommand request, long timeoutMillis)
+            throws RemotingException, InterruptedException {
+        invokeOneWay0(channel, request, timeoutMillis, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void invokeeOneWay(UnresolvedAddress address, RequestCommand request, long timeoutMillis)
+            throws RemotingException, InterruptedException {
+        invokeOneWay0(group(address).next(), request, timeoutMillis, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -192,6 +208,20 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
         }
     }
 
+    private void putChannelEvent(ChannelEvent channelEvent) {
+        this.channelEventExecutor.putChannelEvent(channelEvent);
+    }
+
+    @Override
+    protected ChannelEventListener getChannelEventListener() {
+        return this.channelEventListener;
+    }
+
+    @Override
+    public void shutdown() {
+
+    }
+
     @ChannelHandler.Sharable
     class NettyClientHandler extends SimpleChannelInboundHandler<ByteHolder> implements TimerTask {
 
@@ -215,6 +245,10 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
 
         @Override
         public void run(Timeout timeout) throws Exception {
+            reconnect();
+        }
+
+        private void reconnect() {
             bootstrap.connect(address.getHost(), address.getPort())
                     .addListener(new ChannelFutureListener() {
                         @Override
@@ -310,20 +344,6 @@ public class NettyClient extends NettyServiceAbstract implements RpcClient {
                 NettyClient.this.putChannelEvent(new ChannelEvent(ChannelEventType.EXCEPTION, remoteAddress, ctx.channel()));
             }
         }
-    }
-
-    private void putChannelEvent(ChannelEvent channelEvent) {
-        this.channelEventExecutor.putChannelEvent(channelEvent);
-    }
-
-    @Override
-    protected ChannelEventListener getChannelEventListener() {
-        return this.channelEventListener;
-    }
-
-    @Override
-    public void shutdown() {
-
     }
 
 }

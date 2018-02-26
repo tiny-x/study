@@ -46,4 +46,10 @@ public interface Provider {
      *
      */
     void registerGlobalFlowController(FlowController... flowControllers);
+
+    /**
+     *
+     * @return
+     */
+    FlowController[] globalFlowController();
 }

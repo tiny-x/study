@@ -8,14 +8,11 @@ import org.rpc.exception.RemotingSendRequestException;
 import org.rpc.exception.RemotingTimeoutException;
 import org.rpc.exception.RemotingTooMuchRequestException;
 import org.rpc.remoting.Pair;
-import org.rpc.remoting.api.ChannelEventListener;
-import org.rpc.remoting.api.InvokeCallback;
-import org.rpc.remoting.api.RequestProcessor;
-import org.rpc.remoting.api.ResponseStatus;
+import org.rpc.remoting.api.*;
 import org.rpc.remoting.api.future.ResponseFuture;
 import org.rpc.remoting.api.payload.ByteHolder;
-import org.rpc.remoting.api.payload.RequestBytes;
-import org.rpc.remoting.api.payload.ResponseBytes;
+import org.rpc.remoting.api.payload.RequestCommand;
+import org.rpc.remoting.api.payload.ResponseCommand;
 import org.rpc.remoting.netty.event.ChannelEvent;
 import org.rpc.serializer.Serializer;
 import org.rpc.serializer.SerializerFactory;
@@ -31,7 +28,7 @@ public abstract class NettyServiceAbstract {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServiceAbstract.class);
 
-    protected final ConcurrentMap<Long, ResponseFuture<ResponseBytes>> responseTable =
+    protected final ConcurrentMap<Long, ResponseFuture<ResponseCommand>> responseTable =
             new ConcurrentHashMap(256);
 
     protected final HashMap<Integer/* request code */, Pair<RequestProcessor, ExecutorService>> processorTable =
@@ -53,17 +50,17 @@ public abstract class NettyServiceAbstract {
     public void processMessageReceived(ChannelHandlerContext ctx, ByteHolder msg) throws Exception {
         final ByteHolder cmd = msg;
         if (cmd != null) {
-            if (msg instanceof RequestBytes) {
-                processRequestCommand(ctx, (RequestBytes) msg);
-            } else if (msg instanceof ResponseBytes) {
-                processResponseCommand(ctx, (ResponseBytes) msg);
+            if (msg instanceof RequestCommand) {
+                processRequestCommand(ctx, (RequestCommand) msg);
+            } else if (msg instanceof ResponseCommand) {
+                processResponseCommand(ctx, (ResponseCommand) msg);
             }
         }
     }
 
-    private void processResponseCommand(ChannelHandlerContext ctx, ResponseBytes cmd) throws Exception {
+    private void processResponseCommand(ChannelHandlerContext ctx, ResponseCommand cmd) throws Exception {
         long invokeId = cmd.getInvokeId();
-        ResponseFuture<ResponseBytes> future = responseTable.get(invokeId);
+        ResponseFuture<ResponseCommand> future = responseTable.get(invokeId);
         if (future != null) {
             future.complete(cmd);
             if (future.getInvokeCallback() != null) {
@@ -75,57 +72,65 @@ public abstract class NettyServiceAbstract {
         }
     }
 
-    private void processRequestCommand(ChannelHandlerContext ctx, RequestBytes cmd) {
-        SerializerType serializerType = SerializerType.parse(cmd.getSerializerCode());
-        Serializer serializer = SerializerFactory.serializer(serializerType);
+    private void processRequestCommand(ChannelHandlerContext ctx, RequestCommand cmd) {
+        Serializer serializer = SerializerFactory.serializer(SerializerType.parse(cmd.getSerializerCode()));
 
         if (defaultProcessor.getA() != null && defaultProcessor.getB() != null) {
             try {
                 defaultProcessor.getB().submit(() -> {
+                    ResponseCommand responseCommand = null;
                     if (defaultProcessor.getA().rejectRequest()) {
                         String message = "[REJECT_REQUEST] system busy, start flow control for a while";
-
-                        ResponseBytes responseBytes = new ResponseBytes(
-                                cmd.getSerializerCode(),
-                                serializer.serialize(message));
-                        responseBytes.setInvokeId(cmd.getInvokeId());
-                        responseBytes.setStatus(ResponseStatus.FLOW_CONTROL.value());
-                        ctx.channel().writeAndFlush(responseBytes);
-                    } else {
-                        ResponseBytes responseBytes = defaultProcessor.getA().process(ctx, cmd);
-                        if (responseBytes != null) {
-                            ctx.channel().writeAndFlush(responseBytes);
+                        logger.warn(message);
+                        if (!cmd.isOneWay()) {
+                            responseCommand = RemotingCommandFactory.createResponseCommand(
+                                    cmd.getSerializerCode(),
+                                    serializer.serialize(message),
+                                    cmd.getInvokeId()
+                            );
+                            responseCommand.setStatus(ResponseStatus.FLOW_CONTROL.value());
                         }
+                    } else {
+                        responseCommand = defaultProcessor.getA().process(ctx, cmd);
+                    }
+                    if (responseCommand != null) {
+                        ctx.channel().writeAndFlush(responseCommand);
                     }
                 });
             } catch (RejectedExecutionException e) {
 
                 String message = "[OVERLOAD]system busy, start flow control for a while";
+                logger.error(message, e);
 
-                ResponseBytes responseBytes = new ResponseBytes(
-                        cmd.getSerializerCode(),
-                        serializer.serialize(message));
-                responseBytes.setInvokeId(cmd.getInvokeId());
-                responseBytes.setStatus(ResponseStatus.SYSTEM_BUSY.value());
-                ctx.channel().writeAndFlush(responseBytes);
+                if (!cmd.isOneWay()) {
+                    ResponseCommand responseCommand = RemotingCommandFactory.createResponseCommand(
+                            cmd.getSerializerCode(),
+                            serializer.serialize(message),
+                            cmd.getInvokeId()
+                    );
+                    responseCommand.setStatus(ResponseStatus.SYSTEM_BUSY.value());
+                    ctx.channel().writeAndFlush(responseCommand);
+                }
             }
         } else {
             String message = "[ERROR]system error, request process not register";
-
-            ResponseBytes responseBytes = new ResponseBytes(
-                    cmd.getSerializerCode(),
-                    serializer.serialize(message));
-            responseBytes.setInvokeId(cmd.getInvokeId());
-            responseBytes.setStatus(ResponseStatus.SERVER_ERROR.value());
-            ctx.channel().writeAndFlush(responseBytes);
-
             logger.error(ctx.channel() + message);
+
+            if (!cmd.isOneWay()) {
+                ResponseCommand responseCommand = RemotingCommandFactory.createResponseCommand(
+                        cmd.getSerializerCode(),
+                        serializer.serialize(message),
+                        cmd.getInvokeId()
+                );
+                responseCommand.setStatus(ResponseStatus.SERVER_ERROR.value());
+                ctx.channel().writeAndFlush(responseCommand);
+            }
         }
     }
 
-    protected ResponseBytes invokeSync0(Channel channel, RequestBytes request, long timeout, TimeUnit timeUnit)
+    protected ResponseCommand invokeSync0(Channel channel, RequestCommand request, long timeout, TimeUnit timeUnit)
             throws RemotingException, InterruptedException {
-        ResponseFuture<ResponseBytes> responseFuture = new ResponseFuture<>();
+        ResponseFuture<ResponseCommand> responseFuture = new ResponseFuture<>();
         responseTable.putIfAbsent(request.getInvokeId(), responseFuture);
         try {
             channel.writeAndFlush(request).addListener((ChannelFuture future) -> {
@@ -137,7 +142,7 @@ public abstract class NettyServiceAbstract {
                     logger.warn("send a request command to channel <" + channel + "> failed.");
                 }
             });
-            ResponseBytes response = responseFuture.get(timeout, timeUnit);
+            ResponseCommand response = responseFuture.get(timeout, timeUnit);
             if (response == null) {
                 if (responseFuture.isSuccess()) {
                     response.setInvokeId(request.getInvokeId());
@@ -155,11 +160,11 @@ public abstract class NettyServiceAbstract {
         }
     }
 
-    protected void invokeAsync0(Channel channel, RequestBytes request,
-                                long timeout, TimeUnit timeUnit, InvokeCallback<ResponseBytes> invokeCallback)
+    protected void invokeAsync0(Channel channel, RequestCommand request,
+                                 long timeout, TimeUnit timeUnit, InvokeCallback<ResponseCommand> invokeCallback)
             throws RemotingException, InterruptedException {
 
-        ResponseFuture<ResponseBytes> responseFuture = new ResponseFuture<>(invokeCallback);
+        ResponseFuture<ResponseCommand> responseFuture = new ResponseFuture<>(invokeCallback);
         responseTable.putIfAbsent(request.getInvokeId(), responseFuture);
 
         if (semaphoreAsync.tryAcquire(timeout, timeUnit)) {
@@ -179,7 +184,7 @@ public abstract class NettyServiceAbstract {
                 throw new RemotingTooMuchRequestException("invokeAsyncImpl invoke too fast");
             } else {
                 String info =
-                        String.format("invokeAsyncImpl tryAcquire semaphore timeout, %dms, waiting thread nums: %d semaphoreAsyncValue: %d",
+                        String.format("invokeAsync tryAcquire semaphore timeout, %dms, waiting thread nums: %d semaphoreAsyncValue: %d",
                                 timeout,
                                 this.semaphoreAsync.getQueueLength(),
                                 this.semaphoreAsync.availablePermits()
@@ -188,8 +193,36 @@ public abstract class NettyServiceAbstract {
                 throw new RemotingTimeoutException(info);
             }
         }
-
     }
+
+
+    protected void invokeOneWay0(Channel channel, RequestCommand request, long timeout, TimeUnit timeUnit)
+            throws RemotingException, InterruptedException {
+        request.markOneWay();
+        if (semaphoreAsync.tryAcquire(timeout, timeUnit)) {
+
+            channel.writeAndFlush(request).addListener((ChannelFuture future) -> {
+                if (!future.isSuccess()) {
+                    logger.warn("send a request command to channel <" + channel + "> failed.");
+                }
+            });
+        } else {
+            if (timeout <= 0) {
+                throw new RemotingTooMuchRequestException("invokeAsyncImpl invoke too fast");
+            } else {
+                String info =
+                        String.format("invokeOneWay tryAcquire semaphore timeout, %dms, waiting thread nums: %d semaphoreOneWay: %d",
+                                timeout,
+                                this.semaphoreOneWay.getQueueLength(),
+                                this.semaphoreOneWay.availablePermits()
+                        );
+                logger.warn(info);
+                throw new RemotingTimeoutException(info);
+            }
+        }
+    }
+
+    protected abstract ChannelEventListener getChannelEventListener();
 
     class ChannelEventExecutor implements Runnable {
 
@@ -242,7 +275,5 @@ public abstract class NettyServiceAbstract {
         }
 
     }
-
-    protected abstract ChannelEventListener getChannelEventListener();
 
 }

@@ -1,6 +1,7 @@
 package org.rpc.rpc.consumer.cluster;
 
 import org.rpc.rpc.Request;
+import org.rpc.rpc.consumer.InvokeType;
 import org.rpc.rpc.consumer.dispatcher.Dispatcher;
 
 public class FailFastClusterInvoker implements ClusterInvoker {
@@ -17,7 +18,7 @@ public class FailFastClusterInvoker implements ClusterInvoker {
     }
 
     @Override
-    public Object invoke(Request request, Class<?> classType, boolean sync) throws Exception {
-        return dispatcher.dispatch(request, classType, sync);
+    public Object invoke(Request request, Class<?> classType, InvokeType invokeType) throws Exception {
+        return dispatcher.dispatch(request, classType, invokeType);
     }
 }

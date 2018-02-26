@@ -5,6 +5,7 @@ import org.rpc.remoting.netty.NettyClientConfig;
 import org.rpc.rpc.ProxyFactory;
 import org.rpc.rpc.consumer.Consumer;
 import org.rpc.rpc.consumer.DefaultConsumer;
+import org.rpc.rpc.consumer.InvokeType;
 import org.rpc.rpc.consumer.future.RpcContext;
 import org.rpc.rpc.consumer.future.RpcFuture;
 import org.rpc.rpc.consumer.future.RpcFutureListener;
@@ -25,7 +26,7 @@ public class ConsumerAsyncExample {
                 .consumer(consumer)
                 .directory(serviceMeta)
                 .timeMillis(3000L)
-                .sync(false)
+                .invokeType(InvokeType.ASYNC)
                 .newProxy();
 
         String s = helloService.sayHello(" biu biu biu!!!");

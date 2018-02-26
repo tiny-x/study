@@ -1,6 +1,7 @@
 package org.rpc.rpc.consumer.cluster;
 
 import org.rpc.rpc.Request;
+import org.rpc.rpc.consumer.InvokeType;
 
 public interface ClusterInvoker {
 
@@ -28,5 +29,5 @@ public interface ClusterInvoker {
 
     Strategy strategy();
 
-    Object invoke(Request request, Class<?> classType, boolean sync) throws Exception;
+    Object invoke(Request request, Class<?> classType, InvokeType invokeType) throws Exception;
 }

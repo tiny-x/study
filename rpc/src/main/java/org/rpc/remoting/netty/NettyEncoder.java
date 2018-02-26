@@ -5,8 +5,8 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import org.rpc.remoting.api.payload.ByteHolder;
-import org.rpc.remoting.api.payload.RequestBytes;
-import org.rpc.remoting.api.payload.ResponseBytes;
+import org.rpc.remoting.api.payload.RequestCommand;
+import org.rpc.remoting.api.payload.ResponseCommand;
 import org.rpc.exception.RemotingException;
 import org.rpc.remoting.api.procotol.ProtocolHead;
 import org.slf4j.Logger;
@@ -20,10 +20,10 @@ public class NettyEncoder extends MessageToByteEncoder<ByteHolder> {
     @Override
     protected void encode(ChannelHandlerContext ctx, ByteHolder msg, ByteBuf out) throws Exception {
         try {
-            if (msg instanceof RequestBytes) {
-                doEncodeRequest((RequestBytes) msg, out);
-            } else if (msg instanceof ResponseBytes) {
-                doEncodeResponse((ResponseBytes) msg, out);
+            if (msg instanceof RequestCommand) {
+                doEncodeRequest((RequestCommand) msg, out);
+            } else if (msg instanceof ResponseCommand) {
+                doEncodeResponse((ResponseCommand) msg, out);
             } else {
                 throw new RemotingException("not support byte holder" + msg.getClass());
             }
@@ -33,7 +33,7 @@ public class NettyEncoder extends MessageToByteEncoder<ByteHolder> {
         }
     }
 
-    private void doEncodeRequest(RequestBytes request, ByteBuf out) {
+    private void doEncodeRequest(RequestCommand request, ByteBuf out) {
         byte sign = ProtocolHead.toSign(request.getMessageCode(), request.getSerializerCode());
         long invokeId = request.getInvokeId();
         byte[] bytes = request.getBody();
@@ -50,7 +50,7 @@ public class NettyEncoder extends MessageToByteEncoder<ByteHolder> {
                 .writeBytes(bytes);
     }
 
-    private void doEncodeResponse(ResponseBytes response, ByteBuf out) {
+    private void doEncodeResponse(ResponseCommand response, ByteBuf out) {
 
         byte sign = ProtocolHead.toSign(response.getMessageCode(), response.getSerializerCode());
         byte status = response.getStatus();

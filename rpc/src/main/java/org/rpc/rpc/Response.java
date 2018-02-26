@@ -1,28 +1,28 @@
 package org.rpc.rpc;
 
-import org.rpc.remoting.api.payload.ResponseBytes;
+import org.rpc.remoting.api.payload.ResponseCommand;
 import org.rpc.rpc.model.ResponseWrapper;
 
 public class Response {
 
-    private ResponseBytes responseBytes;
+    private ResponseCommand responseCommand;
 
     private ResponseWrapper responseWrapper;
 
     public Response() {
     }
 
-    public Response(ResponseBytes responseBytes, ResponseWrapper responseWrapper) {
-        this.responseBytes = responseBytes;
+    public Response(ResponseCommand responseCommand, ResponseWrapper responseWrapper) {
+        this.responseCommand = responseCommand;
         this.responseWrapper = responseWrapper;
     }
 
-    public ResponseBytes getResponseBytes() {
-        return responseBytes;
+    public ResponseCommand getResponseCommand() {
+        return responseCommand;
     }
 
-    public void setResponseBytes(ResponseBytes responseBytes) {
-        this.responseBytes = responseBytes;
+    public void setResponseCommand(ResponseCommand responseCommand) {
+        this.responseCommand = responseCommand;
     }
 
     public ResponseWrapper getResponseWrapper() {

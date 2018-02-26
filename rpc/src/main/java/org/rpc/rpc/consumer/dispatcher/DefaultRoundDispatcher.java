@@ -2,10 +2,11 @@ package org.rpc.rpc.consumer.dispatcher;
 
 import org.rpc.exception.RemotingException;
 import org.rpc.remoting.api.channel.ChannelGroup;
-import org.rpc.remoting.api.payload.RequestBytes;
+import org.rpc.remoting.api.payload.RequestCommand;
 import org.rpc.remoting.api.procotol.ProtocolHead;
 import org.rpc.rpc.Request;
 import org.rpc.rpc.consumer.Consumer;
+import org.rpc.rpc.consumer.InvokeType;
 import org.rpc.rpc.load.balancer.LoadBalancer;
 import org.rpc.rpc.model.RequestWrapper;
 import org.rpc.serializer.Serializer;
@@ -19,7 +20,7 @@ public class DefaultRoundDispatcher extends AbstractDispatcher {
     }
 
     @Override
-    public <T> T dispatch(Request request, Class<T> returnType, boolean sync) throws RemotingException, InterruptedException {
+    public <T> T dispatch(Request request, Class<T> returnType, InvokeType invokeType) throws RemotingException, InterruptedException {
 
         final RequestWrapper requestWrapper = request.getRequestWrapper();
 
@@ -28,9 +29,9 @@ public class DefaultRoundDispatcher extends AbstractDispatcher {
         Serializer serializer = getSerializer();
 
         byte[] bytes = serializer.serialize(requestWrapper);
-        RequestBytes requestBytes = new RequestBytes(ProtocolHead.REQUEST, getSerializerCode(), bytes);
-        request.setRequestBytes(requestBytes);
+        RequestCommand requestCommand = new RequestCommand(ProtocolHead.REQUEST, getSerializerCode(), bytes);
+        request.setRequestCommand(requestCommand);
 
-        return (T)invoke(channelGroup, request, DispatchType.ROUND, returnType, sync);
+        return (T)invoke(channelGroup, request, DispatchType.ROUND, returnType, invokeType);
     }
 }

@@ -14,8 +14,8 @@ import org.rpc.remoting.api.InvokeCallback;
 import org.rpc.remoting.api.RequestProcessor;
 import org.rpc.remoting.api.RpcServer;
 import org.rpc.remoting.api.payload.ByteHolder;
-import org.rpc.remoting.api.payload.RequestBytes;
-import org.rpc.remoting.api.payload.ResponseBytes;
+import org.rpc.remoting.api.payload.RequestCommand;
+import org.rpc.remoting.api.payload.ResponseCommand;
 import org.rpc.remoting.netty.event.ChannelEvent;
 import org.rpc.remoting.netty.event.ChannelEventType;
 import org.slf4j.Logger;
@@ -59,12 +59,12 @@ public class NettyServer extends NettyServiceAbstract implements RpcServer {
     }
 
     @Override
-    public void invokeSync(Channel channel, RequestBytes request, long timeoutMillis) throws RemotingException, InterruptedException {
+    public void invokeSync(Channel channel, RequestCommand request, long timeoutMillis) throws RemotingException, InterruptedException {
         invokeSync0(channel, request, timeoutMillis, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public void invokeAsync(Channel channel, RequestBytes request, long timeoutMillis, InvokeCallback<ResponseBytes> invokeCallback) throws RemotingException, InterruptedException {
+    public void invokeAsync(Channel channel, RequestCommand request, long timeoutMillis, InvokeCallback<ResponseCommand> invokeCallback) throws RemotingException, InterruptedException {
         invokeAsync0(channel, request, timeoutMillis, TimeUnit.MILLISECONDS, invokeCallback);
     }
 

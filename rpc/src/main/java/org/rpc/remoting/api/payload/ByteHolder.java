@@ -2,7 +2,7 @@ package org.rpc.remoting.api.payload;
 
 public abstract class ByteHolder {
 
-    private byte messageCode;
+    protected byte messageCode;
 
     private byte serializerCode;
 

@@ -3,7 +3,7 @@ package org.rpc.remoting.api.payload;
 import org.rpc.remoting.api.ResponseStatus;
 import org.rpc.remoting.api.procotol.ProtocolHead;
 
-public class ResponseBytes extends ByteHolder {
+public class ResponseCommand extends ByteHolder {
 
     /**
      * 响应状态
@@ -12,13 +12,14 @@ public class ResponseBytes extends ByteHolder {
 
     private long invokeId;
 
-    public ResponseBytes(byte serializerCode, byte[] body) {
-        this(ProtocolHead.RESPONSE, serializerCode, body);
+    public ResponseCommand(byte serializerCode, byte[] body, long invokeId) {
+        this(ProtocolHead.RESPONSE, serializerCode, body, invokeId);
     }
 
-    public ResponseBytes(byte messageCode, byte serializerCode, byte[] body) {
+    public ResponseCommand(byte messageCode, byte serializerCode, byte[] body, long invokeId) {
         super(messageCode, serializerCode, body);
         this.status = ResponseStatus.SUCCESS.value();
+        this.invokeId = invokeId;
     }
 
     public void setStatus(byte status) {
@@ -39,7 +40,7 @@ public class ResponseBytes extends ByteHolder {
 
     @Override
     public String toString() {
-        return "ResponseBytes{" +
+        return "ResponseCommand{" +
                 "status=" + status +
                 ", invokeId=" + invokeId +
                 '}';

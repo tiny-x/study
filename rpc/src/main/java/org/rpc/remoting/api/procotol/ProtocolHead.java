@@ -27,6 +27,8 @@ public class ProtocolHead {
 
     public static final byte CANCEL_REGISTER_SERVICE = 0x09;  // 取消注册服务
 
+    public static final byte ONEWAY_REQUEST = 0x0A;  // 单向调用
+
     // ====== serializerCode
     public static final byte PROTO_STUFF = 0x01;
     public static final byte JSON = 0x02;

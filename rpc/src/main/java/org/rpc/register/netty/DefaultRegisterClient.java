@@ -13,8 +13,8 @@ import org.rpc.remoting.api.ChannelEventAdapter;
 import org.rpc.remoting.api.RequestProcessor;
 import org.rpc.remoting.api.RpcClient;
 import org.rpc.remoting.api.channel.ChannelGroup;
-import org.rpc.remoting.api.payload.RequestBytes;
-import org.rpc.remoting.api.payload.ResponseBytes;
+import org.rpc.remoting.api.payload.RequestCommand;
+import org.rpc.remoting.api.payload.ResponseCommand;
 import org.rpc.remoting.api.procotol.ProtocolHead;
 import org.rpc.remoting.netty.NettyClient;
 import org.rpc.remoting.netty.NettyClientConfig;
@@ -75,12 +75,12 @@ public class DefaultRegisterClient {
 
     public void register(RegisterMeta registerMeta) {
         Serializer serializer = SerializerFactory.serializer(serializerType);
-        RequestBytes requestBytes = new RequestBytes(ProtocolHead.REGISTER_SERVICE,
+        RequestCommand requestCommand = new RequestCommand(ProtocolHead.REGISTER_SERVICE,
                 serializerType.value(),
                 serializer.serialize(registerMeta));
         try {
             if (attachRegisterEvent(registerMeta, channel)) {
-                rpcClient.invokeSync(channel, requestBytes, config.getInvokeTimeoutMillis());
+                rpcClient.invokeSync(channel, requestCommand, config.getInvokeTimeoutMillis());
             }
         } catch (Exception e) {
             logger.error("register service fail", e);
@@ -89,12 +89,12 @@ public class DefaultRegisterClient {
 
     public void unRegister(RegisterMeta registerMeta) {
         Serializer serializer = SerializerFactory.serializer(serializerType);
-        RequestBytes requestBytes = new RequestBytes(ProtocolHead.CANCEL_REGISTER_SERVICE,
+        RequestCommand requestCommand = new RequestCommand(ProtocolHead.CANCEL_REGISTER_SERVICE,
                 serializerType.value(),
                 serializer.serialize(registerMeta));
         try {
             if (attachCancelRegisterEvent(registerMeta, channel)) {
-                rpcClient.invokeSync(channel, requestBytes, config.getInvokeTimeoutMillis());
+                rpcClient.invokeSync(channel, requestCommand, config.getInvokeTimeoutMillis());
             }
         } catch (Exception e) {
             logger.error("unRegister service fail", e);
@@ -105,14 +105,14 @@ public class DefaultRegisterClient {
     public void subscribe(ServiceMeta serviceMeta) {
         Serializer serializer = SerializerFactory.serializer(serializerType);
 
-        RequestBytes requestBytes = new RequestBytes(ProtocolHead.SUBSCRIBE_SERVICE,
+        RequestCommand requestCommand = new RequestCommand(ProtocolHead.SUBSCRIBE_SERVICE,
                 serializerType.value(),
                 serializer.serialize(serviceMeta));
 
         try {
             if (attachSubscribeEvent(serviceMeta, channel)) {
-                ResponseBytes responseBytes = rpcClient.invokeSync(channel, requestBytes, config.getInvokeTimeoutMillis());
-                Notify notifyData = serializer.deserialize(responseBytes.getBody(), Notify.class);
+                ResponseCommand responseCommand = rpcClient.invokeSync(channel, requestCommand, config.getInvokeTimeoutMillis());
+                Notify notifyData = serializer.deserialize(responseCommand.getBody(), Notify.class);
                 registerService.notify(notifyData.getServiceMeta(),
                         notifyData.getEvent(),
                         notifyData.getRegisterMetas());
@@ -153,7 +153,7 @@ public class DefaultRegisterClient {
     class RegisterClientProcess implements RequestProcessor {
 
         @Override
-        public ResponseBytes process(ChannelHandlerContext context, RequestBytes request) {
+        public ResponseCommand process(ChannelHandlerContext context, RequestCommand request) {
             Serializer serializer = SerializerFactory.serializer(SerializerType.parse(request.getSerializerCode()));
             Notify notifyData = serializer.deserialize(request.getBody(), Notify.class);
             switch (request.getMessageCode()) {

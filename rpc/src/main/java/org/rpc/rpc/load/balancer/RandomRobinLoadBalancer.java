@@ -3,7 +3,6 @@ package org.rpc.rpc.load.balancer;
 import org.rpc.remoting.api.Directory;
 import org.rpc.remoting.api.channel.ChannelGroup;
 
-import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 

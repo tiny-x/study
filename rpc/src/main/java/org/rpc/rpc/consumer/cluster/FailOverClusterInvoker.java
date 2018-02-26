@@ -1,6 +1,7 @@
 package org.rpc.rpc.consumer.cluster;
 
 import org.rpc.rpc.Request;
+import org.rpc.rpc.consumer.InvokeType;
 import org.rpc.rpc.consumer.dispatcher.Dispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,23 +28,22 @@ public class FailOverClusterInvoker implements ClusterInvoker {
     }
 
     @Override
-    public Object invoke(Request request, Class<?> classType, boolean sync) throws Exception {
-        Object result = null;
-        result = invoke0(request, 0, classType, sync);
+    public Object invoke(Request request, Class<?> classType, InvokeType invokeType) throws Exception {
+        Object result = invoke0(request, 0, classType, invokeType);
         return result;
     }
 
-    private Object invoke0(Request request, int tryCount, Class<?> classType, boolean sync) throws Exception {
+    private Object invoke0(Request request, int tryCount, Class<?> classType, InvokeType invokeType) throws Exception {
         try {
             tryCount ++;
-            return dispatcher.dispatch(request, classType, sync);
+            return dispatcher.dispatch(request, classType, invokeType);
         } catch (Exception e) {
             if (tryCount <= retries) {
-                logger.warn("[FAILOVER] tryCount: {} invoke interface: {}, method: {}",
+                logger.warn("[FAILOVER] tryCount: {} directory: {}, method: {}",
                         tryCount,
-                        request.getRequestWrapper().getServiceMeta().getServiceProviderName(),
+                        request.getRequestWrapper().getServiceMeta().directory(),
                         request.getRequestWrapper().getMethodName());
-                return invoke0(request, tryCount, classType, sync);
+                return invoke0(request, tryCount, classType, invokeType);
             } else {
                 throw e;
             }
