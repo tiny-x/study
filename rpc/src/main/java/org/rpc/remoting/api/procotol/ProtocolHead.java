@@ -29,6 +29,8 @@ public class ProtocolHead {
 
     public static final byte ONEWAY_REQUEST = 0x0A;  // 单向调用
 
+    public static final byte LOOKUP_SERVICE = 0x0C;  // 查找服务
+
     // ====== serializerCode
     public static final byte PROTO_STUFF = 0x01;
     public static final byte JSON = 0x02;

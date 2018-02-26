@@ -2,6 +2,7 @@ package org.rpc.register.netty;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import io.netty.util.internal.SystemPropertyUtil;
 import org.rpc.comm.UnresolvedAddress;
@@ -22,11 +23,9 @@ import org.rpc.rpc.model.ServiceMeta;
 import org.rpc.serializer.Serializer;
 import org.rpc.serializer.SerializerFactory;
 import org.rpc.serializer.SerializerType;
-import org.rpc.utils.InetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.concurrent.Executors;
 
 public class DefaultRegisterClient {
@@ -114,13 +113,6 @@ public class DefaultRegisterClient {
         } catch (Exception e) {
             logger.error("subscribe service fail", e);
         }
-    }
-
-    public List<RegisterMeta> lookup(RegisterMeta registerMeta) {
-
-        List<RegisterMeta> registerMetaList = null;
-
-        return registerMetaList;
     }
 
     class RegisterClientChannelEventProcess extends ChannelEventAdapter {

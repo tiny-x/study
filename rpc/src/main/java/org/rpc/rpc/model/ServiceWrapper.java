@@ -2,14 +2,16 @@ package org.rpc.rpc.model;
 
 public class ServiceWrapper {
 
+    private static final int DEFAULT_WEIGHT = 50;
+
     private ServiceMeta serviceMeta;
 
     private Object serviceProvider;
 
-    private int weight = 50;
+    private int weight = DEFAULT_WEIGHT;
 
     public ServiceWrapper(String group, String providerName, String version, Object serviceProvider) {
-        this(group, providerName, version, serviceProvider, 0);
+        this(group, providerName, version, serviceProvider, DEFAULT_WEIGHT);
     }
 
     public ServiceWrapper(String group, String providerName, String version, Object serviceProvider, int weight) {

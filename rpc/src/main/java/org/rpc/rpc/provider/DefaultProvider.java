@@ -24,8 +24,6 @@ import org.slf4j.LoggerFactory;
 
 public class DefaultProvider implements Provider {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultProvider.class);
-
     private RpcServer server;
 
     private ServiceProviderContainer serviceProviderContainer;
@@ -83,7 +81,7 @@ public class DefaultProvider implements Provider {
         registerMeta.setServiceMeta(serviceWrapper.getServiceMeta());
         registerMeta.setConnCount(config.getConnCount());
         registerMeta.setAddress(new UnresolvedAddress(InetUtils.getLocalHost(), config.getPort()));
-        registerMeta.setWeight(50);
+        registerMeta.setWeight(serviceWrapper.getWeight());
 
         registerService.register(registerMeta);
     }

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public abstract class AbstractRegisterService implements RegisterService {
 
@@ -64,6 +63,7 @@ public abstract class AbstractRegisterService implements RegisterService {
 
     @Override
     public void offlineListening(UnresolvedAddress address, OfflineListener listener) {
+        logger.info("[OFFLINE] provider offline: {}", address);
         CopyOnWriteArrayList<OfflineListener> offlineListenerList = offlineListeners.get(address);
         if (offlineListenerList == null) {
             CopyOnWriteArrayList<OfflineListener> newOfflineListenerList = new CopyOnWriteArrayList<>();
