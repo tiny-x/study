@@ -29,5 +29,5 @@ public interface ClusterInvoker {
 
     Strategy strategy();
 
-    Object invoke(Request request, Class<?> classType, InvokeType invokeType) throws Exception;
+    Object invoke(Request request, InvokeType invokeType) throws Exception;
 }

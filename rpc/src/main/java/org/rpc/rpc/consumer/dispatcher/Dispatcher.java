@@ -9,7 +9,7 @@ import org.rpc.rpc.consumer.InvokeType;
  */
 public interface Dispatcher {
 
-    <T> T dispatch(Request request, Class<T> classType, InvokeType invokeType) throws RemotingException, InterruptedException;
+    <T> T dispatch(Request request, InvokeType invokeType) throws RemotingException, InterruptedException;
 
     Dispatcher timeoutMillis(long timeoutMillis);
 

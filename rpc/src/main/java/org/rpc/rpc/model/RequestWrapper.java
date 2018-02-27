@@ -5,6 +5,8 @@ package org.rpc.rpc.model;
  */
 public class RequestWrapper {
 
+    private String application;
+
     private ServiceMeta serviceMeta;
 
     private String methodName;
@@ -33,5 +35,13 @@ public class RequestWrapper {
 
     public void setArgs(Object[] args) {
         this.args = args;
+    }
+
+    public String getApplication() {
+        return application;
+    }
+
+    public void setApplication(String application) {
+        this.application = application;
     }
 }

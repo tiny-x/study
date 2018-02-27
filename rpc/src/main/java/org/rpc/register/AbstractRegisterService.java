@@ -63,7 +63,6 @@ public abstract class AbstractRegisterService implements RegisterService {
 
     @Override
     public void offlineListening(UnresolvedAddress address, OfflineListener listener) {
-        logger.info("[OFFLINE] provider offline: {}", address);
         CopyOnWriteArrayList<OfflineListener> offlineListenerList = offlineListeners.get(address);
         if (offlineListenerList == null) {
             CopyOnWriteArrayList<OfflineListener> newOfflineListenerList = new CopyOnWriteArrayList<>();
@@ -76,6 +75,7 @@ public abstract class AbstractRegisterService implements RegisterService {
     }
 
     public void offline(UnresolvedAddress address) {
+        logger.info("[OFFLINE] provider offline: {}", address);
         // remove & notify
         CopyOnWriteArrayList<OfflineListener> offlineListenerList = offlineListeners.remove(address);
         for (OfflineListener offlineListener : offlineListenerList) {

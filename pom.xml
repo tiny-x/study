@@ -73,6 +73,7 @@
         <module>rpc</module>
         <module>dubbo</module>
         <module>reflect</module>
+        <module>resteasy</module>
     </modules>
 
     <build>

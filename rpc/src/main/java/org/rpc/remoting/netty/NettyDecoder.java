@@ -7,14 +7,10 @@ import org.rpc.remoting.api.RemotingCommandFactory;
 import org.rpc.remoting.api.payload.RequestCommand;
 import org.rpc.remoting.api.payload.ResponseCommand;
 import org.rpc.remoting.api.procotol.ProtocolHead;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class NettyDecoder extends ReplayingDecoder<NettyDecoder.State> {
-
-    private static final Logger logger = LoggerFactory.getLogger(NettyDecoder.class);
 
     public NettyDecoder() {
         super(State.HEADER_MAGIC);

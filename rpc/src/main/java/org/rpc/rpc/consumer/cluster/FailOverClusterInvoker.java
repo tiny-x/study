@@ -28,22 +28,22 @@ public class FailOverClusterInvoker implements ClusterInvoker {
     }
 
     @Override
-    public Object invoke(Request request, Class<?> classType, InvokeType invokeType) throws Exception {
-        Object result = invoke0(request, 0, classType, invokeType);
+    public Object invoke(Request request, InvokeType invokeType) throws Exception {
+        Object result = invoke0(request, 0, invokeType);
         return result;
     }
 
-    private Object invoke0(Request request, int tryCount, Class<?> classType, InvokeType invokeType) throws Exception {
+    private Object invoke0(Request request, int tryCount, InvokeType invokeType) throws Exception {
         try {
             tryCount ++;
-            return dispatcher.dispatch(request, classType, invokeType);
+            return dispatcher.dispatch(request, invokeType);
         } catch (Exception e) {
             if (tryCount <= retries) {
                 logger.warn("[FAILOVER] tryCount: {} directory: {}, method: {}",
                         tryCount,
                         request.getRequestWrapper().getServiceMeta().directory(),
                         request.getRequestWrapper().getMethodName(), e);
-                return invoke0(request, tryCount, classType, invokeType);
+                return invoke0(request, tryCount, invokeType);
             } else {
                 throw e;
             }

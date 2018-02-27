@@ -13,6 +13,7 @@ import org.rpc.rpc.consumer.future.RpcContext;
 import org.rpc.rpc.consumer.future.RpcFuture;
 import org.rpc.rpc.consumer.future.RpcFutureListener;
 import org.rpc.rpc.load.balancer.LoadBalancer;
+import org.rpc.rpc.model.ResponseWrapper;
 import org.rpc.rpc.model.ServiceMeta;
 import org.rpc.serializer.Serializer;
 import org.rpc.serializer.SerializerFactory;
@@ -76,7 +77,6 @@ public abstract class AbstractDispatcher implements Dispatcher {
     protected Object invoke(ChannelGroup channelGroup,
                             final Request request,
                             final DispatchType dispatchType,
-                            Class<?> returnType,
                             InvokeType invokeType) throws RemotingException, InterruptedException {
         switch (invokeType) {
             case SYNC: {
@@ -87,13 +87,15 @@ public abstract class AbstractDispatcher implements Dispatcher {
                                 timeoutMillis);
 
                 if (responseCommand.getStatus() == ResponseStatus.SUCCESS.value()) {
-                    return getSerializer().deserialize(responseCommand.getBody(), returnType);
+                    ResponseWrapper responseWrapper = getSerializer().deserialize(responseCommand.getBody(), ResponseWrapper.class);
+                    return responseWrapper.getResult();
+
                 } else {
-                    String message = getSerializer().deserialize(responseCommand.getBody(), String.class);
+                    ResponseWrapper responseWrapper = getSerializer().deserialize(responseCommand.getBody(), ResponseWrapper.class);
                     logger.warn("[INVOKE FAIL] directory: {}, method: {}, message: {}",
                             request.getRequestWrapper().getServiceMeta().directory(),
                             request.getRequestWrapper().getMethodName(),
-                            message);
+                            responseWrapper.getResult());
                     return null;
                 }
             }
@@ -111,10 +113,10 @@ public abstract class AbstractDispatcher implements Dispatcher {
 
                                 if (responseFuture.isSuccess()) {
                                     ResponseCommand responseCommand = responseFuture.result();
-                                    Object result = getSerializer().deserialize(responseCommand.getBody(), returnType);
-                                    future.set(result);
+                                    ResponseWrapper responseWrapper = getSerializer().deserialize(responseCommand.getBody(), ResponseWrapper.class);
+                                    future.set(responseWrapper.getResult());
                                     if (listener != null) {
-                                        listener.complete(result);
+                                        listener.complete(responseWrapper.getResult());
                                     }
                                 } else {
                                     future.set(null);

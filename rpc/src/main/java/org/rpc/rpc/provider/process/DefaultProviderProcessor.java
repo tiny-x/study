@@ -9,6 +9,7 @@ import org.rpc.remoting.api.payload.ResponseCommand;
 import org.rpc.remoting.api.procotol.ProtocolHead;
 import org.rpc.rpc.flow.controller.FlowController;
 import org.rpc.rpc.model.RequestWrapper;
+import org.rpc.rpc.model.ResponseWrapper;
 import org.rpc.rpc.model.ServiceWrapper;
 import org.rpc.rpc.provider.Provider;
 import org.rpc.serializer.Serializer;
@@ -41,38 +42,34 @@ public class DefaultProviderProcessor implements RequestProcessor {
                 RequestWrapper requestWrapper = serializer.deserialize(request.getBody(), RequestWrapper.class);
                 ServiceWrapper serviceWrapper = provider.lookupService(requestWrapper.getServiceMeta());
 
+                ResponseWrapper responseWrapper = new ResponseWrapper();
                 ResponseCommand responseCommand = null;
                 if (serviceWrapper == null) {
+
                     String message = String.format(
                             "%s service: [%s] not found",
                             context.channel(),
                             requestWrapper.getServiceMeta()
                     );
                     logger.warn(message);
-
-                    if (!request.isOneWay()) {
-                        responseCommand = RemotingCommandFactory.createResponseCommand(
-                                request.getSerializerCode(),
-                                serializer.serialize(message),
-                                request.getInvokeId()
-                        );
-
-                        responseCommand.setStatus(ResponseStatus.SERVICE_NOT_FOUND.value());
-
-                        responseCommand.setInvokeId(request.getInvokeId());
-                    }
+                    responseWrapper.setResult(message);
                 } else {
                     Object result = Reflects.Invoke(
                             serviceWrapper.getServiceProvider(),
                             requestWrapper.getMethodName(),
                             requestWrapper.getArgs()
                     );
-                    if (!request.isOneWay()) {
-                        responseCommand = RemotingCommandFactory.createResponseCommand(
-                                request.getSerializerCode(),
-                                serializer.serialize(result),
-                                request.getInvokeId()
-                        );
+                    responseWrapper.setResult(result);
+                }
+
+                if (!request.isOneWay()) {
+                    responseCommand = RemotingCommandFactory.createResponseCommand(
+                            request.getSerializerCode(),
+                            serializer.serialize(responseWrapper),
+                            request.getInvokeId()
+                    );
+                    if (serviceWrapper == null) {
+                        responseCommand.setStatus(ResponseStatus.SERVICE_NOT_FOUND.value());
                     }
                 }
                 return responseCommand;
