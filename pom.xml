@@ -74,6 +74,7 @@
         <module>dubbo</module>
         <module>reflect</module>
         <module>resteasy</module>
+        <module>guava</module>
     </modules>
 
     <build>
