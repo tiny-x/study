@@ -15,7 +15,7 @@ public class Daemon {
                 }
             }
         });
-        thread.setDaemon(true);
+        //thread.setDaemon(false);
         thread.start();
         System.out.println(Thread.currentThread().isDaemon());
 
