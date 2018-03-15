@@ -8,7 +8,7 @@ public class Encoder extends MessageToByteEncoder<String> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, String msg, ByteBuf out) throws Exception {
-        System.out.printf("--------> encoder %d bytes", msg.getBytes().length);
+        // System.out.printf("--------> encoder %d bytes", msg.getBytes().length);
         out.writeBytes(msg.getBytes());
     }
 }
