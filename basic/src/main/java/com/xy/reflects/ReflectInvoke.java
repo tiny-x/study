@@ -42,7 +42,8 @@ public class ReflectInvoke {
          *  ****反射使得JIT编译器无法有效做优化确实是反射慢的主要原因。
          *
          */
-        getName.invoke(obj, "a");
+        String a = (String) getName.invoke(obj, "a");
+        System.out.println(a);
     }
 
 
@@ -54,8 +55,8 @@ public class ReflectInvoke {
             return name;
         }
 
-        public String getName() {
-            return name;
+        public String getName(String name) {
+            return this.name + name;
         }
     }
 }
