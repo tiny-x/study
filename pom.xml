@@ -75,6 +75,7 @@
         <module>reflect</module>
         <module>resteasy</module>
         <module>guava</module>
+        <module>spring</module>
     </modules>
 
     <build>
