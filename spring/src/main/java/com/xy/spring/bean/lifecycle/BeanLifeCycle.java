@@ -2,12 +2,14 @@ package com.xy.spring.bean.lifecycle;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.*;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+/**
+ *  bean 生命周期
+ */
 public class BeanLifeCycle implements BeanNameAware,
-        BeanFactoryAware, ApplicationContextAware, BeanPostProcessor, InitializingBean, DisposableBean {
+         ApplicationContextAware, InitializingBean, DisposableBean {
 
     private String desc;
 
@@ -17,11 +19,6 @@ public class BeanLifeCycle implements BeanNameAware,
 
     public void destroyed() {
         System.out.println("xml 配置 destroy");
-    }
-
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-
     }
 
     @Override
@@ -41,19 +38,11 @@ public class BeanLifeCycle implements BeanNameAware,
     }
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        System.out.println("postProcessBeforeInitialization baneName: " + beanName);
-        return bean;
-    }
-
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        System.out.println("postProcessAfterInitialization baneName: " + beanName);
-        return bean;
-    }
-
-    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 
+    }
+
+    public String getDesc() {
+        return desc;
     }
 }

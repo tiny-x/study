@@ -5,5 +5,8 @@
        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-    <bean class="com.xy.spring.bean.lifecycle.BeanLifeCycle" init-method="" />
+    <bean id="cycle" name="cycle2,cycle3" class="com.xy.spring.bean.lifecycle.BeanLifeCycle"
+          init-method="init" destroy-method="destroyed" />
+
+    <bean class="com.xy.spring.bean.lifecycle.CustomBeanPostProcessor" />
 </beans>
