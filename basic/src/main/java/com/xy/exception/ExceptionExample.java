@@ -8,7 +8,7 @@ public class ExceptionExample {
 
     public static void main(String[] args) {
 
-        AnyThrow.throwAny(new Exception("aa"));
+        //AnyThrow.throwAny(new Exception("aa"));
     }
 
     static class AnyThrow {
