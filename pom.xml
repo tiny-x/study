@@ -70,12 +70,13 @@
         <module>netty</module>
         <module>basic</module>
         <module>nio</module>
-        <module>rpc</module>
         <module>dubbo</module>
         <module>reflect</module>
         <module>resteasy</module>
         <module>guava</module>
         <module>spring</module>
+        <module>jvm</module>
+        <module>curator</module>
     </modules>
 
     <build>

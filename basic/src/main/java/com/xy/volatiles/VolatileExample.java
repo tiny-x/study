@@ -38,7 +38,7 @@ public class VolatileExample {
     }
 
     public static void main(String[] args) {
-        VolatileExample ex = new VolatileExample();
+        final VolatileExample ex = new VolatileExample();
         new Thread(new Runnable() {
             @Override
             public void run() {
