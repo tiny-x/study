@@ -6,13 +6,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class Cglib {
+public class ReflectFastClass {
 
     private final ConcurrentMap<Class<?>, FastClass> cache = new ConcurrentHashMap<>();
 
-    private final HelloService helloService = new HelloService();
-
-    public void invoke() throws InvocationTargetException {
+    public String invoke(HelloService helloService) {
         FastClass fastClass = cache.get(HelloService.class);
         if (fastClass == null) {
             FastClass newFastClass = FastClass.create(HelloService.class);
@@ -21,10 +19,19 @@ public class Cglib {
                 fastClass = newFastClass;
             }
         }
+        try {
+            return (String) fastClass.invoke("hello",
+                    new Class[]{String.class},
+                    helloService,
+                    new Object[]{"cgl"});
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-        fastClass.invoke("hello",
-                new Class[]{String.class},
-                helloService,
-                new Object[]{"cgl"});
+    public static void main(String[] args) {
+        ReflectFastClass reflectFastClass = new ReflectFastClass();
+        System.out.println(reflectFastClass.invoke(new HelloService()));
     }
 }
