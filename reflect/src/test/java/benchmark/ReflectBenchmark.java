@@ -27,6 +27,8 @@ public class ReflectBenchmark {
 
     private static final ReflectJava REFLECT_JAVA = new ReflectJava();
 
+    private static final ReflectJavassist REFLECT_JAVASSIST = new ReflectJavassist();
+
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
                 .include(ReflectBenchmark.class.getSimpleName())
@@ -50,7 +52,7 @@ public class ReflectBenchmark {
         helloService.hello("direct");
     }
 
-    @Benchmark
+    //@Benchmark
     public void byteBuddyInvoke() {
         BYTE_BUDDY.invoke();
     }
@@ -58,5 +60,10 @@ public class ReflectBenchmark {
     @Benchmark
     public void reflectJava() {
         REFLECT_JAVA.invoke(helloService);
+    }
+
+    @Benchmark
+    public void reflectJavassist() {
+        REFLECT_JAVASSIST.invoke(helloService);
     }
 }

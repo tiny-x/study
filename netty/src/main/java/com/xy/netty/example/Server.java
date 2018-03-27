@@ -4,14 +4,28 @@ import com.xy.netty.example.payload.ByteHolder;
 import com.xy.netty.example.payload.RequestBytes;
 import com.xy.netty.example.protocol.Protocol;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
+/**
+ * ----------------------------
+ * serverBootstrap.bind(9000)
+ * new NioServerSocketChannel
+ * channel 注册到 selector上
+ * ----------------------------
+ * new NioServerSocketChannel 步骤
+ *  打开jdk ServerSocketChannel
+ *  id = newId();  channel Id
+ *  new unsafe();
+ *  new channelPipeline();
+ * ------------------------------
+ * register channel
+ *
+ * ----------------------------
+ *
+ */
 public class Server {
 
     public static void main(String[] args) throws Exception {
@@ -27,13 +41,13 @@ public class Server {
 
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast("encoder", new Encoder());
+                        ch.pipeline().addLast( new Encoder());
                         ch.pipeline().addLast("decoder", new Decoder());
                         ch.pipeline().addLast("ServerHandler", new ServerHandler());
                     }
                 });
 
-        serverBootstrap.bind(9000).sync();
+        ChannelFuture sync = serverBootstrap.bind(9000).sync();
     }
 
     static class ServerHandler extends SimpleChannelInboundHandler<ByteHolder> {
