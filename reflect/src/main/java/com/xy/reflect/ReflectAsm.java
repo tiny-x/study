@@ -32,8 +32,4 @@ public class ReflectAsm {
             System.out.println(method.getName() + "-->" + org.objectweb.asm.Type.getMethodDescriptor(method));
         }
     }
-
-    public void method(Object object, int i, Object... objects) {
-
-    }
 }
