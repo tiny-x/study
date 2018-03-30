@@ -16,7 +16,9 @@ public class ApplicationContext {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 
         BeanLifeCycle beanLifeCycle = (BeanLifeCycle) context.getBean("cycle2");
+        BeanLifeCycle beanLifeCycle2 = (BeanLifeCycle) context.getBean("cycle2");
         System.out.println(beanLifeCycle.getDesc());
+        System.out.println(beanLifeCycle2.getDesc());
 
         context.destroy();
         System.in.read();

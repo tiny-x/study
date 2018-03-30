@@ -6,7 +6,7 @@
 
 
     <bean id="cycle" name="cycle2,cycle3" class="com.xy.spring.bean.lifecycle.BeanLifeCycle"
-          init-method="init" destroy-method="destroyed" />
+          init-method="init" destroy-method="destroyed" scope="prototype" />
 
-    <bean class="com.xy.spring.bean.lifecycle.CustomBeanPostProcessor" />
+    <bean class="com.xy.spring.bean.lifecycle.CustomBeanPostProcessor" lazy-init="true" />
 </beans>
