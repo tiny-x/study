@@ -1,13 +1,13 @@
 package com.xy.reflect;
 
-import com.xy.reflect.method.access.MethodAccess;
+import com.xy.reflect.method.access.MethodAccessJavassist;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class ReflectJavassist {
 
-    private final ConcurrentMap<Class<?>, MethodAccess> cache = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Class<?>, MethodAccessJavassist> cache = new ConcurrentHashMap<>();
 
     public static void main(String[] args) throws Exception {
         HelloService helloService = new HelloService();
@@ -16,15 +16,15 @@ public class ReflectJavassist {
     }
 
     public String invoke(HelloService helloService) {
-        MethodAccess methodAccess = cache.get(HelloService.class);
-        if (methodAccess == null) {
-            MethodAccess newMethodAccess = MethodAccess.get(HelloService.class);
-            methodAccess = cache.putIfAbsent(HelloService.class, newMethodAccess);
-            if (methodAccess == null) {
-                methodAccess = newMethodAccess;
+        MethodAccessJavassist methodAccessJavassist = cache.get(HelloService.class);
+        if (methodAccessJavassist == null) {
+            MethodAccessJavassist newMethodAccessJavassist = MethodAccessJavassist.get(HelloService.class);
+            methodAccessJavassist = cache.putIfAbsent(HelloService.class, newMethodAccessJavassist);
+            if (methodAccessJavassist == null) {
+                methodAccessJavassist = newMethodAccessJavassist;
             }
         }
-        return (String) methodAccess.invoke(helloService, "hello", "javassist");
+        return (String) methodAccessJavassist.invoke(helloService, "hello", "javassist");
     }
 
 }

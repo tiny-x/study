@@ -7,16 +7,16 @@ import javassist.CtNewMethod;
 
 import java.lang.reflect.Method;
 
-public abstract class MethodAccess {
+public abstract class MethodAccessJavassist {
 
     private String[] methodNames;
 
-    public static MethodAccess get(Class<?> aClass) {
+    public static MethodAccessJavassist get(Class<?> aClass) {
         ClassPool classPool = ClassPool.getDefault();
         try {
             synchronized (aClass) {
                 CtClass proxyClass = classPool.makeClass("com.xy.reflect.MethodAccess_" + aClass.getSimpleName());
-                proxyClass.setSuperclass(classPool.get(MethodAccess.class.getName()));
+                proxyClass.setSuperclass(classPool.get(MethodAccessJavassist.class.getName()));
 
                 Method[] methods = aClass.getDeclaredMethods();
                 String[] methodNames = new String[methods.length];
@@ -53,9 +53,9 @@ public abstract class MethodAccess {
                 method.append(" }}");
                 CtMethod ctMethod = CtNewMethod.make(method.toString(), proxyClass);
                 proxyClass.addMethod(ctMethod);
-                MethodAccess methodAccess = (MethodAccess) proxyClass.toClass().newInstance();
-                methodAccess.methodNames = methodNames;
-                return methodAccess;
+                MethodAccessJavassist methodAccessJavassist = (MethodAccessJavassist) proxyClass.toClass().newInstance();
+                methodAccessJavassist.methodNames = methodNames;
+                return methodAccessJavassist;
             }
         } catch (Exception e) {
             e.printStackTrace();

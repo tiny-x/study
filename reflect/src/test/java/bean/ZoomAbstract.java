@@ -1,4 +1,4 @@
-package javassist;
+package bean;
 
 public abstract class ZoomAbstract implements Zoom {
 
