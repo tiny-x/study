@@ -77,6 +77,7 @@
         <module>spring</module>
         <module>jvm</module>
         <module>curator</module>
+        <module>rocketmq</module>
     </modules>
 
     <build>
