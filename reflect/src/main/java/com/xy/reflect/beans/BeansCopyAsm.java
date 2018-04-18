@@ -1,25 +1,27 @@
-package com.xy.reflect.method.access;
+package com.xy.reflect.beans;
+
+import com.xy.reflect.method.access.MethodAccessAsm;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class Beans {
+public class BeansCopyAsm {
 
-    private final static ConcurrentMap<Class<?>, MethodAccess> METHOD_CACHE = new ConcurrentHashMap<>();
+    private final static ConcurrentMap<Class<?>, MethodAccessAsm> METHOD_CACHE = new ConcurrentHashMap<>();
 
     private final static ConcurrentMap<Class<?>, Field[]> FIELDS_CACHE = new ConcurrentHashMap<>();
 
-    private static MethodAccess setIfAbsentMethodAccess(Class<?> aClass) {
-        MethodAccess methodAccess = METHOD_CACHE.get(aClass);
-        if (methodAccess == null) {
-            MethodAccess newMethodAccess = MethodAccess.get(aClass);
-            methodAccess = METHOD_CACHE.putIfAbsent(aClass, newMethodAccess);
-            if (methodAccess == null) {
-                methodAccess = newMethodAccess;
+    private static MethodAccessAsm setIfAbsentMethodAccessAsm(Class<?> aClass) {
+        MethodAccessAsm MethodAccessAsm = METHOD_CACHE.get(aClass);
+        if (MethodAccessAsm == null) {
+            MethodAccessAsm newMethodAccessAsm = MethodAccessAsm.get(aClass);
+            MethodAccessAsm = METHOD_CACHE.putIfAbsent(aClass, newMethodAccessAsm);
+            if (MethodAccessAsm == null) {
+                MethodAccessAsm = newMethodAccessAsm;
             }
         }
-        return methodAccess;
+        return MethodAccessAsm;
     }
 
     private static Field[] setIfAbsentFileds(Class<?> aClass) {
@@ -35,13 +37,13 @@ public class Beans {
     }
 
     public static void copyProperties(Object dest, Object orig) {
-        final MethodAccess destMethodAccess = setIfAbsentMethodAccess(dest.getClass());
-        final MethodAccess origMethodAccess = setIfAbsentMethodAccess(orig.getClass());
+        final MethodAccessAsm destMethodAccessAsm = setIfAbsentMethodAccessAsm(dest.getClass());
+        final MethodAccessAsm origMethodAccessAsm = setIfAbsentMethodAccessAsm(orig.getClass());
         Field[] fields = setIfAbsentFileds(orig.getClass());
 
         for (Field field : fields) {
-            Object param = origMethodAccess.invoke(orig, getMethodName(field.getName()));
-            destMethodAccess.invoke(dest, setMethodName(field.getName()), param);
+            Object param = origMethodAccessAsm.invoke(orig, getMethodName(field.getName()));
+            destMethodAccessAsm.invoke(dest, setMethodName(field.getName()), param);
         }
     }
 

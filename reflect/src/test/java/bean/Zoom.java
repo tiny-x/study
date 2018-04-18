@@ -1,4 +1,4 @@
-package javassist;
+package bean;
 
 public interface Zoom {
 

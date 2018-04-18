@@ -1,5 +1,6 @@
 package javassist;
 
+import bean.ZoomAbstract;
 import org.junit.Test;
 
 public class JavassistTest {
@@ -10,9 +11,9 @@ public class JavassistTest {
         classPool.insertClassPath(new ClassClassPath(this.getClass()));
 
         CtClass proxyClass = classPool.makeClass("com.xy.reflect.JavassistExample");
-        proxyClass.setInterfaces(new CtClass[]{classPool.get("javassist.Zoom")});
+        proxyClass.setInterfaces(new CtClass[]{classPool.get("bean.Zoom")});
 
-        proxyClass.setSuperclass(classPool.get("javassist.ZoomAbstract"));
+        proxyClass.setSuperclass(classPool.get("bean.ZoomAbstract"));
 
         StringBuilder stringBuilder = new StringBuilder("public void he(String[] args)");
         stringBuilder.append("{System.out.println(\"he he he ! \" + args[0]);}");
@@ -24,7 +25,7 @@ public class JavassistTest {
         proxyClass.addMethod(ctMethod);
         proxyClass.addMethod(ctMethod1);
 
-        proxyClass.writeFile("d:/a/");
+        proxyClass.writeFile("/tmp/a/");
         ZoomAbstract o = (ZoomAbstract) proxyClass.toClass().newInstance();
         o.he(new String[]{"猪", "肥牛"});
         o.ha();
