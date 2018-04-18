@@ -18,8 +18,8 @@ public class MasterSelect {
     public static void main(String[] args) throws Exception {
 
         CuratorFramework client = CuratorFrameworkFactory.builder()
-                .connectString("127.0.0.1:2181")
-                .connectionTimeoutMs(3000)
+                .connectString("172.16.2.203:2181")
+                .connectionTimeoutMs(5000)
                 .sessionTimeoutMs(5000)
                 .retryPolicy(new ExponentialBackoffRetry(1000, 3))
                 .build();
@@ -27,7 +27,7 @@ public class MasterSelect {
 
         String masterPath = "/master_slect";
         if (client.checkExists().forPath(masterPath) == null) {
-            client.create().withMode(CreateMode.EPHEMERAL).forPath(masterPath);
+            client.create().withMode(CreateMode.PERSISTENT).forPath(masterPath);
         }
 
         LeaderSelector leaderSelector = new LeaderSelector(client, masterPath, new LeaderSelectorListener() {
