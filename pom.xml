@@ -78,6 +78,7 @@
         <module>jvm</module>
         <module>curator</module>
         <module>rocketmq</module>
+        <module>datasource</module>
     </modules>
 
     <build>

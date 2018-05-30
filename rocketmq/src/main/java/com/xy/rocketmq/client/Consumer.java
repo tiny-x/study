@@ -19,7 +19,7 @@ public class Consumer {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("consumer1");
 
         //同样也要设置NameServer地址
-        consumer.setNamesrvAddr("47.98.219.112:9876");
+        consumer.setNamesrvAddr("mq01.dev.xianglin.com:9876");
 
         //这里设置的是一个consumer的消费策略
         //CONSUME_FROM_LAST_OFFSET 默认策略，从该队列最尾开始消费，即跳过历史消息

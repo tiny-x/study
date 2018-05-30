@@ -34,7 +34,7 @@ public class MasterSelect {
             @Override
             public void takeLeadership(CuratorFramework curatorFramework) throws Exception {
                 System.out.println("成功master");
-                TimeUnit.SECONDS.sleep(2);
+                TimeUnit.SECONDS.sleep(20);
                 System.out.println("执行完释放master角色, 重新开始选举。");
             }
 

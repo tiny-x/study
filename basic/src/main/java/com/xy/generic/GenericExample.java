@@ -25,12 +25,15 @@ public class GenericExample {
          * 参数化类型，安全检查
          *
          * 参数化类型 是 原生态类型的子类型
-         * List<String> 不是 List<Object>的子类型
+         * ListTest<String> 不是 ListTest<Object>的子类型
          */
         //objects = strings;
         xx = objects;
         xx = strings;
         // 除了null 不可放入
         xx.add(null);
+
+        List<? extends Object> yy = new ArrayList<>();
+        Object o = yy.get(0);
     }
 }

@@ -32,7 +32,6 @@ public class Client {
         for (int i = 0; i < 1024; i++) {
             send += fix;
         }
-
         channelFuture.channel().writeAndFlush(send).sync();
         channelFuture.channel().closeFuture().sync();
     }
