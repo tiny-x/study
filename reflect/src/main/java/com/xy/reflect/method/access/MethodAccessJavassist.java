@@ -6,12 +6,32 @@ import javassist.CtMethod;
 import javassist.CtNewMethod;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public abstract class MethodAccessJavassist {
 
+    private static final ConcurrentMap<Class<?>, MethodAccessJavassist> CACHE = new ConcurrentHashMap<>();
+
     private String[] methodNames;
 
-    public static MethodAccessJavassist get(Class<?> aClass) {
+    public static MethodAccessJavassist get(Class<?> type) {
+        MethodAccessJavassist MethodAccessJavassist = CACHE.get(type);
+        if (MethodAccessJavassist != null) {
+            return MethodAccessJavassist;
+        } else {
+            synchronized (type) {
+                MethodAccessJavassist = CACHE.get(type);
+                if (MethodAccessJavassist == null) {
+                    MethodAccessJavassist = crate(type);
+                    CACHE.put(type, MethodAccessJavassist);
+                }
+                return MethodAccessJavassist;
+            }
+        }
+    }
+
+    private static MethodAccessJavassist crate(Class<?> aClass) {
         ClassPool classPool = ClassPool.getDefault();
         try {
             synchronized (aClass) {

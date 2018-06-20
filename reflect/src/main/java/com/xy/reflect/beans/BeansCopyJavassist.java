@@ -8,21 +8,7 @@ import java.util.concurrent.ConcurrentMap;
 
 public class BeansCopyJavassist {
 
-    private final static ConcurrentMap<Class<?>, MethodAccessJavassist> METHOD_CACHE = new ConcurrentHashMap<>();
-
     private final static ConcurrentMap<Class<?>, Field[]> FIELDS_CACHE = new ConcurrentHashMap<>();
-
-    private static MethodAccessJavassist setIfAbsentMethodAccess(Class<?> aClass) {
-        MethodAccessJavassist methodAccessJavassist = METHOD_CACHE.get(aClass);
-        if (methodAccessJavassist == null) {
-            MethodAccessJavassist newMethodAccessJavassist = MethodAccessJavassist.get(aClass);
-            methodAccessJavassist = METHOD_CACHE.putIfAbsent(aClass, newMethodAccessJavassist);
-            if (methodAccessJavassist == null) {
-                methodAccessJavassist = newMethodAccessJavassist;
-            }
-        }
-        return methodAccessJavassist;
-    }
 
     private static Field[] setIfAbsentFileds(Class<?> aClass) {
         Field[] fields = FIELDS_CACHE.get(aClass);
@@ -37,13 +23,36 @@ public class BeansCopyJavassist {
     }
 
     public static void copyProperties(Object dest, Object orig) {
-        final MethodAccessJavassist destMethodAccessJavassist = setIfAbsentMethodAccess(dest.getClass());
-        final MethodAccessJavassist origMethodAccessJavassist = setIfAbsentMethodAccess(orig.getClass());
+        final MethodAccessJavassist destMethodAccessJavassist = MethodAccessJavassist.get(dest.getClass());
+        final MethodAccessJavassist origMethodAccessJavassist = MethodAccessJavassist.get(orig.getClass());
         Field[] fields = setIfAbsentFileds(orig.getClass());
 
         for (Field field : fields) {
-            Object param = origMethodAccessJavassist.invoke(orig, getMethodName(field.getName()));
-            destMethodAccessJavassist.invoke(dest, setMethodName(field.getName()), param);
+            Object param = null;
+            try {
+                field.setAccessible(true);
+                param = field.get(orig);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (param == null)
+                continue;
+
+            Field destField = null;
+            try {
+                destField = dest.getClass().getDeclaredField(field.getName());
+                if (destField.getType() == field.getType()) {
+
+                    destMethodAccessJavassist.invoke(dest,
+                            setMethodName(field.getName()),
+                            param
+                    );
+                } else {
+                    copyProperties(destField.getType().newInstance(), param);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

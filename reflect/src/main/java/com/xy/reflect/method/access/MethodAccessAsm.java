@@ -7,10 +7,14 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import static org.objectweb.asm.Opcodes.*;
 
 public abstract class MethodAccessAsm {
+
+    private static final ConcurrentMap<Class<?>, MethodAccessAsm> CACHE = new ConcurrentHashMap<>();
 
     private String[] methodNames;
 
@@ -19,7 +23,23 @@ public abstract class MethodAccessAsm {
     private Class[] returnTypes;
 
     public static MethodAccessAsm get(Class<?> type) {
+        MethodAccessAsm methodAccessAsm = CACHE.get(type);
+        if (methodAccessAsm != null) {
+            return methodAccessAsm;
+        } else {
+            synchronized (type) {
+                methodAccessAsm = CACHE.get(type);
+                if (methodAccessAsm == null) {
+                    methodAccessAsm = crate(type);
+                    CACHE.put(type, methodAccessAsm);
+                }
+                return methodAccessAsm;
+            }
+        }
+    }
 
+    private static MethodAccessAsm crate(Class<?> type) {
+        //
         ArrayList<Method> methods = new ArrayList<>();
         boolean isInterface = type.isInterface();
 
@@ -60,6 +80,7 @@ public abstract class MethodAccessAsm {
             mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
             mv.visitCode();
             mv.visitVarInsn(ALOAD, 0);
+            // invoke_special 调用特殊方法 初始化方法 私有方法
             mv.visitMethodInsn(INVOKESPECIAL, superClassNameInternal, "<init>", "()V", false);
             mv.visitInsn(RETURN);
             mv.visitMaxs(0, 0);
