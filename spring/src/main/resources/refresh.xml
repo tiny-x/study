@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <bean class="com.xy.spring.bean.event.EventBean"/>
+
+    <bean class="com.xy.spring.bean.event.EventBean1" />
+
+    <!--<task:annotation-driven executor="annotationExecutor"/>-->
+    <!--&lt;!&ndash; 支持 @Async 注解 &ndash;&gt;-->
+    <!--<task:executor id="annotationExecutor" pool-size="10"/>-->
+
+</beans>

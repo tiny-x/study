@@ -24,7 +24,7 @@ public class Client {
 
                     }
                 });
-        ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", 9000).sync();
+        ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", 9001).sync();
 
         // 16 byte
         String fix = "01234567890ABCDEF";

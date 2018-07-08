@@ -37,7 +37,6 @@ public abstract class MethodAccessJavassist {
             synchronized (aClass) {
                 CtClass proxyClass = classPool.makeClass("com.xy.reflect.MethodAccess_" + aClass.getSimpleName());
                 proxyClass.setSuperclass(classPool.get(MethodAccessJavassist.class.getName()));
-
                 Method[] methods = aClass.getDeclaredMethods();
                 String[] methodNames = new String[methods.length];
 
