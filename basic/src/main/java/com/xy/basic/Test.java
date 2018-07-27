@@ -17,5 +17,6 @@ public class Test {
         } catch (Exception e) {
 
         }
+        System.out.println(0xFF);
     }
 }

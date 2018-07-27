@@ -2,6 +2,7 @@ package com.logback;
 
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 
 public class FileReader {
 
@@ -19,5 +20,6 @@ public class FileReader {
                 stringBuffer.setLength(0);
             }
         }
+
     }
 }

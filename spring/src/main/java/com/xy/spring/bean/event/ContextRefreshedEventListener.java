@@ -7,16 +7,16 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-public class EventBean implements ApplicationListener<ContextRefreshedEvent>, ApplicationContextAware {
+public class ContextRefreshedEventListener implements ApplicationListener<ContextRefreshedEvent>, ApplicationContextAware {
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        System.out.println("ContextRefreshedEvent: " + event.getApplicationContext().getApplicationName());
+        System.out.println("listening ContextRefreshedEvent: " + event.getSource());
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        System.out.println("put event");
-        applicationContext.publishEvent(new EventBean1.AEvent(this));
+        System.out.println("put event: [AEvent]");
+        applicationContext.publishEvent(new AEventListener.AEvent(this));
     }
 }

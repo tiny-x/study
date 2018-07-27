@@ -24,6 +24,7 @@ public class ByteTest {
         System.out.println((x >>> 1));
         System.out.println(x >> 1);
         System.out.println((-128 & 0xff) >> 1);
+        System.out.println((byte)(Byte.MAX_VALUE + 2));
 
     }
 
