@@ -13,8 +13,8 @@ public class Main {
 
         MessageService messageService = (MessageService) configApplicationContext.getBean("messageService");
         messageService.sendMessage();
-
-        System.in.read();
+        configApplicationContext.registerShutdownHook();
+        Thread.currentThread().join();
     }
 
     @Configuration

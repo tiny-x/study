@@ -8,7 +8,7 @@ public class ByteModel {
 
     public static void main(String[] args) {
 
-        System.out.println(tableSizeFor(151));
+        System.out.println(tableSizeFor(3));
     }
 
     /**
