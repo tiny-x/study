@@ -20,9 +20,7 @@ public class Server {
 
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
         //
-        serverSocketChannel
-                .socket()
-                .bind(new InetSocketAddress(9000));
+        serverSocketChannel.socket().bind(new InetSocketAddress(9000));
         // 设置非阻塞
         serverSocketChannel
                 .configureBlocking(false)
