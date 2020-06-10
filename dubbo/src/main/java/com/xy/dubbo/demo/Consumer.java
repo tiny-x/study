@@ -2,6 +2,7 @@ package com.xy.dubbo.demo;
 
 import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.ReferenceConfig;
+import com.alibaba.dubbo.config.RegistryConfig;
 
 public class Consumer {
 
@@ -16,6 +17,7 @@ public class Consumer {
         reference.setInterface(HelloService.class);
         reference.setVersion("1.0.0");
         reference.setUrl("dubbo://127.0.0.1:20880");
+        reference.setRegistry(new RegistryConfig("N/A"));
 
         // 和本地bean一样使用xxxService
         HelloService helloService = reference.get();

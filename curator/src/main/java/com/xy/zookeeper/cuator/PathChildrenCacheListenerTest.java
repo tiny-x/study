@@ -5,29 +5,35 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
+import org.apache.curator.framework.state.ConnectionState;
+import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.zookeeper.server.SessionTracker;
 
 public class PathChildrenCacheListenerTest {
 
     public static void main(String[] args) throws Exception {
 
         CuratorFramework client = CuratorFrameworkFactory.builder()
-                .connectString("zookeeper.dev.xianglin.com:2181")
+                .connectString("121.43.175.216:2181")
                 .connectionTimeoutMs(3000)
-                .sessionTimeoutMs(5000)
+                .sessionTimeoutMs(20000)
                 .retryPolicy(new ExponentialBackoffRetry(1000, 3))
                 .build();
         client.start();
 
-        PathChildrenCache childrenCache = new PathChildrenCache(client, "/xlschedule/method/com.xianglin.xlnodecore.shared.DataMigrationService.DataMigration.a174a06a", false);
+        //PathChildrenCache childrenCache = new PathChildrenCache(client, "/yy", false);
+        PathChildrenCache childrenCache = new PathChildrenCache(client, "/leaf/providers/dp/com.leaf.jobs.DataProcessService/1.0.0", false);
+        //PathChildrenCache childrenCache = new PathChildrenCache(client, "/jupiter/provider/test/org.jupiter.example.ServiceTest/1.0.0.daily", false);
         childrenCache.getListenable().addListener(new PathChildrenCacheListener() {
             @Override
             public void childEvent(CuratorFramework curatorFramework, PathChildrenCacheEvent pathChildrenCacheEvent)
                     throws Exception {
+
                 System.out.println(pathChildrenCacheEvent.getType());
                 System.out.println("path: " + pathChildrenCacheEvent.getData().getPath());
-                String s = new String(curatorFramework.getData().forPath("/xlschedule/method/com.xianglin.xlnodecore.shared.DataMigrationService.DataMigration.a174a06a"));
-                System.out.println("data: " + s);
+                System.out.println("------------------");
+
             }
         });
 

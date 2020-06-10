@@ -8,18 +8,20 @@ import org.apache.zookeeper.CreateMode;
 public class Demo {
 
     public static void main(String[] args) throws Exception {
-        CuratorFramework client = CuratorFrameworkFactory.builder()
-                .connectString("127.0.0.1:2181")
-                .connectionTimeoutMs(3000)
-                .sessionTimeoutMs(5000)
-                .retryPolicy(new ExponentialBackoffRetry(1000, 3))
-                .build();
+//        CuratorFramework client = CuratorFrameworkFactory.builder()
+//                .connectString("121.43.175.216:2181")
+//                .connectionTimeoutMs(3000)
+//                .sessionTimeoutMs(5000)
+//                .retryPolicy(new ExponentialBackoffRetry(1000, 3))
+//                .build();
+
+        CuratorFramework client = CuratorFrameworkFactory.newClient(
+                "121.43.175.216:2181", 60000, 15000, new ExponentialBackoffRetry(500, 20));
         client.start();
 
-        if (client.checkExists().forPath("/demo") == null) {
-            client.create().withMode(CreateMode.EPHEMERAL).forPath("/demo");
-        }
+        client.create().withMode(CreateMode.EPHEMERAL).forPath("/yy/demo");
 
-        System.out.println(client.getChildren().forPath("/demo"));
+        Runtime.getRuntime().addShutdownHook(new Thread(client::close));
+        System.in.read();
     }
 }

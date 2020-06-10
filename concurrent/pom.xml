@@ -21,5 +21,19 @@
             <artifactId>disruptor</artifactId>
             <version>3.3.6</version>
         </dependency>
+
+        <!-- jmh -->
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>1.9.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>1.9.3</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

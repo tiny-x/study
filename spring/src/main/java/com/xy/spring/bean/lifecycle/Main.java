@@ -11,10 +11,10 @@ public class Main {
         context.stop();
         context.close();
 
-        Object cycle = context.getBean("cycle");
-        System.out.println(cycle);
-
-        context.destroy();
-        System.in.read();
+//        Object cycle = context.getBean("cycle");
+//        System.out.println(cycle);
+//
+//        context.destroy();
+//        System.in.read();
     }
 }

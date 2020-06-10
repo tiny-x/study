@@ -9,5 +9,5 @@
     <bean id="cycle" name="cycle2,cycle3" class="com.xy.spring.bean.lifecycle.BeanLifeCycle"
           init-method="initXML" destroy-method="destroyed"/>
 
-    <bean class="com.xy.spring.bean.lifecycle.CustomBeanPostProcessor" />
+<!--    <bean class="com.xy.spring.bean.lifecycle.CustomBeanPostProcessor" />-->
 </beans>

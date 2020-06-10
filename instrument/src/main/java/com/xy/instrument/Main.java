@@ -17,18 +17,21 @@ public class Main {
      * @param args
      */
     public static void main(String[] args) {
-        ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1,
-                (Runnable r) -> {
-                    Thread thread = new Thread(r);
-                    thread.setDaemon(false);
-                    return thread;
+        ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1);
 
-                });
-
-        scheduledExecutorService.scheduleWithFixedDelay(() -> {
-            Random random = new Random();
-            int add = new Main().add(random.nextInt(), random.nextInt());
-            System.out.println(add);
+        scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Random random = new Random();
+                    int a = random.nextInt(10);
+                    int b = random.nextInt(10);
+                    int add = new Main().add(a, b);
+                    System.out.println("a: (" + a + ")+ \tb: (" + b + ")\tresult: (" + add + ")");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }, 1, 3, TimeUnit.SECONDS);
 
     }

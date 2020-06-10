@@ -3,8 +3,6 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-
     <groupId>com.xy</groupId>
     <artifactId>study</artifactId>
     <version>1.0.0</version>
@@ -50,19 +48,6 @@
             <version>1.7.12</version>
             <scope>runtime</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.openjdk.jmh</groupId>
-            <artifactId>jmh-core</artifactId>
-            <version>1.9.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openjdk.jmh</groupId>
-            <artifactId>jmh-generator-annprocess</artifactId>
-            <version>1.9.3</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
     <modules>
@@ -81,6 +66,7 @@
         <module>rocketmq</module>
         <module>datasource</module>
         <module>instrument</module>
+        <module>druid</module>
     </modules>
 
     <build>
