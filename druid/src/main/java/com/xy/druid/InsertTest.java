@@ -63,9 +63,9 @@ public class InsertTest {
                     preparedStatement.setLong(4, 100);
                     preparedStatement.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
                     preparedStatement.setString(6, "2020-03-30 16:45:10");
-                    preparedStatement.executeUpdate();
-                    int updateCount = preparedStatement.getUpdateCount();
-                    System.out.println("effect line: " + updateCount);
+                    int i = preparedStatement.executeUpdate();
+
+                    System.out.println("effect line: " + i);
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {

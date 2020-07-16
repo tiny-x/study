@@ -1,0 +1,920 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="generator.ShopOrderMapper">
+  <resultMap id="BaseResultMap" type="generator.ShopOrder">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="gorder_id" jdbcType="VARCHAR" property="gorderId" />
+    <result column="order_time" jdbcType="TIMESTAMP" property="orderTime" />
+    <result column="order_ip" jdbcType="VARCHAR" property="orderIp" />
+    <result column="order_status" jdbcType="TINYINT" property="orderStatus" />
+    <result column="order_amount" jdbcType="DECIMAL" property="orderAmount" />
+    <result column="save_amount" jdbcType="DECIMAL" property="saveAmount" />
+    <result column="pay_amount" jdbcType="DECIMAL" property="payAmount" />
+    <result column="ok_amount" jdbcType="DECIMAL" property="okAmount" />
+    <result column="logistics_amount" jdbcType="DECIMAL" property="logisticsAmount" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+    <result column="original_pay_amount" jdbcType="DECIMAL" property="originalPayAmount" />
+    <result column="cost_amount" jdbcType="DECIMAL" property="costAmount" />
+    <result column="buy_account_id" jdbcType="VARCHAR" property="buyAccountId" />
+    <result column="pre_close_time" jdbcType="TIMESTAMP" property="preCloseTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="pay_success_time" jdbcType="TIMESTAMP" property="paySuccessTime" />
+    <result column="success_time" jdbcType="TIMESTAMP" property="successTime" />
+    <result column="settle_up" jdbcType="DECIMAL" property="settleUp" />
+    <result column="is_store_released" jdbcType="DECIMAL" property="isStoreReleased" />
+    <result column="merchant_id" jdbcType="DECIMAL" property="merchantId" />
+    <result column="merchant_name" jdbcType="VARCHAR" property="merchantName" />
+    <result column="merchant_account" jdbcType="VARCHAR" property="merchantAccount" />
+    <result column="merchant_tel" jdbcType="VARCHAR" property="merchantTel" />
+    <result column="merchant_order_id" jdbcType="VARCHAR" property="merchantOrderId" />
+    <result column="merchant_amount" jdbcType="DECIMAL" property="merchantAmount" />
+    <result column="activity_id" jdbcType="DECIMAL" property="activityId" />
+    <result column="activity_type" jdbcType="DECIMAL" property="activityType" />
+    <result column="order_desc" jdbcType="VARCHAR" property="orderDesc" />
+    <result column="partner1_order_id" jdbcType="VARCHAR" property="partner1OrderId" />
+    <result column="partner2_order_id" jdbcType="VARCHAR" property="partner2OrderId" />
+    <result column="origin" jdbcType="VARCHAR" property="origin" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="can_deliver" jdbcType="DECIMAL" property="canDeliver" />
+    <result column="real_pay_method" jdbcType="VARCHAR" property="realPayMethod" />
+    <result column="can_settle_up" jdbcType="DECIMAL" property="canSettleUp" />
+    <result column="can_refund" jdbcType="DECIMAL" property="canRefund" />
+    <result column="pay_url" jdbcType="VARCHAR" property="payUrl" />
+    <result column="wyb_order_id" jdbcType="VARCHAR" property="wybOrderId" />
+    <result column="misc" jdbcType="VARCHAR" property="misc" />
+    <result column="business_extend1" jdbcType="VARCHAR" property="businessExtend1" />
+    <result column="business_extend2" jdbcType="VARCHAR" property="businessExtend2" />
+    <result column="trade_success_time" jdbcType="TIMESTAMP" property="tradeSuccessTime" />
+    <result column="merchant_protocol" jdbcType="VARCHAR" property="merchantProtocol" />
+    <result column="deliver_time" jdbcType="TIMESTAMP" property="deliverTime" />
+    <result column="display_status" jdbcType="DECIMAL" property="displayStatus" />
+    <result column="tax_amount" jdbcType="DECIMAL" property="taxAmount" />
+    <result column="service_fee" jdbcType="DECIMAL" property="serviceFee" />
+    <result column="oversea_logistic_fee" jdbcType="DECIMAL" property="overseaLogisticFee" />
+    <result column="china_logistic_fee" jdbcType="DECIMAL" property="chinaLogisticFee" />
+    <result column="warehouse_name" jdbcType="VARCHAR" property="warehouseName" />
+    <result column="order_import_type" jdbcType="DECIMAL" property="orderImportType" />
+    <result column="need_verify" jdbcType="DECIMAL" property="needVerify" />
+    <result column="recycle_status" jdbcType="DECIMAL" property="recycleStatus" />
+    <result column="order_sub_status" jdbcType="DECIMAL" property="orderSubStatus" />
+    <result column="first_save_amount" jdbcType="DECIMAL" property="firstSaveAmount" />
+    <result column="order_warehouse_id" jdbcType="DECIMAL" property="orderWarehouseId" />
+    <result column="is_tomorrow_arrival" jdbcType="DECIMAL" property="isTomorrowArrival" />
+    <result column="logistics_tax_amount" jdbcType="DECIMAL" property="logisticsTaxAmount" />
+    <result column="vat_amount" jdbcType="DECIMAL" property="vatAmount" />
+    <result column="consumer_tax_amount" jdbcType="DECIMAL" property="consumerTaxAmount" />
+    <result column="is_tax_inclusive" jdbcType="DECIMAL" property="isTaxInclusive" />
+    <result column="order_type" jdbcType="DECIMAL" property="orderType" />
+    <result column="is_switch_to_personal" jdbcType="DECIMAL" property="isSwitchToPersonal" />
+    <result column="activity_reduce_tax_amount" jdbcType="DECIMAL" property="activityReduceTaxAmount" />
+    <result column="vip_discount_amount" jdbcType="DECIMAL" property="vipDiscountAmount" />
+    <result column="logistics_coupon_amount" jdbcType="DECIMAL" property="logisticsCouponAmount" />
+    <result column="tax_coupon_amount" jdbcType="DECIMAL" property="taxCouponAmount" />
+    <result column="sell_supplier_type" jdbcType="DECIMAL" property="sellSupplierType" />
+    <result column="expected_deliver_time" jdbcType="TIMESTAMP" property="expectedDeliverTime" />
+    <result column="expected_arrival_time" jdbcType="TIMESTAMP" property="expectedArrivalTime" />
+    <result column="redpacket_reduce_amount" jdbcType="DECIMAL" property="redpacketReduceAmount" />
+    <result column="ndc_source" jdbcType="VARCHAR" property="ndcSource" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="order_status_bit_tag" jdbcType="BIGINT" property="orderStatusBitTag" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, gorder_id, order_time, order_ip, order_status, order_amount, save_amount, pay_amount, 
+    ok_amount, logistics_amount, fee, original_pay_amount, cost_amount, buy_account_id, 
+    pre_close_time, update_time, pay_success_time, success_time, settle_up, is_store_released, 
+    merchant_id, merchant_name, merchant_account, merchant_tel, merchant_order_id, merchant_amount, 
+    activity_id, activity_type, order_desc, partner1_order_id, partner2_order_id, origin, 
+    remark, can_deliver, real_pay_method, can_settle_up, can_refund, pay_url, wyb_order_id, 
+    misc, business_extend1, business_extend2, trade_success_time, merchant_protocol, 
+    deliver_time, display_status, tax_amount, service_fee, oversea_logistic_fee, china_logistic_fee, 
+    warehouse_name, order_import_type, need_verify, recycle_status, order_sub_status, 
+    first_save_amount, order_warehouse_id, is_tomorrow_arrival, logistics_tax_amount, 
+    vat_amount, consumer_tax_amount, is_tax_inclusive, order_type, is_switch_to_personal, 
+    activity_reduce_tax_amount, vip_discount_amount, logistics_coupon_amount, tax_coupon_amount, 
+    sell_supplier_type, expected_deliver_time, expected_arrival_time, redpacket_reduce_amount, 
+    ndc_source, user_id, order_status_bit_tag
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_shop_order
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_shop_order
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="generator.ShopOrder" useGeneratedKeys="true">
+    insert into tb_shop_order (gorder_id, order_time, order_ip, 
+      order_status, order_amount, save_amount, 
+      pay_amount, ok_amount, logistics_amount, 
+      fee, original_pay_amount, cost_amount, 
+      buy_account_id, pre_close_time, update_time, 
+      pay_success_time, success_time, settle_up, 
+      is_store_released, merchant_id, merchant_name, 
+      merchant_account, merchant_tel, merchant_order_id, 
+      merchant_amount, activity_id, activity_type, 
+      order_desc, partner1_order_id, partner2_order_id, 
+      origin, remark, can_deliver, 
+      real_pay_method, can_settle_up, can_refund, 
+      pay_url, wyb_order_id, misc, 
+      business_extend1, business_extend2, trade_success_time, 
+      merchant_protocol, deliver_time, display_status, 
+      tax_amount, service_fee, oversea_logistic_fee, 
+      china_logistic_fee, warehouse_name, order_import_type, 
+      need_verify, recycle_status, order_sub_status, 
+      first_save_amount, order_warehouse_id, is_tomorrow_arrival, 
+      logistics_tax_amount, vat_amount, consumer_tax_amount, 
+      is_tax_inclusive, order_type, is_switch_to_personal, 
+      activity_reduce_tax_amount, vip_discount_amount, 
+      logistics_coupon_amount, tax_coupon_amount, 
+      sell_supplier_type, expected_deliver_time, 
+      expected_arrival_time, redpacket_reduce_amount, 
+      ndc_source, user_id, order_status_bit_tag
+      )
+    values (#{gorderId,jdbcType=VARCHAR}, #{orderTime,jdbcType=TIMESTAMP}, #{orderIp,jdbcType=VARCHAR}, 
+      #{orderStatus,jdbcType=TINYINT}, #{orderAmount,jdbcType=DECIMAL}, #{saveAmount,jdbcType=DECIMAL}, 
+      #{payAmount,jdbcType=DECIMAL}, #{okAmount,jdbcType=DECIMAL}, #{logisticsAmount,jdbcType=DECIMAL}, 
+      #{fee,jdbcType=DECIMAL}, #{originalPayAmount,jdbcType=DECIMAL}, #{costAmount,jdbcType=DECIMAL}, 
+      #{buyAccountId,jdbcType=VARCHAR}, #{preCloseTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{paySuccessTime,jdbcType=TIMESTAMP}, #{successTime,jdbcType=TIMESTAMP}, #{settleUp,jdbcType=DECIMAL}, 
+      #{isStoreReleased,jdbcType=DECIMAL}, #{merchantId,jdbcType=DECIMAL}, #{merchantName,jdbcType=VARCHAR}, 
+      #{merchantAccount,jdbcType=VARCHAR}, #{merchantTel,jdbcType=VARCHAR}, #{merchantOrderId,jdbcType=VARCHAR}, 
+      #{merchantAmount,jdbcType=DECIMAL}, #{activityId,jdbcType=DECIMAL}, #{activityType,jdbcType=DECIMAL}, 
+      #{orderDesc,jdbcType=VARCHAR}, #{partner1OrderId,jdbcType=VARCHAR}, #{partner2OrderId,jdbcType=VARCHAR}, 
+      #{origin,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{canDeliver,jdbcType=DECIMAL}, 
+      #{realPayMethod,jdbcType=VARCHAR}, #{canSettleUp,jdbcType=DECIMAL}, #{canRefund,jdbcType=DECIMAL}, 
+      #{payUrl,jdbcType=VARCHAR}, #{wybOrderId,jdbcType=VARCHAR}, #{misc,jdbcType=VARCHAR}, 
+      #{businessExtend1,jdbcType=VARCHAR}, #{businessExtend2,jdbcType=VARCHAR}, #{tradeSuccessTime,jdbcType=TIMESTAMP}, 
+      #{merchantProtocol,jdbcType=VARCHAR}, #{deliverTime,jdbcType=TIMESTAMP}, #{displayStatus,jdbcType=DECIMAL}, 
+      #{taxAmount,jdbcType=DECIMAL}, #{serviceFee,jdbcType=DECIMAL}, #{overseaLogisticFee,jdbcType=DECIMAL}, 
+      #{chinaLogisticFee,jdbcType=DECIMAL}, #{warehouseName,jdbcType=VARCHAR}, #{orderImportType,jdbcType=DECIMAL}, 
+      #{needVerify,jdbcType=DECIMAL}, #{recycleStatus,jdbcType=DECIMAL}, #{orderSubStatus,jdbcType=DECIMAL}, 
+      #{firstSaveAmount,jdbcType=DECIMAL}, #{orderWarehouseId,jdbcType=DECIMAL}, #{isTomorrowArrival,jdbcType=DECIMAL}, 
+      #{logisticsTaxAmount,jdbcType=DECIMAL}, #{vatAmount,jdbcType=DECIMAL}, #{consumerTaxAmount,jdbcType=DECIMAL}, 
+      #{isTaxInclusive,jdbcType=DECIMAL}, #{orderType,jdbcType=DECIMAL}, #{isSwitchToPersonal,jdbcType=DECIMAL}, 
+      #{activityReduceTaxAmount,jdbcType=DECIMAL}, #{vipDiscountAmount,jdbcType=DECIMAL}, 
+      #{logisticsCouponAmount,jdbcType=DECIMAL}, #{taxCouponAmount,jdbcType=DECIMAL}, 
+      #{sellSupplierType,jdbcType=DECIMAL}, #{expectedDeliverTime,jdbcType=TIMESTAMP}, 
+      #{expectedArrivalTime,jdbcType=TIMESTAMP}, #{redpacketReduceAmount,jdbcType=DECIMAL}, 
+      #{ndcSource,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}, #{orderStatusBitTag,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="generator.ShopOrder" useGeneratedKeys="true">
+    insert into tb_shop_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="gorderId != null">
+        gorder_id,
+      </if>
+      <if test="orderTime != null">
+        order_time,
+      </if>
+      <if test="orderIp != null">
+        order_ip,
+      </if>
+      <if test="orderStatus != null">
+        order_status,
+      </if>
+      <if test="orderAmount != null">
+        order_amount,
+      </if>
+      <if test="saveAmount != null">
+        save_amount,
+      </if>
+      <if test="payAmount != null">
+        pay_amount,
+      </if>
+      <if test="okAmount != null">
+        ok_amount,
+      </if>
+      <if test="logisticsAmount != null">
+        logistics_amount,
+      </if>
+      <if test="fee != null">
+        fee,
+      </if>
+      <if test="originalPayAmount != null">
+        original_pay_amount,
+      </if>
+      <if test="costAmount != null">
+        cost_amount,
+      </if>
+      <if test="buyAccountId != null">
+        buy_account_id,
+      </if>
+      <if test="preCloseTime != null">
+        pre_close_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="paySuccessTime != null">
+        pay_success_time,
+      </if>
+      <if test="successTime != null">
+        success_time,
+      </if>
+      <if test="settleUp != null">
+        settle_up,
+      </if>
+      <if test="isStoreReleased != null">
+        is_store_released,
+      </if>
+      <if test="merchantId != null">
+        merchant_id,
+      </if>
+      <if test="merchantName != null">
+        merchant_name,
+      </if>
+      <if test="merchantAccount != null">
+        merchant_account,
+      </if>
+      <if test="merchantTel != null">
+        merchant_tel,
+      </if>
+      <if test="merchantOrderId != null">
+        merchant_order_id,
+      </if>
+      <if test="merchantAmount != null">
+        merchant_amount,
+      </if>
+      <if test="activityId != null">
+        activity_id,
+      </if>
+      <if test="activityType != null">
+        activity_type,
+      </if>
+      <if test="orderDesc != null">
+        order_desc,
+      </if>
+      <if test="partner1OrderId != null">
+        partner1_order_id,
+      </if>
+      <if test="partner2OrderId != null">
+        partner2_order_id,
+      </if>
+      <if test="origin != null">
+        origin,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="canDeliver != null">
+        can_deliver,
+      </if>
+      <if test="realPayMethod != null">
+        real_pay_method,
+      </if>
+      <if test="canSettleUp != null">
+        can_settle_up,
+      </if>
+      <if test="canRefund != null">
+        can_refund,
+      </if>
+      <if test="payUrl != null">
+        pay_url,
+      </if>
+      <if test="wybOrderId != null">
+        wyb_order_id,
+      </if>
+      <if test="misc != null">
+        misc,
+      </if>
+      <if test="businessExtend1 != null">
+        business_extend1,
+      </if>
+      <if test="businessExtend2 != null">
+        business_extend2,
+      </if>
+      <if test="tradeSuccessTime != null">
+        trade_success_time,
+      </if>
+      <if test="merchantProtocol != null">
+        merchant_protocol,
+      </if>
+      <if test="deliverTime != null">
+        deliver_time,
+      </if>
+      <if test="displayStatus != null">
+        display_status,
+      </if>
+      <if test="taxAmount != null">
+        tax_amount,
+      </if>
+      <if test="serviceFee != null">
+        service_fee,
+      </if>
+      <if test="overseaLogisticFee != null">
+        oversea_logistic_fee,
+      </if>
+      <if test="chinaLogisticFee != null">
+        china_logistic_fee,
+      </if>
+      <if test="warehouseName != null">
+        warehouse_name,
+      </if>
+      <if test="orderImportType != null">
+        order_import_type,
+      </if>
+      <if test="needVerify != null">
+        need_verify,
+      </if>
+      <if test="recycleStatus != null">
+        recycle_status,
+      </if>
+      <if test="orderSubStatus != null">
+        order_sub_status,
+      </if>
+      <if test="firstSaveAmount != null">
+        first_save_amount,
+      </if>
+      <if test="orderWarehouseId != null">
+        order_warehouse_id,
+      </if>
+      <if test="isTomorrowArrival != null">
+        is_tomorrow_arrival,
+      </if>
+      <if test="logisticsTaxAmount != null">
+        logistics_tax_amount,
+      </if>
+      <if test="vatAmount != null">
+        vat_amount,
+      </if>
+      <if test="consumerTaxAmount != null">
+        consumer_tax_amount,
+      </if>
+      <if test="isTaxInclusive != null">
+        is_tax_inclusive,
+      </if>
+      <if test="orderType != null">
+        order_type,
+      </if>
+      <if test="isSwitchToPersonal != null">
+        is_switch_to_personal,
+      </if>
+      <if test="activityReduceTaxAmount != null">
+        activity_reduce_tax_amount,
+      </if>
+      <if test="vipDiscountAmount != null">
+        vip_discount_amount,
+      </if>
+      <if test="logisticsCouponAmount != null">
+        logistics_coupon_amount,
+      </if>
+      <if test="taxCouponAmount != null">
+        tax_coupon_amount,
+      </if>
+      <if test="sellSupplierType != null">
+        sell_supplier_type,
+      </if>
+      <if test="expectedDeliverTime != null">
+        expected_deliver_time,
+      </if>
+      <if test="expectedArrivalTime != null">
+        expected_arrival_time,
+      </if>
+      <if test="redpacketReduceAmount != null">
+        redpacket_reduce_amount,
+      </if>
+      <if test="ndcSource != null">
+        ndc_source,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="orderStatusBitTag != null">
+        order_status_bit_tag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="gorderId != null">
+        #{gorderId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderTime != null">
+        #{orderTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderIp != null">
+        #{orderIp,jdbcType=VARCHAR},
+      </if>
+      <if test="orderStatus != null">
+        #{orderStatus,jdbcType=TINYINT},
+      </if>
+      <if test="orderAmount != null">
+        #{orderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="saveAmount != null">
+        #{saveAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="payAmount != null">
+        #{payAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="okAmount != null">
+        #{okAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="logisticsAmount != null">
+        #{logisticsAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="fee != null">
+        #{fee,jdbcType=DECIMAL},
+      </if>
+      <if test="originalPayAmount != null">
+        #{originalPayAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="costAmount != null">
+        #{costAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="buyAccountId != null">
+        #{buyAccountId,jdbcType=VARCHAR},
+      </if>
+      <if test="preCloseTime != null">
+        #{preCloseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="paySuccessTime != null">
+        #{paySuccessTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="successTime != null">
+        #{successTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="settleUp != null">
+        #{settleUp,jdbcType=DECIMAL},
+      </if>
+      <if test="isStoreReleased != null">
+        #{isStoreReleased,jdbcType=DECIMAL},
+      </if>
+      <if test="merchantId != null">
+        #{merchantId,jdbcType=DECIMAL},
+      </if>
+      <if test="merchantName != null">
+        #{merchantName,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantAccount != null">
+        #{merchantAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantTel != null">
+        #{merchantTel,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantOrderId != null">
+        #{merchantOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantAmount != null">
+        #{merchantAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="activityId != null">
+        #{activityId,jdbcType=DECIMAL},
+      </if>
+      <if test="activityType != null">
+        #{activityType,jdbcType=DECIMAL},
+      </if>
+      <if test="orderDesc != null">
+        #{orderDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="partner1OrderId != null">
+        #{partner1OrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="partner2OrderId != null">
+        #{partner2OrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="origin != null">
+        #{origin,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="canDeliver != null">
+        #{canDeliver,jdbcType=DECIMAL},
+      </if>
+      <if test="realPayMethod != null">
+        #{realPayMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="canSettleUp != null">
+        #{canSettleUp,jdbcType=DECIMAL},
+      </if>
+      <if test="canRefund != null">
+        #{canRefund,jdbcType=DECIMAL},
+      </if>
+      <if test="payUrl != null">
+        #{payUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="wybOrderId != null">
+        #{wybOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="misc != null">
+        #{misc,jdbcType=VARCHAR},
+      </if>
+      <if test="businessExtend1 != null">
+        #{businessExtend1,jdbcType=VARCHAR},
+      </if>
+      <if test="businessExtend2 != null">
+        #{businessExtend2,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeSuccessTime != null">
+        #{tradeSuccessTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="merchantProtocol != null">
+        #{merchantProtocol,jdbcType=VARCHAR},
+      </if>
+      <if test="deliverTime != null">
+        #{deliverTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="displayStatus != null">
+        #{displayStatus,jdbcType=DECIMAL},
+      </if>
+      <if test="taxAmount != null">
+        #{taxAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="serviceFee != null">
+        #{serviceFee,jdbcType=DECIMAL},
+      </if>
+      <if test="overseaLogisticFee != null">
+        #{overseaLogisticFee,jdbcType=DECIMAL},
+      </if>
+      <if test="chinaLogisticFee != null">
+        #{chinaLogisticFee,jdbcType=DECIMAL},
+      </if>
+      <if test="warehouseName != null">
+        #{warehouseName,jdbcType=VARCHAR},
+      </if>
+      <if test="orderImportType != null">
+        #{orderImportType,jdbcType=DECIMAL},
+      </if>
+      <if test="needVerify != null">
+        #{needVerify,jdbcType=DECIMAL},
+      </if>
+      <if test="recycleStatus != null">
+        #{recycleStatus,jdbcType=DECIMAL},
+      </if>
+      <if test="orderSubStatus != null">
+        #{orderSubStatus,jdbcType=DECIMAL},
+      </if>
+      <if test="firstSaveAmount != null">
+        #{firstSaveAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="orderWarehouseId != null">
+        #{orderWarehouseId,jdbcType=DECIMAL},
+      </if>
+      <if test="isTomorrowArrival != null">
+        #{isTomorrowArrival,jdbcType=DECIMAL},
+      </if>
+      <if test="logisticsTaxAmount != null">
+        #{logisticsTaxAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="vatAmount != null">
+        #{vatAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="consumerTaxAmount != null">
+        #{consumerTaxAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="isTaxInclusive != null">
+        #{isTaxInclusive,jdbcType=DECIMAL},
+      </if>
+      <if test="orderType != null">
+        #{orderType,jdbcType=DECIMAL},
+      </if>
+      <if test="isSwitchToPersonal != null">
+        #{isSwitchToPersonal,jdbcType=DECIMAL},
+      </if>
+      <if test="activityReduceTaxAmount != null">
+        #{activityReduceTaxAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="vipDiscountAmount != null">
+        #{vipDiscountAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="logisticsCouponAmount != null">
+        #{logisticsCouponAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="taxCouponAmount != null">
+        #{taxCouponAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="sellSupplierType != null">
+        #{sellSupplierType,jdbcType=DECIMAL},
+      </if>
+      <if test="expectedDeliverTime != null">
+        #{expectedDeliverTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectedArrivalTime != null">
+        #{expectedArrivalTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="redpacketReduceAmount != null">
+        #{redpacketReduceAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="ndcSource != null">
+        #{ndcSource,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="orderStatusBitTag != null">
+        #{orderStatusBitTag,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="generator.ShopOrder">
+    update tb_shop_order
+    <set>
+      <if test="gorderId != null">
+        gorder_id = #{gorderId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderTime != null">
+        order_time = #{orderTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderIp != null">
+        order_ip = #{orderIp,jdbcType=VARCHAR},
+      </if>
+      <if test="orderStatus != null">
+        order_status = #{orderStatus,jdbcType=TINYINT},
+      </if>
+      <if test="orderAmount != null">
+        order_amount = #{orderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="saveAmount != null">
+        save_amount = #{saveAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="payAmount != null">
+        pay_amount = #{payAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="okAmount != null">
+        ok_amount = #{okAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="logisticsAmount != null">
+        logistics_amount = #{logisticsAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="fee != null">
+        fee = #{fee,jdbcType=DECIMAL},
+      </if>
+      <if test="originalPayAmount != null">
+        original_pay_amount = #{originalPayAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="costAmount != null">
+        cost_amount = #{costAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="buyAccountId != null">
+        buy_account_id = #{buyAccountId,jdbcType=VARCHAR},
+      </if>
+      <if test="preCloseTime != null">
+        pre_close_time = #{preCloseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="paySuccessTime != null">
+        pay_success_time = #{paySuccessTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="successTime != null">
+        success_time = #{successTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="settleUp != null">
+        settle_up = #{settleUp,jdbcType=DECIMAL},
+      </if>
+      <if test="isStoreReleased != null">
+        is_store_released = #{isStoreReleased,jdbcType=DECIMAL},
+      </if>
+      <if test="merchantId != null">
+        merchant_id = #{merchantId,jdbcType=DECIMAL},
+      </if>
+      <if test="merchantName != null">
+        merchant_name = #{merchantName,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantAccount != null">
+        merchant_account = #{merchantAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantTel != null">
+        merchant_tel = #{merchantTel,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantOrderId != null">
+        merchant_order_id = #{merchantOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantAmount != null">
+        merchant_amount = #{merchantAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="activityId != null">
+        activity_id = #{activityId,jdbcType=DECIMAL},
+      </if>
+      <if test="activityType != null">
+        activity_type = #{activityType,jdbcType=DECIMAL},
+      </if>
+      <if test="orderDesc != null">
+        order_desc = #{orderDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="partner1OrderId != null">
+        partner1_order_id = #{partner1OrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="partner2OrderId != null">
+        partner2_order_id = #{partner2OrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="origin != null">
+        origin = #{origin,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="canDeliver != null">
+        can_deliver = #{canDeliver,jdbcType=DECIMAL},
+      </if>
+      <if test="realPayMethod != null">
+        real_pay_method = #{realPayMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="canSettleUp != null">
+        can_settle_up = #{canSettleUp,jdbcType=DECIMAL},
+      </if>
+      <if test="canRefund != null">
+        can_refund = #{canRefund,jdbcType=DECIMAL},
+      </if>
+      <if test="payUrl != null">
+        pay_url = #{payUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="wybOrderId != null">
+        wyb_order_id = #{wybOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="misc != null">
+        misc = #{misc,jdbcType=VARCHAR},
+      </if>
+      <if test="businessExtend1 != null">
+        business_extend1 = #{businessExtend1,jdbcType=VARCHAR},
+      </if>
+      <if test="businessExtend2 != null">
+        business_extend2 = #{businessExtend2,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeSuccessTime != null">
+        trade_success_time = #{tradeSuccessTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="merchantProtocol != null">
+        merchant_protocol = #{merchantProtocol,jdbcType=VARCHAR},
+      </if>
+      <if test="deliverTime != null">
+        deliver_time = #{deliverTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="displayStatus != null">
+        display_status = #{displayStatus,jdbcType=DECIMAL},
+      </if>
+      <if test="taxAmount != null">
+        tax_amount = #{taxAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="serviceFee != null">
+        service_fee = #{serviceFee,jdbcType=DECIMAL},
+      </if>
+      <if test="overseaLogisticFee != null">
+        oversea_logistic_fee = #{overseaLogisticFee,jdbcType=DECIMAL},
+      </if>
+      <if test="chinaLogisticFee != null">
+        china_logistic_fee = #{chinaLogisticFee,jdbcType=DECIMAL},
+      </if>
+      <if test="warehouseName != null">
+        warehouse_name = #{warehouseName,jdbcType=VARCHAR},
+      </if>
+      <if test="orderImportType != null">
+        order_import_type = #{orderImportType,jdbcType=DECIMAL},
+      </if>
+      <if test="needVerify != null">
+        need_verify = #{needVerify,jdbcType=DECIMAL},
+      </if>
+      <if test="recycleStatus != null">
+        recycle_status = #{recycleStatus,jdbcType=DECIMAL},
+      </if>
+      <if test="orderSubStatus != null">
+        order_sub_status = #{orderSubStatus,jdbcType=DECIMAL},
+      </if>
+      <if test="firstSaveAmount != null">
+        first_save_amount = #{firstSaveAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="orderWarehouseId != null">
+        order_warehouse_id = #{orderWarehouseId,jdbcType=DECIMAL},
+      </if>
+      <if test="isTomorrowArrival != null">
+        is_tomorrow_arrival = #{isTomorrowArrival,jdbcType=DECIMAL},
+      </if>
+      <if test="logisticsTaxAmount != null">
+        logistics_tax_amount = #{logisticsTaxAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="vatAmount != null">
+        vat_amount = #{vatAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="consumerTaxAmount != null">
+        consumer_tax_amount = #{consumerTaxAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="isTaxInclusive != null">
+        is_tax_inclusive = #{isTaxInclusive,jdbcType=DECIMAL},
+      </if>
+      <if test="orderType != null">
+        order_type = #{orderType,jdbcType=DECIMAL},
+      </if>
+      <if test="isSwitchToPersonal != null">
+        is_switch_to_personal = #{isSwitchToPersonal,jdbcType=DECIMAL},
+      </if>
+      <if test="activityReduceTaxAmount != null">
+        activity_reduce_tax_amount = #{activityReduceTaxAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="vipDiscountAmount != null">
+        vip_discount_amount = #{vipDiscountAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="logisticsCouponAmount != null">
+        logistics_coupon_amount = #{logisticsCouponAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="taxCouponAmount != null">
+        tax_coupon_amount = #{taxCouponAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="sellSupplierType != null">
+        sell_supplier_type = #{sellSupplierType,jdbcType=DECIMAL},
+      </if>
+      <if test="expectedDeliverTime != null">
+        expected_deliver_time = #{expectedDeliverTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectedArrivalTime != null">
+        expected_arrival_time = #{expectedArrivalTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="redpacketReduceAmount != null">
+        redpacket_reduce_amount = #{redpacketReduceAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="ndcSource != null">
+        ndc_source = #{ndcSource,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="orderStatusBitTag != null">
+        order_status_bit_tag = #{orderStatusBitTag,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="generator.ShopOrder">
+    update tb_shop_order
+    set gorder_id = #{gorderId,jdbcType=VARCHAR},
+      order_time = #{orderTime,jdbcType=TIMESTAMP},
+      order_ip = #{orderIp,jdbcType=VARCHAR},
+      order_status = #{orderStatus,jdbcType=TINYINT},
+      order_amount = #{orderAmount,jdbcType=DECIMAL},
+      save_amount = #{saveAmount,jdbcType=DECIMAL},
+      pay_amount = #{payAmount,jdbcType=DECIMAL},
+      ok_amount = #{okAmount,jdbcType=DECIMAL},
+      logistics_amount = #{logisticsAmount,jdbcType=DECIMAL},
+      fee = #{fee,jdbcType=DECIMAL},
+      original_pay_amount = #{originalPayAmount,jdbcType=DECIMAL},
+      cost_amount = #{costAmount,jdbcType=DECIMAL},
+      buy_account_id = #{buyAccountId,jdbcType=VARCHAR},
+      pre_close_time = #{preCloseTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      pay_success_time = #{paySuccessTime,jdbcType=TIMESTAMP},
+      success_time = #{successTime,jdbcType=TIMESTAMP},
+      settle_up = #{settleUp,jdbcType=DECIMAL},
+      is_store_released = #{isStoreReleased,jdbcType=DECIMAL},
+      merchant_id = #{merchantId,jdbcType=DECIMAL},
+      merchant_name = #{merchantName,jdbcType=VARCHAR},
+      merchant_account = #{merchantAccount,jdbcType=VARCHAR},
+      merchant_tel = #{merchantTel,jdbcType=VARCHAR},
+      merchant_order_id = #{merchantOrderId,jdbcType=VARCHAR},
+      merchant_amount = #{merchantAmount,jdbcType=DECIMAL},
+      activity_id = #{activityId,jdbcType=DECIMAL},
+      activity_type = #{activityType,jdbcType=DECIMAL},
+      order_desc = #{orderDesc,jdbcType=VARCHAR},
+      partner1_order_id = #{partner1OrderId,jdbcType=VARCHAR},
+      partner2_order_id = #{partner2OrderId,jdbcType=VARCHAR},
+      origin = #{origin,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      can_deliver = #{canDeliver,jdbcType=DECIMAL},
+      real_pay_method = #{realPayMethod,jdbcType=VARCHAR},
+      can_settle_up = #{canSettleUp,jdbcType=DECIMAL},
+      can_refund = #{canRefund,jdbcType=DECIMAL},
+      pay_url = #{payUrl,jdbcType=VARCHAR},
+      wyb_order_id = #{wybOrderId,jdbcType=VARCHAR},
+      misc = #{misc,jdbcType=VARCHAR},
+      business_extend1 = #{businessExtend1,jdbcType=VARCHAR},
+      business_extend2 = #{businessExtend2,jdbcType=VARCHAR},
+      trade_success_time = #{tradeSuccessTime,jdbcType=TIMESTAMP},
+      merchant_protocol = #{merchantProtocol,jdbcType=VARCHAR},
+      deliver_time = #{deliverTime,jdbcType=TIMESTAMP},
+      display_status = #{displayStatus,jdbcType=DECIMAL},
+      tax_amount = #{taxAmount,jdbcType=DECIMAL},
+      service_fee = #{serviceFee,jdbcType=DECIMAL},
+      oversea_logistic_fee = #{overseaLogisticFee,jdbcType=DECIMAL},
+      china_logistic_fee = #{chinaLogisticFee,jdbcType=DECIMAL},
+      warehouse_name = #{warehouseName,jdbcType=VARCHAR},
+      order_import_type = #{orderImportType,jdbcType=DECIMAL},
+      need_verify = #{needVerify,jdbcType=DECIMAL},
+      recycle_status = #{recycleStatus,jdbcType=DECIMAL},
+      order_sub_status = #{orderSubStatus,jdbcType=DECIMAL},
+      first_save_amount = #{firstSaveAmount,jdbcType=DECIMAL},
+      order_warehouse_id = #{orderWarehouseId,jdbcType=DECIMAL},
+      is_tomorrow_arrival = #{isTomorrowArrival,jdbcType=DECIMAL},
+      logistics_tax_amount = #{logisticsTaxAmount,jdbcType=DECIMAL},
+      vat_amount = #{vatAmount,jdbcType=DECIMAL},
+      consumer_tax_amount = #{consumerTaxAmount,jdbcType=DECIMAL},
+      is_tax_inclusive = #{isTaxInclusive,jdbcType=DECIMAL},
+      order_type = #{orderType,jdbcType=DECIMAL},
+      is_switch_to_personal = #{isSwitchToPersonal,jdbcType=DECIMAL},
+      activity_reduce_tax_amount = #{activityReduceTaxAmount,jdbcType=DECIMAL},
+      vip_discount_amount = #{vipDiscountAmount,jdbcType=DECIMAL},
+      logistics_coupon_amount = #{logisticsCouponAmount,jdbcType=DECIMAL},
+      tax_coupon_amount = #{taxCouponAmount,jdbcType=DECIMAL},
+      sell_supplier_type = #{sellSupplierType,jdbcType=DECIMAL},
+      expected_deliver_time = #{expectedDeliverTime,jdbcType=TIMESTAMP},
+      expected_arrival_time = #{expectedArrivalTime,jdbcType=TIMESTAMP},
+      redpacket_reduce_amount = #{redpacketReduceAmount,jdbcType=DECIMAL},
+      ndc_source = #{ndcSource,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=BIGINT},
+      order_status_bit_tag = #{orderStatusBitTag,jdbcType=BIGINT}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

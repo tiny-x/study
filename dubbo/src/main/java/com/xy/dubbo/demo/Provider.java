@@ -18,7 +18,7 @@ public class Provider {
         application.setName("provider");
 
         // 服务提供者暴露服务配置
-        ServiceConfig<HelloService> service = new ServiceConfig<HelloService>(); // 此实例很重，封装了与注册中心的连接，请自行缓存，否则可能造成内存和连接泄漏
+        ServiceConfig<HelloService> service = new ServiceConfig<>();
         service.setApplication(application);
         service.setInterface(HelloService.class);
         service.setRegister(false);

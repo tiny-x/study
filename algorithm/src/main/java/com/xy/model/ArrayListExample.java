@@ -12,6 +12,8 @@ public class ArrayListExample {
         list.add(new User(2));
         list.add(new User(3));
 
+        System.out.println(list.get(4));
+
         /**
          *  elementData[--size] = null; // clear to let GC do its work
          *  目测当删除最后一个元素，才会使gc roots链不可达。
