@@ -20,12 +20,14 @@ public class MainAgent {
      */
     public static void agentmain(String agentArgs, Instrumentation inst) throws UnmodifiableClassException {
         logger.info("agentmain");
+
         inst.addTransformer(new NumberAddTransform(), true);
         Class[] allLoadedClasses = inst.getAllLoadedClasses();
         for (Class allLoadedClass : allLoadedClasses) {
             if ("com.xx.NumberAdd".equals(allLoadedClass.getName())) {
                 logger.info("retrans form Classes : {}", allLoadedClass.getName());
                 inst.retransformClasses(allLoadedClass);
+
             }
         }
     }

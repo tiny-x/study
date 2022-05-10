@@ -1,0 +1,8 @@
+[
+  {
+    "resourceCode": "CONTAINER",
+    "property": "os",
+    "operation": "=",
+    "expectValues": "linux"
+  }
+]

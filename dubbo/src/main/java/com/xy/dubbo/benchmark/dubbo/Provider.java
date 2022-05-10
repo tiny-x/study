@@ -28,7 +28,7 @@ public class Provider {
         service.setApplication(application);
         service.setInterface(HelloService.class);
         RegistryConfig registry = new RegistryConfig();
-        registry.setAddress("N/A");
+        registry.setAddress("zookeeper://192.168.102.250:2181");
         service.setRegistry(registry);
         service.setRef(helloService);
         service.setVersion("1.0.0");

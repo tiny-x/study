@@ -15,15 +15,16 @@ public class PathChildrenCacheListenerTest {
     public static void main(String[] args) throws Exception {
 
         CuratorFramework client = CuratorFrameworkFactory.builder()
-                .connectString("121.43.175.216:2181")
+                .connectString("127.0.0.1:2181")
                 .connectionTimeoutMs(3000)
                 .sessionTimeoutMs(20000)
+                .namespace("dubbo")
                 .retryPolicy(new ExponentialBackoffRetry(1000, 3))
                 .build();
         client.start();
 
         //PathChildrenCache childrenCache = new PathChildrenCache(client, "/yy", false);
-        PathChildrenCache childrenCache = new PathChildrenCache(client, "/leaf/providers/dp/com.leaf.jobs.DataProcessService/1.0.0", false);
+        PathChildrenCache childrenCache = new PathChildrenCache(client, "/com.xy.dubbo.demo.HelloService/providers", false);
         //PathChildrenCache childrenCache = new PathChildrenCache(client, "/jupiter/provider/test/org.jupiter.example.ServiceTest/1.0.0.daily", false);
         childrenCache.getListenable().addListener(new PathChildrenCacheListener() {
             @Override

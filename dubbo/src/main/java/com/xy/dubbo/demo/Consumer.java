@@ -16,8 +16,8 @@ public class Consumer {
         reference.setApplication(application);
         reference.setInterface(HelloService.class);
         reference.setVersion("1.0.0");
-        reference.setUrl("dubbo://127.0.0.1:20880");
-        reference.setRegistry(new RegistryConfig("N/A"));
+        //reference.setUrl("dubbo://127.0.0.1:20880");
+        reference.setRegistry(new RegistryConfig("zookeeper://10.10.101.59:2181"));
 
         // 和本地bean一样使用xxxService
         HelloService helloService = reference.get();

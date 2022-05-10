@@ -21,7 +21,7 @@ public class NumberAdd implements Module {
     @Command("add")
     public void repairCheckState() {
         new EventWatchBuilder(moduleEventWatcher)
-                .onClass("com.xx.NumberAdd")
+                .onClass("NumberAdd")
                 .onBehavior("add")
                 .onWatch(new AdviceListener() {
                     @Override

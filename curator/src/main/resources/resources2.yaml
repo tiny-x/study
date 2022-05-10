@@ -1,0 +1,28 @@
+name: 应用
+code: APPLICATION
+children:
+  - name: 容器
+    code: CONTAINER
+    parentCode: APPLICATION
+    properties:
+      - name: 操作系统
+        code: OS
+    children:
+      - name: CPU
+        code: CPU
+        parentCode: CONTAINER
+        properties:
+          - name: 核数
+            code: KERNEL_NUMBER
+        metrics:
+          - name: 使用率
+            code: USAGERATE
+      - name: 内存
+        code: MEMORY
+        parentCode: CONTAINER
+        properties:
+          - name: 大小
+            code: SIZE
+        metrics:
+          - name: 使用率
+            code: USAGERATE

@@ -1,0 +1,15 @@
+name: CPU 告警
+metrics:
+  - resourceCode: CPU
+    resourceName: CPU
+    metricCode: USAGE_RATE
+    metricName: 使用率
+    type: between
+    expectValues: '1, 90'
+constraint:
+  - resourceCode: CONTAINER
+    property: OS
+    expectValues: Linux
+exception:
+  - type: 告警
+    delay: '3000'

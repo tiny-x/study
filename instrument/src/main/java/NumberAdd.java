@@ -1,5 +1,3 @@
-package com.xx;
-
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -15,8 +13,8 @@ public class NumberAdd {
      * @param args
      */
     public static void main(String[] args) throws Exception {
+        NumberAdd numberAdd = new NumberAdd();
         while (true) {
-            NumberAdd numberAdd = new NumberAdd();
             Random random = new Random();
             int a = random.nextInt(10);
             int b = random.nextInt(10);

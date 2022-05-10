@@ -1,5 +1,3 @@
-package com.xy.lettuce;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -42,7 +40,8 @@ public class LettuceTest {
     }
 
     public static void main(String[] args) {
-        RedisURI uri = RedisURI.create("redis://perfma-xchaos.redis.cc:30941/");
+
+        RedisURI uri = RedisURI.create("redis://10.10.222.104:32016/");
         RedisClient redisClient = RedisClient.create(uri);
         StatefulRedisConnection<String, String> connection = redisClient.connect();
         RedisCommands<String, String> redisCommands = connection.sync();

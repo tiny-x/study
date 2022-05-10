@@ -51,6 +51,9 @@
         <module>lettuce</module>
         <module>httpclient</module>
         <module>postgresql</module>
+        <module>chaosblade</module>
+        <module>tinyagent</module>
+        <module>rabbitmq</module>
     </modules>
 
     <build>

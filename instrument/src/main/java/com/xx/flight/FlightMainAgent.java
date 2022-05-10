@@ -22,7 +22,10 @@ public class FlightMainAgent {
                 VirtualMachine virtualMachine = null;
                 try {
                     virtualMachine = VirtualMachine.attach(vmd.id());
-                    virtualMachine.loadAgent("/Users/yefei/ali/project/study/instrument/target/instrument-1.0.0.jar");
+                    virtualMachine.loadAgent("/Users/xf.yefei/Projects/github/tiny-agent/target/tiny-agent-0.0.1-SNAPSHOT.jar");
+                    //virtualMachine.loadAgent("/Users/xf.yefei/Projects/study/bytebuddy/target/bytebuddy-1.0.0.jar");
+                    //virtualMachine.loadAgent("/Users/xf.yefei/Projects/github/tt2016_byte_buddy_agent_demo/target/byte-buddy-agent-demo-1.0-full.jar");
+                    //virtualMachine.loadAgent("/Users/xf.yefei/Projects/study/instrument/target/instrument-1.0.0.jar");
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {

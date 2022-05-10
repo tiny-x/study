@@ -103,7 +103,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.xx.NumberAdd</mainClass>
+                            <mainClass>NumberAdd</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

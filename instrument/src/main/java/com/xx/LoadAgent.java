@@ -9,8 +9,8 @@ import com.sun.tools.attach.VirtualMachine;
 public class LoadAgent {
 
     public static void main(String[] args) throws Exception {
-        VirtualMachine virtualMachine = VirtualMachine.attach("53522");
-        virtualMachine.loadAgent("/temp/instrument-1.0.0.jar");
+        VirtualMachine virtualMachine = VirtualMachine.attach("15301");
+        virtualMachine.loadAgent("/Users/xf.yefei/Projects/github/tiny-agent/target/tiny-agent-0.0.1-SNAPSHOT.jar");
         virtualMachine.detach();
     }
 }
