@@ -54,7 +54,6 @@ public class ThreadPoolExample {
          * 允许核心线程超时，小于corePoolSize线程也会被中断
          */
         threadPoolExecutor.allowCoreThreadTimeOut(true);
-
         /**
          * 初始创建核心线程
          */

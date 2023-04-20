@@ -18,44 +18,17 @@
             <version>2.6.8</version>
         </dependency>
 
-        <!-- leaf-rpc -->
         <dependency>
-            <groupId>com.leaf.rpc</groupId>
-            <artifactId>rpc</artifactId>
-            <version>1.0.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>logback-classic</artifactId>
-                    <groupId>ch.qos.logback</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>byte-buddy</artifactId>
-                    <groupId>net.bytebuddy</groupId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.curator</groupId>
-                    <artifactId>curator-test</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.36</version>
         </dependency>
 
         <dependency>
-            <groupId>com.leaf.rpc</groupId>
-            <artifactId>serialization-protostuff</artifactId>
-            <version>1.0.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>protostuff-core</artifactId>
-                    <groupId>io.protostuff</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>protostuff-runtime</artifactId>
-                    <groupId>io.protostuff</groupId>
-                </exclusion>
-            </exclusions>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.0.36.Final</version>
         </dependency>
-        <!-- leaf-rpc -->
-
         <!-- jmh -->
         <dependency>
             <groupId>org.openjdk.jmh</groupId>
@@ -69,6 +42,7 @@
             <version>1.9.3</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>com.xy</groupId>
             <artifactId>reflect</artifactId>
@@ -89,6 +63,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <!-- jmh -->
         <dependency>
             <groupId>org.apache.curator</groupId>

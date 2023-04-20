@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
  * @author yefei
  * @date 2017-06-20 14:14
  */
-public class HelloServiceImpl implements HelloService {
+public class HelloServiceImpl implements com.example.demo.service.HelloService {
 
     /**
      * logger
@@ -18,5 +18,10 @@ public class HelloServiceImpl implements HelloService {
     public String sayHello(String name) {
         logger.debug("HelloServiceImpl param:{}", name);
         return "hello" + name;
+    }
+
+    @Override
+    public void sayHello2() {
+
     }
 }

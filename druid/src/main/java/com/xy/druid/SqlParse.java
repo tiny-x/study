@@ -20,7 +20,7 @@ public class SqlParse {
         String updateSql = "Update t_user set USER_ID = x, NAME = ? WHERE (USER_ID = y AND NAME = ?)";
         String selectSql = "SELECT * FROM t_user WHERE USER_ID = x AND NAME = ? OR  (USER_ID = y AND A = ?)";
 
-        SQLStatement sqlStatement = SQLUtils.parseSingleMysqlStatement(updateSql);
+        SQLStatement sqlStatement = SQLUtils.parseSingleMysqlStatement(sql);
         for (SQLObject child : sqlStatement.getChildren()) {
             System.out.println(child.getAttributes());
         }

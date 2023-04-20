@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.ProtocolConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 import com.alibaba.dubbo.config.ServiceConfig;
+import com.example.demo.service.HelloService;
 
 import java.io.IOException;
 
@@ -29,7 +30,7 @@ public class Provider {
         service.setInterface(HelloService.class);
         service.setRef(helloService);
         service.setVersion("1.0.0");
-        service.setRegistry(new RegistryConfig("zookeeper://10.10.101.59:2181"));
+        service.setRegistry(new RegistryConfig("zookeeper://10.10.225.128:2181"));
 
         // 暴露及注册服务
         service.export();

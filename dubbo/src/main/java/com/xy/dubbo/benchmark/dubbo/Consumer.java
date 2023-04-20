@@ -2,10 +2,10 @@ package com.xy.dubbo.benchmark.dubbo;
 
 import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.ReferenceConfig;
-import com.xy.dubbo.demo.HelloService;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import com.example.demo.service.HelloService;
 
 public class Consumer {
 
@@ -14,7 +14,7 @@ public class Consumer {
     static {
         ApplicationConfig application = new ApplicationConfig();
         application.setName("yyy");
-        ReferenceConfig<HelloService> reference = new ReferenceConfig<>();
+        ReferenceConfig<com.example.demo.service.HelloService> reference = new ReferenceConfig<>();
         reference.setApplication(application);
         reference.setInterface(HelloService.class);
         reference.setVersion("1.0.0");

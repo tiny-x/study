@@ -2,8 +2,7 @@ package benchmark;
 
 import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.ReferenceConfig;
-import com.xy.dubbo.demo.HelloService;
-import org.junit.Before;
+import com.com.example.demo.service.HelloService;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.annotations.Benchmark;
 

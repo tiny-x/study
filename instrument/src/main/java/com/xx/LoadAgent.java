@@ -9,8 +9,8 @@ import com.sun.tools.attach.VirtualMachine;
 public class LoadAgent {
 
     public static void main(String[] args) throws Exception {
-        VirtualMachine virtualMachine = VirtualMachine.attach("15301");
-        virtualMachine.loadAgent("/Users/xf.yefei/Projects/github/tiny-agent/target/tiny-agent-0.0.1-SNAPSHOT.jar");
+        VirtualMachine virtualMachine = VirtualMachine.attach("61967");
+        virtualMachine.loadAgent("/Users/xf.yefei/Projects/xhas/xchaos-agent-java/xchaos-agent-java-assembly/target/xchaos-agent.jar=command=create;target=mysql;action=delay");
         virtualMachine.detach();
     }
 }

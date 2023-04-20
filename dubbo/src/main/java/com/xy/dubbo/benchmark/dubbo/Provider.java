@@ -4,7 +4,7 @@ import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.MethodConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 import com.alibaba.dubbo.config.ServiceConfig;
-import com.xy.dubbo.demo.HelloService;
+import com.example.demo.service.HelloService;
 import com.xy.dubbo.demo.HelloServiceImpl;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class Provider {
         service.setApplication(application);
         service.setInterface(HelloService.class);
         RegistryConfig registry = new RegistryConfig();
-        registry.setAddress("zookeeper://192.168.102.250:2181");
+        registry.setAddress("zookeeper://10.10.225.128:2181");
         service.setRegistry(registry);
         service.setRef(helloService);
         service.setVersion("1.0.0");

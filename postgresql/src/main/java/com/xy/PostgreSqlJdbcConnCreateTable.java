@@ -11,7 +11,7 @@ public class PostgreSqlJdbcConnCreateTable {
         Statement stmt = null;
         try {
             Class.forName("org.postgresql.Driver");
-            c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "123456");
+            c = DriverManager.getConnection("jdbc:postgresql://10.10.225.128:5432/postgres", "postgres", "123456");
             System.out.println("连接数据库成功！");
             stmt = c.createStatement();
             String sql = "CREATE TABLE t_user " +

@@ -41,7 +41,7 @@ public class LettuceTest {
 
     public static void main(String[] args) {
 
-        RedisURI uri = RedisURI.create("redis://10.10.222.104:32016/");
+        RedisURI uri = RedisURI.create("redis://10.10.228.225:6379/");
         RedisClient redisClient = RedisClient.create(uri);
         StatefulRedisConnection<String, String> connection = redisClient.connect();
         RedisCommands<String, String> redisCommands = connection.sync();

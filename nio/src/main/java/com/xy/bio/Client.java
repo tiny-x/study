@@ -14,7 +14,7 @@ public class Client {
 
     public static void main(String[] args) throws Exception {
         Socket socket = new Socket();
-        socket.connect(new InetSocketAddress("127.0.0.1", 12345));
+        socket.connect(new InetSocketAddress("127.0.0.1", 9222));
 
         OutputStream outputStream = socket.getOutputStream();
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));

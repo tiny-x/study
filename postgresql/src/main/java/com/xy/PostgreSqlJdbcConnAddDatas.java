@@ -14,7 +14,7 @@ public class PostgreSqlJdbcConnAddDatas {
 
         Class.forName("org.postgresql.Driver");
         c = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/postgres", "postgres",
+                "jdbc:postgresql://10.10.225.128:5432/postgres", "postgres",
                 "123456");
         c.setAutoCommit(false);
 

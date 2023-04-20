@@ -10,7 +10,7 @@ public class Demo {
 
     public static void main(String[] args) throws Exception {
         CuratorFramework client = CuratorFrameworkFactory.builder()
-                .connectString("10.10.220.211:2181")
+                .connectString("10.10.228.213:2182")
                 .connectionTimeoutMs(3000)
                 .sessionTimeoutMs(5000)
                 .retryPolicy(new ExponentialBackoffRetry(1000, 3))

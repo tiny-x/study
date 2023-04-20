@@ -15,7 +15,7 @@ public class PathChildrenCacheListenerTest {
     public static void main(String[] args) throws Exception {
 
         CuratorFramework client = CuratorFrameworkFactory.builder()
-                .connectString("127.0.0.1:2181")
+                .connectString("10.10.228.213:2182")
                 .connectionTimeoutMs(3000)
                 .sessionTimeoutMs(20000)
                 .namespace("dubbo")

@@ -151,7 +151,7 @@ public class Reactor implements Runnable {
     }
 
     public static void main(String[] args) throws IOException {
-        new Thread(new Reactor(9001)).start();
+        new Thread(new Reactor(9222)).start();
         System.out.println("Server start...");
     }
 }

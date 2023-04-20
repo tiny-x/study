@@ -28,6 +28,20 @@
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
         </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.7.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <modules>
@@ -52,8 +66,21 @@
         <module>httpclient</module>
         <module>postgresql</module>
         <module>chaosblade</module>
-        <module>tinyagent</module>
         <module>rabbitmq</module>
+        <module>flink</module>
+        <module>hbase</module>
+        <module>tair</module>
+        <module>jedis</module>
+        <module>elasticsearch</module>
+        <module>http4</module>
+        <module>resttemplate</module>
+        <module>redisson</module>
+        <module>clickhouse</module>
+        <module>mongodb</module>
+        <module>feign</module>
+        <module>http3</module>
+        <module>pulsar</module>
+        <module>kafka</module>
     </modules>
 
     <build>

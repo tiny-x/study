@@ -27,7 +27,6 @@ public class MainAgent {
             if ("com.xx.NumberAdd".equals(allLoadedClass.getName())) {
                 logger.info("retrans form Classes : {}", allLoadedClass.getName());
                 inst.retransformClasses(allLoadedClass);
-
             }
         }
     }

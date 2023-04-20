@@ -1,6 +1,8 @@
 package com.rabbitmq.test;
 
 import java.io.IOException;
+
+import cn.hutool.core.date.DateUtil;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -11,7 +13,7 @@ import com.rabbitmq.client.Envelope;
 
 /**
  * 接收默认消息
- * 
+ *
  * @author
  * @date 2019/01/10 11:14:32
  */
@@ -23,11 +25,11 @@ public class ConsumerDirectDemo {
         try {
 
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost("32212");
+            factory.setHost("10.10.228.213");
             factory.setPort(5672);
             factory.setUsername("guest");
             factory.setPassword("guest");
-            factory.setVirtualHost("test_vhosts");
+            //factory.setVirtualHost("test_vhosts");
             connection = factory.newConnection();
             channel = connection.createChannel();
 
@@ -36,7 +38,7 @@ public class ConsumerDirectDemo {
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
                         byte[] body) throws IOException {
                     String message = new String(body, "UTF-8");
-                    System.out.println(envelope.getExchange() + "," + envelope.getRoutingKey() + "," + message);
+                    System.out.println(envelope.getExchange() + "," + envelope.getRoutingKey() + "," + DateUtil.date().toString("yyyy-MM-dd HH:mm:ss") + " --- "+ message);
                 }
             };
             // channel绑定队列，autoAck为true表示一旦收到消息则自动回复确认消息

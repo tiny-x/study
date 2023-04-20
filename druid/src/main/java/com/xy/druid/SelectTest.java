@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -25,13 +26,14 @@ public class SelectTest {
     private static final Logger logger = LoggerFactory.getLogger(UpdateTest.class);
 
     static {
-        datasource.setUrl("jdbc:mysql://cdb-r8rnnc1s.cd.tencentcdb.com:10038/leaf-jobs?useSSL=false&useUnicode=true&characterEncoding=gbk");
+        datasource.setUrl("jdbc:mysql://10.10.222.108:3306/chaosblade?useSSL=false&useUnicode=true&characterEncoding=gbk&useServerPrepStmts=true");
         //datasource.setUrl("jdbc:mysql://cdb-r8rnnc1s.cd.tencentcdb.com:10038/leaf-jobs?useSSL=false");
-        datasource.setUsername("yefei");
-        datasource.setPassword("yefei123456");
+        datasource.setUsername("root");
+        datasource.setPassword("123456");
         datasource.setDriverClassName("com.mysql.jdbc.Driver");
         Properties properties = new Properties();
         datasource.setConnectProperties(properties);
+        datasource.setMaxActive(20);
     }
 
     public static void main(String[] args) throws Exception {
@@ -39,27 +41,31 @@ public class SelectTest {
     }
 
     public void select() throws SQLException {
+        final DruidPooledConnection connection = datasource.getConnection(3000);
+
+        String sql = "select id from t_chaos_user where id = ?";
+        final PreparedStatement preparedStatement = connection.prepareStatement(
+                sql
+        );
+
         executor.scheduleWithFixedDelay(new Runnable() {
+
 
             @Override
             public void run() {
-                DruidPooledConnection connection = null;
-                PreparedStatement preparedStatement = null;
 
                 try {
-
-                    connection = datasource.getConnection(3000);
-
-                    String sql = "select USER_NAME from t_user where USER_NAME = ?;";
-
-                    preparedStatement = connection.prepareStatement(
-                            sql
-                    );
-                    preparedStatement.setString(1, "admin");
+                    preparedStatement.setLong(1, 1);
                     preparedStatement.execute();
                     ResultSet resultSet = preparedStatement.getResultSet();
                     while (resultSet.next()) {
                         System.out.println(resultSet.getString(1));
+                    }
+
+                    Statement statement = connection.createStatement();
+                    resultSet = statement.executeQuery("select id from t_chaos_user where id = 1");
+                    while (resultSet.next()) {
+                        System.out.println("statement: " + resultSet.getString(1));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
