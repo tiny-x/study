@@ -11,6 +11,7 @@ import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -49,7 +50,8 @@ public class LettuceTest {
             try {
                 TimeUnit.SECONDS.sleep(3);
                 long start = System.currentTimeMillis();
-                redisCommands.set("name", "luna");
+                String set = redisCommands.set("name", Math.random() + "");
+                System.out.println(set);
                 logger.info("key: [name]; value: [{}], time: [{}ms]", redisCommands.get("name"), (System.currentTimeMillis() - start));
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);

@@ -81,6 +81,8 @@
         <module>http3</module>
         <module>pulsar</module>
         <module>kafka</module>
+        <module>oeannbase</module>
+        <module>dubbo2.7</module>
     </modules>
 
     <build>

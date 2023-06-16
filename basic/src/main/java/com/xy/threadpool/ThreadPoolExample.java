@@ -4,7 +4,7 @@ import java.util.concurrent.*;
 
 public class ThreadPoolExample {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         ExecutorService newCachedThreadPool = Executors.newCachedThreadPool();
 
@@ -48,7 +48,32 @@ public class ThreadPoolExample {
                 5,
                 500L,
                 TimeUnit.MILLISECONDS,
-                new SynchronousQueue<>());
+                new SynchronousQueue<>(),
+                new ThreadFactory() {
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread thread = new Thread(r);
+                        thread.setName("aa");
+                        return thread;
+                    }
+                }
+        );
+
+        ThreadPoolExecutor threadPoolExecutor2 = new ThreadPoolExecutor(
+                1,
+                5,
+                500L,
+                TimeUnit.MILLISECONDS,
+                new SynchronousQueue<>(),
+                new ThreadFactory() {
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread thread = new Thread(r);
+                        thread.setName("bb");
+                        return thread;
+                    }
+                }
+        );
 
         /**
          * 允许核心线程超时，小于corePoolSize线程也会被中断
@@ -68,19 +93,30 @@ public class ThreadPoolExample {
          * 大于corePoolSize 调用阻塞队列take poll(keepAliveTime, unit) 超时退出循环，直到线程结束
          *
          */
-        for (int i = 0; i < 3; i++) {
-            threadPoolExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        TimeUnit.SECONDS.sleep(50);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+        String name = Thread.currentThread().getThreadGroup().getName();
+        System.out.println(name);
+        for (int i = 0; i < 30000; i++) {
+            TimeUnit.SECONDS.sleep(2);
+            try {
+                threadPoolExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println(Thread.currentThread().getName() + ": hello thread pool");
                     }
-                    System.out.println("hello thread pool");
-                }
-            });
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                threadPoolExecutor2.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println(Thread.currentThread().getName() + ": hello thread pool");
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-
     }
 }

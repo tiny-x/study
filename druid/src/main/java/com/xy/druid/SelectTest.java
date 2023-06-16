@@ -26,7 +26,7 @@ public class SelectTest {
     private static final Logger logger = LoggerFactory.getLogger(UpdateTest.class);
 
     static {
-        datasource.setUrl("jdbc:mysql://10.10.222.108:3306/chaosblade?useSSL=false&useUnicode=true&characterEncoding=gbk&useServerPrepStmts=true");
+        datasource.setUrl("jdbc:mysql://10.10.225.128:3306/chaosblade?useSSL=false&useUnicode=true&characterEncoding=gbk&useServerPrepStmts=true");
         //datasource.setUrl("jdbc:mysql://cdb-r8rnnc1s.cd.tencentcdb.com:10038/leaf-jobs?useSSL=false");
         datasource.setUsername("root");
         datasource.setPassword("123456");
@@ -44,25 +44,25 @@ public class SelectTest {
         final DruidPooledConnection connection = datasource.getConnection(3000);
 
         String sql = "select id from t_chaos_user where id = ?";
-        final PreparedStatement preparedStatement = connection.prepareStatement(
-                sql
-        );
 
         executor.scheduleWithFixedDelay(new Runnable() {
 
 
             @Override
             public void run() {
-
+                Statement statement = null;
                 try {
+                    PreparedStatement  preparedStatement = connection.prepareStatement(sql);
+                    long start = System.currentTimeMillis();
                     preparedStatement.setLong(1, 1);
                     preparedStatement.execute();
                     ResultSet resultSet = preparedStatement.getResultSet();
                     while (resultSet.next()) {
                         System.out.println(resultSet.getString(1));
                     }
+                    System.out.printf("耗时 %d\n", System.currentTimeMillis() - start);
 
-                    Statement statement = connection.createStatement();
+                    statement = connection.createStatement();
                     resultSet = statement.executeQuery("select id from t_chaos_user where id = 1");
                     while (resultSet.next()) {
                         System.out.println("statement: " + resultSet.getString(1));
@@ -71,8 +71,7 @@ public class SelectTest {
                     e.printStackTrace();
                 } finally {
                     try {
-                        preparedStatement.close();
-                        connection.close();
+                        statement.close();
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }

@@ -17,7 +17,7 @@ public class TairDemo {
     static void test0() throws Exception {
         DefaultTairManager defaultTairManager = new DefaultTairManager();
         List<String> cs = new ArrayList<String>();
-        cs.add("10.10.225.128:5198");
+        cs.add("10.10.225.128:5191");
         defaultTairManager.setConfigServerList(cs);
         defaultTairManager.setGroupName("group_test");
         defaultTairManager.init();

@@ -17,5 +17,10 @@ public class ListTest {
         for (String s : list) {
             System.out.println(s);
         }
+        list.addAll(list);
+
+        for (String s : list) {
+            System.out.println(s);
+        }
     }
 }
