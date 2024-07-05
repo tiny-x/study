@@ -26,7 +26,7 @@ public class SelectTest {
     private static final Logger logger = LoggerFactory.getLogger(UpdateTest.class);
 
     static {
-        datasource.setUrl("jdbc:mysql://10.10.225.128:3306/chaosblade?useSSL=false&useUnicode=true&characterEncoding=gbk&useServerPrepStmts=true");
+        datasource.setUrl("jdbc:mysql://10.10.220.46:3306/chaosblade?useSSL=false&useUnicode=true&characterEncoding=gbk&useServerPrepStmts=true");
         //datasource.setUrl("jdbc:mysql://cdb-r8rnnc1s.cd.tencentcdb.com:10038/leaf-jobs?useSSL=false");
         datasource.setUsername("root");
         datasource.setPassword("123456");

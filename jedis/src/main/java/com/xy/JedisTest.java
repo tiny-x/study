@@ -15,7 +15,7 @@ public class JedisTest {
 
     public static void main(String[] args) {
         //创建一个连接
-        Jedis jedis = new Jedis("10.10.228.225", 6379);
+        Jedis jedis = new Jedis("10.10.224.19", 31284);
         //ping一下Redis服务端是否在线，成功则返回 “PONG” 反之报错超时
         String ping = jedis.ping();
         //Jedis它实现了各式各样接口，最终汇聚一个类Jedis，它内部封装了全部Redis命令

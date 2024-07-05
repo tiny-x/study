@@ -5,15 +5,24 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Enumeration;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.*;
 
 public class Testxxx {
 
     private static Logger logger = Logger.getLogger(Testxxx.class.getName());
 
+    static final Lock lock = new ReentrantLock();
+
     public static void main(String[] args) throws Exception {
-        ServerSocket serverSocket = new ServerSocket(12345);
-        new Thread(new Runnable() {
+        ServerSocket serverSocket = new ServerSocket(11111);
+
+        String[] split = "1,   2,3,4  6".split(",");
+        for (String s : split) {
+            System.out.println(s);
+        }
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
@@ -41,7 +50,22 @@ public class Testxxx {
                     }
                 }
             }
-        }).start();
+        });
+        thread.start();
+        Thread.State state = thread.getState();
+        System.out.println(state.name());
+        thread.interrupt();
+        thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                System.out.println(e.getCause());
+            }
+        });
+        Thread.State state2 = thread.getState();
+        System.out.println(state2.name());
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        System.out.println(stackTrace);
+
 
         String property = System.getProperty("user.home");
         System.out.println(property);
@@ -67,19 +91,24 @@ public class Testxxx {
 
         while (true) {
             try {
-
                 TimeUnit.SECONDS.sleep(2);
                 long l = System.currentTimeMillis();
                 int add = add(1, 10);
                 logger.info(String.format("used: %d, %d ", memoryMXBean.getHeapMemoryUsage().getMax() / 1024 / 1024, memoryMXBean.getHeapMemoryUsage().getUsed() / 1024 / 1024));
                 System.out.println("test-1, 耗时：" + (System.currentTimeMillis() - l));
+                System.out.println(add);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
+
     }
 
-    public static int add(int a, int b) {
+    public static int add(int a, int b) throws Exception{
+        lock.lock();
+        System.out.println("------");
+        lock.unlock();
         return a + b;
     }
 }

@@ -83,6 +83,7 @@
         <module>kafka</module>
         <module>oeannbase</module>
         <module>dubbo2.7</module>
+        <module>nacos</module>
     </modules>
 
     <build>

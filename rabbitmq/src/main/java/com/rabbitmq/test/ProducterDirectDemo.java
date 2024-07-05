@@ -21,29 +21,31 @@ import com.rabbitmq.client.ConnectionFactory;
 public class ProducterDirectDemo {
     public static void main(String[] args) throws IOException, TimeoutException {
 
-        String queneName = "test";
+        String queneName = "order21";
         Connection connection = null;
         Channel channel = null;
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost("10.10.228.213");
+            factory.setHost("10.10.220.46");
             factory.setPort(5672);
-            factory.setUsername("guest");
-            factory.setPassword("guest");
-           // factory.setVirtualHost("test_vhosts");
+            factory.setUsername("admin");
+            factory.setPassword("admin123456");
+            factory.setVirtualHost("my_vhost");
             // 创建与RabbitMQ服务器的TCP连接
             connection = factory.newConnection();
             // 创建一个频道
             channel = connection.createChannel();
             // 声明默认的队列
             channel.queueDeclare(queneName, true, false, false, null);
+            channel.queueDeclare(queneName+ "_shadow", true, false, false, null);
             while (true) {
                 long l = System.currentTimeMillis();
                 UUID uuid = UUID.randomUUID();
                 byte[] bytes = uuid.toString().getBytes();
                 channel.basicPublish("", queneName, null, bytes);
+                channel.basicPublish("", queneName+ "_shadow", null, bytes);
                 System.out.printf("耗时 %d %s %s\n ", System.currentTimeMillis() - l, DateUtil.date().toString("yyyy-MM-dd HH:mm:ss"), uuid.toString());
-                Thread.sleep(1000);
+                Thread.sleep(5000);
             }
         } catch (Exception ex) {
             ex.printStackTrace();

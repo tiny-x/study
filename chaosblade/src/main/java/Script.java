@@ -1,3 +1,4 @@
+import java.lang.reflect.Field;
 import java.util.Map;
 
 /**
@@ -6,9 +7,22 @@ import java.util.Map;
 public class Script {
 
     public Object run(Map<String, Object> params) {
-        System.out.println("----");
-       
-        return null;
+        Object returnx = params.get("return");
+
+        try {
+
+            Field status = returnx.getClass().getField("status");
+            status.setAccessible(true);
+
+            status.set(returnx, 500);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return returnx;
     }
 
 }

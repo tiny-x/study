@@ -2,6 +2,8 @@ package asm;
 
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class AccessorClassLoader extends ClassLoader {
 
@@ -9,7 +11,7 @@ public class AccessorClassLoader extends ClassLoader {
 
     private static final ClassLoader selfContextParentClassLoader = getParentClassLoader(AccessorClassLoader.class);
     private static volatile AccessorClassLoader selfContextAccessorClassLoader = new AccessorClassLoader(selfContextParentClassLoader);
-
+   final static Lock lock = new ReentrantLock();
     public AccessorClassLoader(ClassLoader parent) {
         super(parent);
     }
@@ -19,6 +21,7 @@ public class AccessorClassLoader extends ClassLoader {
     }
 
     static AccessorClassLoader get(Class<?> type) {
+        lock.lock();
         ClassLoader parent = getParentClassLoader(type);
 
         // 1. 最快路径:

@@ -1,15 +1,9 @@
 package com.rabbitmq.test;
 
-import java.io.IOException;
-
 import cn.hutool.core.date.DateUtil;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Consumer;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.*;
+
+import java.io.IOException;
 
 /**
  * 接收默认消息
@@ -17,22 +11,21 @@ import com.rabbitmq.client.Envelope;
  * @author
  * @date 2019/01/10 11:14:32
  */
-public class ConsumerDirectDemo {
+public class ConsumerTestLF {
     public static void main(String[] args) {
-        String queneName = "test";
+        String queneName = "CW_417_001.cscectc03.Get";
         Connection connection = null;
         Channel channel = null;
         try {
 
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost("10.10.220.46");
-            factory.setPort(5672);
-            factory.setUsername("admin");
-            factory.setPassword("admin123456");
-            factory.setVirtualHost("my_vhost");
+            factory.setHost("47.94.58.99");
+            factory.setPort(1883);
+            factory.setUsername("cscectc03");
+            factory.setPassword("TjfWEQNz");
+            //factory.setVirtualHost("test_vhosts");
             connection = factory.newConnection();
             channel = connection.createChannel();
-
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
