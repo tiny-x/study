@@ -122,7 +122,7 @@ public class KafkaProduct extends AbstractClient {
 
         prop.put("security.protocol", "SASL_PLAINTEXT");
         prop.put("sasl.mechanism", "PLAIN");
-        prop.put("sasl.jaas.config", "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"admin\" password=\"123456\";");
+        prop.put("sasl.jaas.config", "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"kafka\" password=\"123456\";");
 
 
         AdminClient adminClient = AdminClient.create(prop);
@@ -139,7 +139,7 @@ public class KafkaProduct extends AbstractClient {
             try {
                 String value = "kafka消息,发送时间戳:" + DateUtil.now();
                 System.out.printf("发送消息 %s \t", value);
-                ProducerRecord record = new ProducerRecord("test111", value);
+                ProducerRecord record = new ProducerRecord("test33444", value);
                 Callback callback = new Callback() {
                     @Override
                     public void onCompletion(RecordMetadata metadata, Exception exception) {

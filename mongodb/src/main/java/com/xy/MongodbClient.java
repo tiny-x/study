@@ -15,7 +15,7 @@ public class MongodbClient {
     MongoClient mongoClient;
     MongoDatabase database;
 
-    private String mondbUrl = "mongodb://10.10.228.212:27017/";
+    private String mondbUrl = "mongodb://admin:123456@10.10.220.46:27017/";
 
     public void getConnection() {
         ConnectionString connectionString = new ConnectionString(mondbUrl);

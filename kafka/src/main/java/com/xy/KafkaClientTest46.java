@@ -12,19 +12,21 @@ import java.util.*;
 /**
  * @author xf.yefei
  */
-public class KafkaClient226Test {
+public class KafkaClientTest46 {
 
     public static void main(String[] args) throws Exception {
-        System.out.println(System.currentTimeMillis());
         Map<String, Object> prop = new HashMap<>();
-        prop.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "10.10.228.220:32508,10.10.228.213:31827,10.10.224.90:31459");
+        prop.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "10.10.220.46:9092");
 
+        prop.put("security.protocol", "SASL_PLAINTEXT");
+        prop.put("sasl.mechanism", "PLAIN");
         prop.put("client.id", "otel-collector-metrics");
-        prop.put("group.id", "perfma-xcrab-default");
+        prop.put("group.id", "consumer-group-id");
+        prop.put("sasl.jaas.config", "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"kafka\" password=\"123456\";");
 
         KafkaConsumer kafkaConsumer = new KafkaConsumer<String, String>(prop, new StringDeserializer(), new StringDeserializer());
         //kafkaConsumer.subscribe(Arrays.asList("chaos_plugin_metrics"));
-        kafkaConsumer.subscribe(Arrays.asList("exporter_metric_topic"));
+        kafkaConsumer.subscribe(Arrays.asList("go-micoservicexxx_T"));
 
         while (true) {
             ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(5000);
@@ -33,8 +35,9 @@ public class KafkaClient226Test {
                 ConsumerRecord<String, String> next = iterator.next();
                 Date date = new Date(next.timestamp());
 
-                System.out.println(next.offset());
+                System.out.println(DateUtil.date(date).toString());
                 System.out.println("-----------");
+                System.out.println(next.value());
             }
         }
     }

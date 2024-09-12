@@ -20,7 +20,7 @@ public class Producer {
 
         //设置NameServer地址,此处应改为实际NameServer地址，多个地址之间用；分隔
         //NameServer的地址必须有，但是也可以通过环境变量的方式设置，不一定非得写死在代码里
-        producer.setNamesrvAddr("10.10.228.213:9876");
+        producer.setNamesrvAddr("10.10.228.215:32228");
        // producer.setRetryTimesWhenSendFailed(20);
        // producer.setRetryTimesWhenSendAsyncFailed(20);
         //调用start()方法启动一个producer实例
@@ -51,7 +51,7 @@ public class Producer {
     }
 
     static RPCHook getAclRPCHook() {
-        return new AclClientRPCHook(new SessionCredentials("RocketMQ","12345678"));
+        return new AclClientRPCHook(new SessionCredentials("admin","admin"));
     }
 }
 

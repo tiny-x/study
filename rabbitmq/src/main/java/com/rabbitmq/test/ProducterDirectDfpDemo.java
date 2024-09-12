@@ -1,15 +1,13 @@
 package com.rabbitmq.test;
 
-import java.io.IOException;
-import java.text.DateFormat;
-import java.util.UUID;
-import java.util.concurrent.TimeoutException;
-
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.io.unit.DataUnit;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
 /**
  *
@@ -18,19 +16,19 @@ import com.rabbitmq.client.ConnectionFactory;
  * @author
  * @date 2019/01/10 11:17:10
  */
-public class ProducterDirectDemo {
+public class ProducterDirectDfpDemo {
     public static void main(String[] args) throws IOException, TimeoutException {
 
-        String queneName = "order2";
+        String queneName = "Gnsscscectc01";
         Connection connection = null;
         Channel channel = null;
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost("10.10.220.46");
+            factory.setHost("47.94.58.99");
             factory.setPort(5672);
-            factory.setUsername("admin");
-            factory.setPassword("admin123456");
-            factory.setVirtualHost("my_vhost");
+            factory.setUsername("cscectc01");
+            factory.setPassword("Q5gRGR==N@dQ");
+          //  factory.setVirtualHost("my_vhost");
             // 创建与RabbitMQ服务器的TCP连接
             connection = factory.newConnection();
             // 创建一个频道

@@ -1,3 +1,4 @@
+import java.net.InetAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -13,6 +14,7 @@ public class Test2x {
     private static Map<String, Object> map = new ConcurrentHashMap<>();
 
     public static void main(String[] args) throws Exception {
+        InetAddress localHost = InetAddress.getLocalHost();
         Object o = new Object();
         map.put("a",o);
         Object o1 = map.remove("a");
