@@ -85,6 +85,7 @@
         <module>dubbo2.7</module>
         <module>nacos</module>
         <module>oshi</module>
+        <module>otel</module>
     </modules>
 
     <build>

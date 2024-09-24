@@ -20,17 +20,18 @@ public class Producer {
 
         //设置NameServer地址,此处应改为实际NameServer地址，多个地址之间用；分隔
         //NameServer的地址必须有，但是也可以通过环境变量的方式设置，不一定非得写死在代码里
-        producer.setNamesrvAddr("10.10.228.215:32228");
-       // producer.setRetryTimesWhenSendFailed(20);
-       // producer.setRetryTimesWhenSendAsyncFailed(20);
+        producer.setNamesrvAddr("10.10.220.46:9876");
+        producer.setVipChannelEnabled(false);
+        // producer.setRetryTimesWhenSendFailed(20);
+        // producer.setRetryTimesWhenSendAsyncFailed(20);
         //调用start()方法启动一个producer实例
         producer.start();
 
         //发送10条消息到Topic为TopicTest，tag为TagA，消息内容为“Hello RocketMQ”拼接上i的值
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 1000; i++) {
             try {
-                TimeUnit.SECONDS.sleep(2);
-                Message msg = new Message("TopicTest",// topic
+                TimeUnit.MILLISECONDS.sleep(10);
+                Message msg = new Message("TopicTest" + i,// topic
                         "TagA",// tag
                         ("Hello RocketMQ " + i).getBytes(RemotingHelper.DEFAULT_CHARSET)// body
                 );
@@ -51,7 +52,7 @@ public class Producer {
     }
 
     static RPCHook getAclRPCHook() {
-        return new AclClientRPCHook(new SessionCredentials("admin","admin"));
+        return new AclClientRPCHook(new SessionCredentials("admin", "admin"));
     }
 }
 
