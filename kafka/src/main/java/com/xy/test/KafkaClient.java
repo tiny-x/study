@@ -21,9 +21,10 @@ public class KafkaClient {
 
         prop.put("security.protocol", "SASL_PLAINTEXT");
         prop.put("sasl.mechanism", "PLAIN");
+        prop.put("sasl.jaas.config", "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"admin\" password=\"123456\";");
+
         prop.put("client.id", "otel-collector-metrics");
         prop.put("group.id", "otel-collector");
-        prop.put("sasl.jaas.config", "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"admin\" password=\"123456\";");
 
         KafkaConsumer kafkaConsumer = new KafkaConsumer<String, String>(prop, new StringDeserializer(), new StringDeserializer());
         //kafkaConsumer.subscribe(Arrays.asList("chaos_plugin_metrics"));
